@@ -14,7 +14,7 @@ const rows = ref([null,0,0,0,0,0]),
     columns: 0,
     diagonals: 0,
     corners: 0,
-    blackout: 0
+    blackout: 0,
   });
 
 const fDiagonalStyle = [[1,5],[2,4],[4,2],[5,1]],
@@ -42,22 +42,60 @@ function markCell(row,cellId) {
   }
 }
 
-function registerCell() {
+function registerCell(row, column) {
+  rows.value[row] += 1;
+  columns.value[column] += 1;
 
+  for (let i = 0; i < fDiagonalStyle.length; i++) {
+    if (row == fDiagonalStyle[i][0] && column == fDiagonalStyle[i][1]) fDiagonal.value += 1;
+  }
+  for (let i = 0; i < bDiagonalStyle.length; i++) {
+    if (row == bDiagonalStyle[i][0] && column == bDiagonalStyle[i][1]) bDiagonal.value += 1;
+  }
+  for (let i = 0; i < cornersStyle.length; i++) {
+    if (row == cornersStyle[i][0] && column == cornersStyle[i][1]) corners.value += 1;
+  }
+
+  updateWins();
 }
 
 function unregisterCell(row, column) {
-  rows[row] --;
-  columns[column] --;
-  for (style in fDiagonalStyle) {
-    if (row == style[0] && column == style[1]) fDiagonal--
+  rows.value[row] -= 1;
+  columns.value[column] -= 1;
+
+  for (let i = 0; i < fDiagonalStyle.length; i++) {
+    if (row == fDiagonalStyle[i][0] && column == fDiagonalStyle[i][1]) fDiagonal.value -= 1;
   }
-  for (style in bDiagonalStyle) {
-    if (row == style[0] && column == style[1]) bDiagonal--
+  for (let i = 0; i < bDiagonalStyle.length; i++) {
+    if (row == bDiagonalStyle[i][0] && column == bDiagonalStyle[i][1]) bDiagonal.value -= 1;
   }
-  for (style in cornersStyle) {
-    if (row == style[0] && column == style[1]) corners--
+  for (let i = 0; i < cornersStyle.length; i++) {
+    if (row == cornersStyle[i][0] && column == cornersStyle[i][1]) corners.value -= 1;
   }
+
+  updateWins();
+}
+
+function updateWins() {
+  // Check rows
+  wins.value.rows = rows.value.filter((row, index) => row && row == winStyle.rows[index]).length;
+
+  // Check columns
+  wins.value.columns = columns.value.filter((column, index) => column && column == winStyle.columns[index]).length;
+
+  // Check diagonals
+  wins.value.diagonals = [fDiagonal.value,bDiagonal.value].filter((diagonal,index) => diagonal == [winStyle.fDiagonal,winStyle.bDiagonal][index]).length;
+
+  // Check corners
+  wins.value.corners = [corners.value].filter((corner,index) => corner == [winStyle.corners][index]).length;
+
+  // Blackout
+  if (
+    wins.value.rows == 5 &&
+    wins.value.columns == 5 &&
+    wins.value.diagonals == 2 &&
+    wins.value.corners
+  ) wins.value.blackout = 1;
 }
   
 </script>
@@ -76,7 +114,11 @@ function unregisterCell(row, column) {
       </template>
     </div>
     <div id="info">
-      I show up
+      <p :class="wins.rows == 5 ? 'win rows' :wins.rows ? '' : 'disabled'">{{ wins.rows == 5 ? "Rows" : `Rows: ${wins.rows}` }}</p>
+      <p :class="wins.columns == 5 ? 'win columns' :wins.columns ? '' : 'disabled'">{{ wins.columns == 5 ? "Columns" : `Columns: ${wins.columns}` }}</p>
+      <p :class="wins.diagonals == 2 ? 'win diagonals' :wins.diagonals ? '' : 'disabled'">{{ wins.diagonals == 2 ? "Diagonals" : `Diagonals: ${wins.diagonals}` }}</p>
+      <p :class="wins.corners ? 'win corners' : 'disabled'">Corners</p>
+      <p :class="wins.blackout ? 'win blackout' : 'disabled'">Blackout</p>
     </div>
   </main>
 </template>
@@ -96,20 +138,21 @@ function unregisterCell(row, column) {
 
   #card {
     border: 1px solid black;
-    width: min(99vw,20rem);
-    height: min(99vw,20rem);
+    width: min(99vw,30rem);
+    height: min(99vw,30rem);
     padding: 0;
     gap: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
     margin-inline: auto;
   }
 
   .row {
     display: flex;
     height: 20%;
+    width: 100%;
 
     &:not(:last-child) {
       border-bottom: 1px solid black;
@@ -123,9 +166,9 @@ function unregisterCell(row, column) {
     text-align: center;
     padding: .45rem;
     flex: 1;
-    height: 4rem;
-    width: 4rem;
-    font-size: .45rem;
+    height: 100%;
+    width: 20%;
+    font-size: calc(.5rem * 1em);
     cursor: pointer;
     user-select: none;
     position: relative;
@@ -150,23 +193,12 @@ function unregisterCell(row, column) {
         all: unset;
       }
 
-      &::before, &::after, &:hover::after {
-        content: "";
+      &:hover::after, &::after {
+        content: url("~/assets/yellow-star.svg");
         position: absolute;
         z-index: -1;
-        inset: 0.9rem;
-        border-left: 1.05rem solid transparent;
-        border-right: 1.05rem solid transparent;
-      }
-
-      &::before {
-        bottom: 1.5rem;
-        border-bottom: 1.5rem solid #6df843;
-      }
-
-      &::after, &:hover::after {
-        top: 1.5rem;
-        border-top: 1.5rem solid #6df843;
+        transform: scale(0.5);
+        transform-origin: center center;
       }
     }
   }
@@ -183,4 +215,32 @@ function unregisterCell(row, column) {
       border-radius: 50%;
     }
   }
+
+  #info {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .win {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .blackout { color: blue; font-size: 2rem }
+
+  .corners { color: red }
+  
+  .diagonals { color: purple }
+
+  .rows { color: green }
+
+  .columns { color: orange }
+
+  .disabled {
+    color: gray;
+  }
+
 </style>
