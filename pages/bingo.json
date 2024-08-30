@@ -1,237 +1,227 @@
 [
-  [
-    {
-      "id": "r1-cell-1",
-      "value": "green car",
-      "row": 1,
-      "column": 1,
-      "class": "cell",
-      "bDiagonal": true,
-      "fDiagonal": false
-    },
-    {
-      "id": "r1-cell-2",
-      "value": "man on a bike",
-      "row": 1,
-      "column": 2,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r1-cell-3",
-      "value": "fur hat",
-      "row": 1,
-      "column": 3,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r1-cell-4",
-      "value": "leaf with 3 holes",
-      "row": 1,
-      "column": 4,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r1-cell-5",
-      "value": "your mother's face",
-      "row": 1,
-      "column": 5,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": true
-    }
-  ],
-  [
-    {
-      "id": "r2-cell-1",
-      "value": "green car",
-      "row": 2,
-      "column": 1,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r2-cell-2",
-      "value": "man on a bike",
-      "row": 2,
-      "column": 2,
-      "class": "cell",
-      "bDiagonal": true,
-      "fDiagonal": false
-    },
-    {
-      "id": "r2-cell-3",
-      "value": "fur hat",
-      "row": 2,
-      "column": 3,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r2-cell-4",
-      "value": "leaf with 3 holes",
-      "row": 2,
-      "column": 4,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": true
-    },
-    {
-      "id": "r2-cell-5",
-      "value": "your mother's face",
-      "row": 2,
-      "column": 5,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    }
-  ],
-  [
-    {
-      "id": "r3-cell-1",
-      "value": "green car",
-      "row": 3,
-      "column": 1,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r3-cell-2",
-      "value": "man on a bike",
-      "row": 3,
-      "column": 2,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r3-cell-3",
-      "value": "Free Cell",
-      "row": 3,
-      "column": 3,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r3-cell-4",
-      "value": "leaf with 3 holes",
-      "row": 3,
-      "column": 4,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r3-cell-5",
-      "value": "your mother's face",
-      "row": 3,
-      "column": 5,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    }
-  ],
-  [
-    {
-      "id": "r4-cell-1",
-      "value": "green car",
-      "row": 4,
-      "column": 1,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r4-cell-2",
-      "value": "man on a bike",
-      "row": 4,
-      "column": 2,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": true
-    },
-    {
-      "id": "r4-cell-3",
-      "value": "fur hat",
-      "row": 4,
-      "column": 3,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r4-cell-4",
-      "value": "leaf with 3 holes",
-      "row": 4,
-      "column": 4,
-      "class": "cell",
-      "bDiagonal": true,
-      "fDiagonal": false
-    },
-    {
-      "id": "r4-cell-5",
-      "value": "your mother's face",
-      "row": 4,
-      "column": 5,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    }
-  ],
-  [
-    {
-      "id": "r5-cell-1",
-      "value": "green car",
-      "row": 5,
-      "column": 1,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": true
-    },
-    {
-      "id": "r5-cell-2",
-      "value": "man on a bike",
-      "row": 5,
-      "column": 2,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r5-cell-3",
-      "value": "fur hat",
-      "row": 5,
-      "column": 3,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r5-cell-4",
-      "value": "leaf with 3 holes",
-      "row": 5,
-      "column": 4,
-      "class": "cell",
-      "bDiagonal": false,
-      "fDiagonal": false
-    },
-    {
-      "id": "r5-cell-5",
-      "value": "your mother's face",
-      "row": 5,
-      "column": 5,
-      "class": "cell",
-      "bDiagonal": true,
-      "fDiagonal": false
-    }
-  ]
+  {
+    "id": "r1-cell-1",
+    "value": "green car",
+    "row": 1,
+    "column": 1,
+    "class": "cell",
+    "bDiagonal": true,
+    "fDiagonal": false
+  },
+  {
+    "id": "r1-cell-2",
+    "value": "man on a bike",
+    "row": 1,
+    "column": 2,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r1-cell-3",
+    "value": "fur hat",
+    "row": 1,
+    "column": 3,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r1-cell-4",
+    "value": "leaf with 3 holes",
+    "row": 1,
+    "column": 4,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r1-cell-5",
+    "value": "your mother's face",
+    "row": 1,
+    "column": 5,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": true
+  },
+  {
+    "id": "r2-cell-1",
+    "value": "green car",
+    "row": 2,
+    "column": 1,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r2-cell-2",
+    "value": "man on a bike",
+    "row": 2,
+    "column": 2,
+    "class": "cell",
+    "bDiagonal": true,
+    "fDiagonal": false
+  },
+  {
+    "id": "r2-cell-3",
+    "value": "fur hat",
+    "row": 2,
+    "column": 3,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r2-cell-4",
+    "value": "leaf with 3 holes",
+    "row": 2,
+    "column": 4,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": true
+  },
+  {
+    "id": "r2-cell-5",
+    "value": "your mother's face",
+    "row": 2,
+    "column": 5,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },  
+  {
+    "id": "r3-cell-1",
+    "value": "green car",
+    "row": 3,
+    "column": 1,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r3-cell-2",
+    "value": "man on a bike",
+    "row": 3,
+    "column": 2,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r3-cell-3",
+    "value": "Free Cell",
+    "row": 3,
+    "column": 3,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r3-cell-4",
+    "value": "leaf with 3 holes",
+    "row": 3,
+    "column": 4,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r3-cell-5",
+    "value": "your mother's face",
+    "row": 3,
+    "column": 5,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r4-cell-1",
+    "value": "green car",
+    "row": 4,
+    "column": 1,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r4-cell-2",
+    "value": "man on a bike",
+    "row": 4,
+    "column": 2,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": true
+  },
+  {
+    "id": "r4-cell-3",
+    "value": "fur hat",
+    "row": 4,
+    "column": 3,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r4-cell-4",
+    "value": "leaf with 3 holes",
+    "row": 4,
+    "column": 4,
+    "class": "cell",
+    "bDiagonal": true,
+    "fDiagonal": false
+  },
+  {
+    "id": "r4-cell-5",
+    "value": "your mother's face",
+    "row": 4,
+    "column": 5,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r5-cell-1",
+    "value": "green car",
+    "row": 5,
+    "column": 1,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": true
+  },
+  {
+    "id": "r5-cell-2",
+    "value": "man on a bike",
+    "row": 5,
+    "column": 2,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r5-cell-3",
+    "value": "fur hat",
+    "row": 5,
+    "column": 3,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r5-cell-4",
+    "value": "leaf with 3 holes",
+    "row": 5,
+    "column": 4,
+    "class": "cell",
+    "bDiagonal": false,
+    "fDiagonal": false
+  },
+  {
+    "id": "r5-cell-5",
+    "value": "your mother's face",
+    "row": 5,
+    "column": 5,
+    "class": "cell",
+    "bDiagonal": true,
+    "fDiagonal": false
+  }
 ]

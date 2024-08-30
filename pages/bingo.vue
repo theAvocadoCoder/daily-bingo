@@ -29,10 +29,11 @@ const fDiagonalStyle = [[1,5],[2,4],[4,2],[5,1]],
   };
 
 
-function markCell(row,cellId) {
-  if (cellId === "r3-cell-3") return
-  const cellIndex = card.value[row].indexOf(card.value[row].filter(c=>c.id===cellId)[0]);
-  const cell = card.value[row][cellIndex];
+function markCell(_cell) {
+  if (_cell.id === "r3-cell-3") return
+
+  const cell = card.value[card.value.indexOf(_cell)];
+
   if (cell.class.includes("selected")) { 
     cell.class = cell.class.replace("selected", "");
     unregisterCell(cell.row, cell.column);
@@ -143,21 +144,12 @@ function updateWins() {
     padding: 0;
     gap: 0;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     margin-inline: auto;
   }
 
-  .row {
-    display: flex;
-    height: 20%;
-    width: 100%;
-
-    &:not(:last-child) {
-      border-bottom: 1px solid black;
-    }
-  }
   .cell {
     box-sizing: border-box;
     display: flex;
@@ -165,17 +157,13 @@ function updateWins() {
     justify-content: center;
     text-align: center;
     padding: .45rem;
-    flex: 1;
-    height: 100%;
+    height: 20%;
     width: 20%;
     font-size: calc(.5rem * 1em);
     cursor: pointer;
     user-select: none;
     position: relative;
-
-    &:not(:last-child) {
-      border-right: 1px solid black;
-    }
+    border: 1px solid black;
 
     &:hover::after {
       content: "";
