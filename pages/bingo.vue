@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue';
-import bingoCard from "./bingo.json"
+import bingoCard from "./bingo.json";
+
+const SCALE = 5,
+  LENGTH = SCALE ** 2;
 
 const card = ref(bingoCard);
 
@@ -98,28 +101,48 @@ function updateWins() {
     wins.value.corners
   ) wins.value.blackout = 1;
 }
+
+function resetBoard() {
+  for (let i = 0; i < LENGTH; i++) {
+    card.value[i].class = "cell";
+  }
+  for (let i = 1; i <= SCALE; i++) {
+    rows.value[i] = 0;
+    columns.value[i] = 0;
+  }
+
+  fDiagonal.value = 0; 
+  bDiagonal.value = 0;
+  corners.value = 0;
+  wins.value.rows = 0;
+  wins.value.columns = 0;
+  wins.value.diagonals = 0;
+  wins.value.corners = 0;
+  wins.value.blackout = 0;
+}
   
 </script>
 
 <template>
   <main>
     <div id="card">
-      <template v-for="row,rowid in card">
-        <div :id="'row-'+(rowid+1)" class="row">
-          <template v-for="cell in row">
-            <div :id="cell.id" :class="cell.class" @click="markCell(cell.row - 1,cell.id)">
-              {{ cell.value }}
-            </div>
-          </template>
+      <template v-for="cell in card">
+        <div :id="cell.id" :class="cell.class" @click="markCell(cell)">
+          {{ cell.value }}
         </div>
       </template>
     </div>
-    <div id="info">
-      <p :class="wins.rows == 5 ? 'win rows' :wins.rows ? '' : 'disabled'">{{ wins.rows == 5 ? "Rows" : `Rows: ${wins.rows}` }}</p>
-      <p :class="wins.columns == 5 ? 'win columns' :wins.columns ? '' : 'disabled'">{{ wins.columns == 5 ? "Columns" : `Columns: ${wins.columns}` }}</p>
-      <p :class="wins.diagonals == 2 ? 'win diagonals' :wins.diagonals ? '' : 'disabled'">{{ wins.diagonals == 2 ? "Diagonals" : `Diagonals: ${wins.diagonals}` }}</p>
-      <p :class="wins.corners ? 'win corners' : 'disabled'">Corners</p>
-      <p :class="wins.blackout ? 'win blackout' : 'disabled'">Blackout</p>
+    <div id="system">
+      <div id="info">
+        <p :class="wins.rows == 5 ? 'win rows' :wins.rows ? '' : 'disabled'">{{ wins.rows == 5 ? "Rows" : `Rows: ${wins.rows}` }}</p>
+        <p :class="wins.columns == 5 ? 'win columns' :wins.columns ? '' : 'disabled'">{{ wins.columns == 5 ? "Columns" : `Columns: ${wins.columns}` }}</p>
+        <p :class="wins.diagonals == 2 ? 'win diagonals' :wins.diagonals ? '' : 'disabled'">{{ wins.diagonals == 2 ? "Diagonals" : `Diagonals: ${wins.diagonals}` }}</p>
+        <p :class="wins.corners ? 'win corners' : 'disabled'">Corners</p>
+        <p :class="wins.blackout ? 'win blackout' : 'disabled'">Blackout</p>
+      </div>
+      <div id="controls">
+        <button id="reset-btn" @click="resetBoard">Reset</button>
+      </div>
     </div>
   </main>
 </template>
@@ -204,12 +227,37 @@ function updateWins() {
     }
   }
 
-  #info {
+  #system {
     width: 30%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    padding-block: .5rem;
+  }
+
+  #info {
+    display: flex;
+    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: start;
+  }
+
+  /* #controls {
+  } */
+
+  #reset-btn {
+    background-color: #68ff2c;
+    color: #0a010a;
+    padding: .5rem 1rem;
+    border: none;
+    border-radius: .5rem;
+    box-shadow: 0px 1px 15px 0px #020c0141;
+
+    &:hover {
+      transform: translate(0, .1rem);
+      background-color: #55e71b;
+      color: #09010c
+    }
   }
 
   .win {
