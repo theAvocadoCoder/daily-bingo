@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <AppHeader />
+  <v-layout>
     <slot />
-    <AppFooter />
-  </div>
+    <AppNavigation />
+  </v-layout>
 </template>
