@@ -1,5 +1,5 @@
 <template>
-  <v-bottom-navigation :elevation="0" mode="shift">
+  <v-bottom-navigation :elevation="0" mode="shift" class="position-fixed bottom-0">
     <nuxt-link to="/bingo">
       <v-btn value="bingo">
         <v-icon>mdi-account-group</v-icon>
