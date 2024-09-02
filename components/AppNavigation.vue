@@ -1,5 +1,9 @@
 <template>
-  <v-bottom-navigation :elevation="0" mode="shift" class="position-fixed bottom-0">
+  <v-bottom-navigation 
+    :elevation="0" 
+    mode="shift" 
+    :class="`${smAndUp ? 'position-sticky top-0' : 'position-fixed bottom-0'}`"
+  >
     <nuxt-link to="/bingo">
       <v-btn value="bingo">
         <v-icon>mdi-account-group</v-icon>
@@ -22,3 +26,9 @@
     </nuxt-link>
   </v-bottom-navigation>
 </template>
+
+<script setup>
+  import { useDisplay } from "vuetify";
+
+  const { smAndUp } = useDisplay();
+</script>
