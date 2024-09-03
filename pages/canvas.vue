@@ -70,14 +70,18 @@
   };
 
   onMounted(() => { 
-    // resetCard();
-    drawCard();
+    if (FIRSTRENDER.value) {
+      drawCard();
+      FIRSTRENDER.value = false;
+    }
     window.onresize = handleResize;
     handleResize();
-    FIRSTRENDER.value = false;
-  }); 
+  });
 
-  onUnmounted(() => { window.removeEventListener('resize', handleResize); });
+  onUnmounted(() => { 
+    window.removeEventListener('resize', handleResize); 
+    FIRSTRENDER.value = true;
+  });
 
   function drawCard() {
     if (canvas.value) {
@@ -105,7 +109,9 @@
     // Draw the highlight if marked
     if (cell.marked) {
       // Register the cell if it's marked and it's the first render
-       if (FIRSTRENDER) {registerCell(cell.row, cell.column);}
+       if (FIRSTRENDER.value) {
+        registerCell(cell.row, cell.column);
+       }
 
       ctx.beginPath();
       ctx.fillStyle = highlightColor.value;
