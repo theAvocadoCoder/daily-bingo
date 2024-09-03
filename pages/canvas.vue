@@ -1,14 +1,65 @@
 <template>
-  <div class="d-flex justify-center gap-5">
-    <img ref="starImg" src="~/assets/yellow-star.svg" class="d-none" />
-    <canvas class="cursor-pointer" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
-    <div id="system">
-      <div id="info">
-        <p :class="wins.rows == 5 ? 'win rows' :wins.rows ? '' : 'disabled'">{{ wins.rows == 5 ? "Rows" : `Rows: ${wins.rows}` }}</p>
-        <p :class="wins.columns == 5 ? 'win columns' :wins.columns ? '' : 'disabled'">{{ wins.columns == 5 ? "Columns" : `Columns: ${wins.columns}` }}</p>
-        <p :class="wins.diagonals == 2 ? 'win diagonals' :wins.diagonals ? '' : 'disabled'">{{ wins.diagonals == 2 ? "Diagonals" : `Diagonals: ${wins.diagonals}` }}</p>
-        <p :class="wins.corners ? 'win corners' : 'disabled'">Corners</p>
-        <p :class="wins.blackout ? 'win blackout' : 'disabled'">Blackout</p>
+  <img ref="starImg" src="~/assets/yellow-star.svg" class="d-none" />
+  <div class="d-flex flex-wrap gap-3">
+    <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
+    <!-- System div -->
+    <div class="w-33 d-flex flex-column justify-space-between py-2">
+      <!-- Info -->
+      <div class="d-flex flex-column justify-center align-start w-100">
+        <p :class="`${wins.rows === 5 ? 
+          'font-weight-medium text-green-darken-1'
+          : rows.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
+          : 'text-disabled'} w-100 mb-5`"
+        >
+          Rows:
+          <v-progress-linear 
+            :model-value="rows.reduce((p,c)=>p+c)/24*100" 
+            rounded
+            :height="8"
+          ></v-progress-linear>
+        </p>
+        <p :class="`${wins.columns === 5 ? 
+          'font-weight-medium text-green-darken-1'
+          : columns.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
+          : 'text-disabled'} w-100 mb-5`"
+        >
+          Columns: 
+          <v-progress-linear 
+            :model-value="columns.reduce((p,c)=>p+c)/24*100" 
+            rounded
+            :height="8"
+          ></v-progress-linear>
+        </p>
+        <p :class="`${wins.diagonals === 2 ? 
+          'font-weight-medium text-green-darken-1'
+          : fDiagonal + bDiagonal > 0 ? 'text-amber-darken-4' 
+          : 'text-disabled'} w-100 mb-5`"
+        >
+          Diagonals: 
+          <v-progress-linear 
+            :model-value="(bDiagonal + fDiagonal)/8*100" 
+            rounded
+            :height="8"
+          ></v-progress-linear>
+        </p>
+        <p :class="`${wins.corners ? 
+          'font-weight-medium text-green-darken-1' 
+          : corners !== 0 ? 'text-amber-darken-4'
+          : 'text-disabled'} w-100 mb-5`"
+        >
+          Corners: 
+          <v-progress-linear 
+            :model-value="corners/4*100" 
+            rounded
+            :height="8"
+          ></v-progress-linear>
+        </p>
+        <p :class="`${wins.blackout ? 
+          'font-weight-black text-green-darken-1' 
+          : 'text-disabled'} w-100 mb-5`"
+        >
+          Blackout
+        </p>
       </div>
       <!-- Controls -->
       <div class="w-100">
@@ -38,8 +89,8 @@
 
   const canvas = ref(null);
   const starImg = ref(null);
-  const highlightColor = ref("#6df843");
-  const MAXWIDTH = 560;
+  const highlightColor = ref("#76FF03"); // MDI light-green-accent-3
+  const MAXWIDTH = 480;
   const SCALE = ref(300);
   const LENGTH = 5;
   const CELLSIZE = ref((SCALE.value/LENGTH));
@@ -132,7 +183,7 @@
 
     // Draw text
     ctx.fillStyle = 'black';
-    ctx.font = SCALE.value > 365 ? '16px Arial' : '12px Arial';
+    ctx.font = SCALE.value > 365 ? '14px Arial' : '10px Arial';
     ctx.textAlign = 'center'; 
     ctx.textBaseline = 'middle';
 
@@ -237,16 +288,18 @@
 
   function updateWins() {
     // Check rows
-    wins.value.rows = rows.value.filter((row, index) => row && row == winStyle.rows[index]).length;
+    wins.value.rows = rows.value.filter((row, index) => row == winStyle.rows[index]).length;
 
     // Check columns
-    wins.value.columns = columns.value.filter((column, index) => column && column == winStyle.columns[index]).length;
+    wins.value.columns = columns.value.filter((column, index) => column == winStyle.columns[index]).length;
 
     // Check diagonals
-    wins.value.diagonals = [fDiagonal.value,bDiagonal.value].filter((diagonal,index) => diagonal == [winStyle.fDiagonal,winStyle.bDiagonal][index]).length;
+    wins.value.diagonals = fDiagonal.value == winStyle.fDiagonal && bDiagonal.value == winStyle.bDiagonal
+      ? 2 : fDiagonal.value == winStyle.fDiagonal || bDiagonal.value == winStyle.bDiagonal
+      ? 1 : 0;
 
     // Check corners
-    wins.value.corners = [corners.value].filter((corner,index) => corner == [winStyle.corners][index]).length;
+    wins.value.corners = corners.value === winStyle.corners ? 1 : 0;
 
     // Blackout
     if (
@@ -254,7 +307,8 @@
       wins.value.columns == 5 &&
       wins.value.diagonals == 2 &&
       wins.value.corners
-    ) wins.value.blackout = 1;
+    ) {wins.value.blackout = 1}
+    else {wins.value.blackout = 0}
   }
 
   function resetCard() {
