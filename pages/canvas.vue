@@ -29,29 +29,29 @@
   const CELLSIZE = ref((SCALE.value/5));
   const FIRSTRENDER = {value: true};
 
-  const rows = ref([null,0,0,0,0,0]),
-    columns = ref([null,0,0,0,0,0]),
-    fDiagonal = ref(0),
-    bDiagonal = ref(0),
-    corners = ref(0),
-    wins = ref({
-      rows: 0,
-      columns: 0,
-      diagonals: 0,
-      corners: 0,
-      blackout: 0,
-    });
+  const rows = ref([0,0,0,0,0]);
+  const columns = ref([0,0,0,0,0]);
+  const fDiagonal = ref(0);
+  const bDiagonal = ref(0);
+  const corners = ref(0);
+  const wins = ref({
+    rows: 0,
+    columns: 0,
+    diagonals: 0,
+    corners: 0,
+    blackout: 0,
+  });
 
-  const fDiagonalStyle = [[1,5],[2,4],[4,2],[5,1]],
-    bDiagonalStyle = [[1,1],[2,2],[4,4],[5,5]],
-    cornersStyle = [[1,1],[1,5],[5,1],[5,5]],
-    winStyle = {
-      rows: [null,5,5,4,5,5],
-      columns: [null,5,5,4,5,5],
-      fDiagonal: 4,
-      bDiagonal: 4,
-      corners: 4,
-    };
+  const fDiagonalStyle = [[0,4],[1,3],[3,1],[4,0]];
+  const bDiagonalStyle = [[0,0],[1,1],[3,3],[4,4]];
+  const cornersStyle = [[0,0],[0,4],[4,0],[4,4]];
+  const winStyle = {
+    rows: [5,5,4,5,5],
+    columns: [5,5,4,5,5],
+    fDiagonal: 4,
+    bDiagonal: 4,
+    corners: 4,
+  };
 
   onMounted(() => { 
     // resetCard();
@@ -83,8 +83,8 @@
   }
 
   function drawCell(ctx, cell) {
-    const x = (cell.row - 1) * CELLSIZE.value,
-      y = (cell.column - 1) * CELLSIZE.value;
+    const x = cell.column * CELLSIZE.value,
+      y = cell.row * CELLSIZE.value;
 
     // Draw the highlight if marked
     if (cell.marked) {
@@ -98,7 +98,7 @@
     }
 
     // Draw the free cell star
-    if (cell.row == 3 && cell.column == 3) {
+    if (cell.row == 2 && cell.column == 2) {
       ctx.drawImage(starImg.value, x + 10, y + 10, CELLSIZE.value - 20, CELLSIZE.value - 20);
     }
 
@@ -151,10 +151,10 @@
   function markCell(event) {
     const x = event.offsetX;
     const y = event.offsetY;
-    const [row, column] = getCellCoords(x, y);
+    const [column, row] = getCellCoords(x, y);
     const cell = bingoCard.find(cell => cell.row == row && cell.column == column);
     // if free cell, don't mark
-    if (row == 3 && column == 3) return;
+    if (row == 2 && column == 2) return;
 
     if (cell.marked) {
       unregisterCell(cell.row, cell.column);
@@ -168,8 +168,8 @@
 
   function getCellCoords(x, y) {
     return [
-      Math.ceil(x / CELLSIZE.value),
-      Math.ceil(y / CELLSIZE.value)
+      Math.floor(x / CELLSIZE.value),
+      Math.floor(y / CELLSIZE.value)
     ]
   }
 
