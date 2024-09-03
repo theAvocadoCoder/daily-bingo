@@ -10,8 +10,23 @@
         <p :class="wins.corners ? 'win corners' : 'disabled'">Corners</p>
         <p :class="wins.blackout ? 'win blackout' : 'disabled'">Blackout</p>
       </div>
-      <div id="controls">
-        <button id="reset-btn" @click="resetCard">Reset</button>
+      <!-- Controls -->
+      <div class="w-100">
+        <ConfirmDialog
+          dialog-button-text="Reset"
+          dialog-button-color="light-green-darken-4"
+          dialog-title="Reset Bingo Card?"
+          dialog-text="This will clear all your markings from the card."
+          :action-buttons="[
+            {
+              buttonText: 'Reset Bingo Card',
+              onClick: resetCard
+            },
+            {
+              buttonText: 'Cancel',
+            }
+          ]"
+        />
       </div>
     </div>
   </div>
