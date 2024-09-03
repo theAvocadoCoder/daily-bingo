@@ -2,10 +2,14 @@
   <v-layout class="overflow-hidden height-screen d-flex flex-column">
     <template v-if="smAndUp">
       <AppNavigation />
-      <slot class="overflow-y-auto h-100 pa-3" />
+      <main class="overflow-y-auto h-100 pa-4">
+        <slot />
+      </main>
     </template>
     <template v-else>
-      <slot class="overflow-y-auto h-100" />
+      <main class="overflow-y-auto h-100 pa-4 pb-16">
+        <slot />
+      </main>
       <AppNavigation />
     </template>
   </v-layout>
