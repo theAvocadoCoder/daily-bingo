@@ -41,8 +41,9 @@
   const highlightColor = ref("#6df843");
   const MAXWIDTH = 560;
   const SCALE = ref(300);
-  const CELLSIZE = ref((SCALE.value/5));
-  const FIRSTRENDER = {value: true};
+  const LENGTH = 5;
+  const CELLSIZE = ref((SCALE.value/LENGTH));
+  const FIRSTRENDER = ref(true);
 
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
@@ -251,7 +252,7 @@
   }
 
   function resetCard() {
-    for (let i = 1; i <= rows.length; i++) {
+    for (let i = 0; i <= LENGTH; i++) {
       rows.value[i] = 0;
       columns.value[i] = 0;
     }
