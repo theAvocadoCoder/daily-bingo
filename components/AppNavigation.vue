@@ -1,14 +1,14 @@
 <template>
   <v-bottom-navigation 
-    :elevation="0" 
+    :elevation="1" 
     mode="shift" 
-    :class="`${smAndUp ? 'position-sticky top-0' : 'position-fixed bottom-0'}`"
+    :class="props.position"
     bg-color="teal-lighten-5"
   >
-    <nuxt-link to="/bingo">
-      <v-btn class="text-teal-darken-4" value="bingo">
+    <nuxt-link to="/groups">
+      <v-btn class="text-teal-darken-4" value="groups">
         <v-icon class="text-teal-darken-4">mdi-account-group</v-icon>
-        <span>Bingo</span>
+        <span>Groups</span>
       </v-btn>
     </nuxt-link>
 
@@ -19,17 +19,15 @@
       </v-btn>
     </nuxt-link>
 
-    <nuxt-link to="/canvas">
-      <v-btn class="text-teal-darken-4" value="canvas">
+    <nuxt-link to="/profile">
+      <v-btn class="text-teal-darken-4" value="profile">
         <v-icon class="text-teal-darken-4">mdi-account-circle</v-icon>
-        <span>Canvas</span>
+        <span>Profile</span>
       </v-btn>
     </nuxt-link>
   </v-bottom-navigation>
 </template>
 
 <script setup>
-  import { useDisplay } from "vuetify";
-
-  const { smAndUp } = useDisplay();
+  const props = defineProps(["position"]);
 </script>
