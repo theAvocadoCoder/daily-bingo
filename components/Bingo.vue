@@ -3,7 +3,7 @@
   <div class="d-flex flex-wrap gap-3">
     <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
     <!-- System div -->
-    <div class="w-33 d-flex flex-column justify-space-between py-2">
+    <div class="d-flex flex-column justify-space-between py-2">
       <!-- Info -->
       <div class="d-flex flex-column justify-center align-start w-100">
         <p :class="`${wins.rows === 5 ? 
@@ -83,9 +83,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   import {onMounted, onUnmounted, ref} from "vue";
-  import bingoCard from "./bingo.json";
+  import type Card from "~/server/interfaces/Card";
+  
+  const props = defineProps<{
+    card: Card,
+  }>();
+  const bingoCard = props.card;
 
   const canvas = ref(null);
   const starImg = ref(null);
@@ -247,7 +252,7 @@
   }
 
   function handleResize () {
-    const newWidth = window.innerWidth * 0.9;
+    const newWidth = window.innerWidth * 0.7;
     SCALE.value = newWidth > MAXWIDTH ? MAXWIDTH : newWidth;
     setTimeout(()=>drawCard(),300);
   };
@@ -334,3 +339,4 @@
   }
 
 </script>
+~/interfaces/Card
