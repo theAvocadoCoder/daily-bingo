@@ -1,252 +1,152 @@
 [
   {
-    "id": "r1-cell-1",
     "value": "green car",
     "row": 0,
     "column": 0,
-    "class": "cell",
-    "bDiagonal": true,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r1-cell-2",
     "value": "man on a bike",
     "row": 0,
     "column": 1,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": true
   },
   {
-    "id": "r1-cell-3",
     "value": "fur hat",
     "row": 0,
     "column": 2,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r1-cell-4",
     "value": "leaf with 3 holes",
     "row": 0,
     "column": 3,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r1-cell-5",
     "value": "your mother's face",
     "row": 0,
     "column": 4,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": true,
     "marked": false
   },
   {
-    "id": "r2-cell-1",
     "value": "green car",
     "row": 1,
     "column": 0,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r2-cell-2",
     "value": "man on a bike",
     "row": 1,
     "column": 1,
-    "class": "cell",
-    "bDiagonal": true,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r2-cell-3",
     "value": "fur hat",
     "row": 1,
     "column": 2,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r2-cell-4",
     "value": "leaf with 3 holes",
     "row": 1,
     "column": 3,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": true,
     "marked": true
   },
   {
-    "id": "r2-cell-5",
     "value": "your mother's face",
     "row": 1,
     "column": 4,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },  
   {
-    "id": "r3-cell-1",
     "value": "green car",
     "row": 2,
     "column": 0,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r3-cell-2",
     "value": "man on a bike",
     "row": 2,
     "column": 1,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r3-cell-3",
     "value": "Free",
     "row": 2,
     "column": 2,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r3-cell-4",
     "value": "leaf with 3 holes",
     "row": 2,
     "column": 3,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r3-cell-5",
     "value": "your mother's face",
     "row": 2,
     "column": 4,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r4-cell-1",
     "value": "green car",
     "row": 3,
     "column": 0,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r4-cell-2",
     "value": "man on a bike",
     "row": 3,
     "column": 1,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": true,
     "marked": false
   },
   {
-    "id": "r4-cell-3",
     "value": "fur hat",
     "row": 3,
     "column": 2,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r4-cell-4",
     "value": "leaf with 3 holes",
     "row": 3,
     "column": 3,
-    "class": "cell",
-    "bDiagonal": true,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r4-cell-5",
     "value": "your mother's face",
     "row": 3,
     "column": 4,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r5-cell-1",
     "value": "green car",
     "row": 4,
     "column": 0,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": true,
     "marked": false
   },
   {
-    "id": "r5-cell-2",
     "value": "man on a bike",
     "row": 4,
     "column": 1,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r5-cell-3",
     "value": "fur hat",
     "row": 4,
     "column": 2,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r5-cell-4",
     "value": "leaf with 3 holes",
     "row": 4,
     "column": 3,
-    "class": "cell",
-    "bDiagonal": false,
-    "fDiagonal": false,
     "marked": false
   },
   {
-    "id": "r5-cell-5",
     "value": "your mother's face",
     "row": 4,
     "column": 4,
-    "class": "cell",
-    "bDiagonal": true,
-    "fDiagonal": false,
     "marked": false
   }
 ]
