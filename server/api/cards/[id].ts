@@ -7,7 +7,10 @@ export default defineEventHandler(async (event) => {
     const theCard = await mongo.findCard(cardId);
     console.info("Get card %s completed", cardId);
     setResponseStatus(event, 200)
-    return theCard;
+    return {
+      ...theCard,
+      _: ""
+    };
 
   } catch (error) {
     let message = getMessage(error);
