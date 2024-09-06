@@ -86,14 +86,15 @@
 <script setup lang="ts">
   import {onMounted, onUnmounted, ref} from "vue";
   import type Card from "~/server/interfaces/Card";
+  import type Cell from "~/server/interfaces/Cell";
   
   const props = defineProps<{
     card: Card,
   }>();
   const bingoCard = props.card;
 
-  const canvas = ref(null);
-  const starImg = ref(null);
+  const canvas = ref<HTMLCanvasElement>();
+  const starImg = ref<CanvasImageSource>();
   const highlightColor = ref("#76FF03"); // MDI light-green-accent-3
   const MAXWIDTH = 480;
   const SCALE = ref(300);
@@ -125,6 +126,8 @@
     corners: 4,
   };
 
+  let saveCardInterval: ReturnType<typeof setInterval>;
+
   onMounted(() => { 
     if (FIRSTRENDER.value) {
       drawCard();
@@ -132,16 +135,19 @@
     }
     window.onresize = handleResize;
     handleResize();
+
+    saveCardInterval = setInterval(saveCard, 60_000);
   });
 
   onUnmounted(() => { 
     window.removeEventListener('resize', handleResize); 
     FIRSTRENDER.value = true;
+    clearInterval(saveCardInterval);
   });
 
   function drawCard() {
     if (canvas.value) {
-      const ctx = canvas.value.getContext("2d");
+      const ctx = canvas.value.getContext("2d") as CanvasRenderingContext2D;
 
       canvas.value.width = SCALE.value;
       canvas.value.height = SCALE.value;
@@ -158,7 +164,7 @@
     }
   }
 
-  function drawCell(ctx, cell) {
+  function drawCell(ctx: CanvasRenderingContext2D, cell: Cell) {
     const x = cell.column * CELLSIZE.value,
       y = cell.row * CELLSIZE.value;
 
@@ -177,7 +183,7 @@
 
     // Draw the free cell star
     if (cell.row == 2 && cell.column == 2) {
-      ctx.drawImage(starImg.value, x + 10, y + 10, CELLSIZE.value - 20, CELLSIZE.value - 20);
+      ctx.drawImage(starImg.value as CanvasImageSource, x + 10, y + 10, CELLSIZE.value - 20, CELLSIZE.value - 20);
     }
 
     // Draw the cell border
@@ -188,12 +194,18 @@
 
     // Draw text
     ctx.fillStyle = 'black';
-    ctx.font = SCALE.value > 365 ? '14px Arial' : '10px Arial';
+    ctx.font = SCALE.value > 400 
+      ? '14px Arial' 
+      : SCALE.value > 350 
+      ? '12px Arial' 
+      : SCALE.value > 300
+      ? '10px Arial'
+      : '6px Arial';
     ctx.textAlign = 'center'; 
     ctx.textBaseline = 'middle';
 
     // Calculate vertical centering
-    const textLines = wrapText(ctx, cell.value, CELLSIZE.value - 10);
+    const textLines = wrapText(ctx, cell.value, CELLSIZE.value - 8);
     const lineHeight = parseInt(ctx.font, 10) + 2; // Line height based on font size
     const textBlockHeight = textLines.length * lineHeight;
     const textY = y + (CELLSIZE.value - textBlockHeight) / 2 + lineHeight / 2;
@@ -204,7 +216,7 @@
     });
   }
 
-  function wrapText(ctx, text, maxWidth) {
+  function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
     const words = text.split(' ');
     let line = '';
     const lines = [];
@@ -226,11 +238,11 @@
     return lines;
   }
 
-  function markCell(event) {
+  function markCell(event: MouseEvent) {
     const x = event.offsetX;
     const y = event.offsetY;
     const [column, row] = getCellCoords(x, y);
-    const cell = bingoCard.find(cell => cell.row == row && cell.column == column);
+    const cell = bingoCard.find((cell: Cell) => cell.row == row && cell.column == column);
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
 
@@ -244,7 +256,7 @@
     drawCard();
   }
 
-  function getCellCoords(x, y) {
+  function getCellCoords(x: number, y: number) {
     return [
       Math.floor(x / CELLSIZE.value),
       Math.floor(y / CELLSIZE.value)
@@ -257,7 +269,11 @@
     setTimeout(()=>drawCard(),300);
   };
 
-  function registerCell(row, column) {
+  function saveCard () {
+    // TODO: write functionality to save card state
+  }
+
+  function registerCell(row: number, column: number) {
     rows.value[row] += 1;
     columns.value[column] += 1;
 
@@ -274,7 +290,7 @@
     updateWins();
   }
 
-  function unregisterCell(row, column) {
+  function unregisterCell(row: number, column: number) {
     rows.value[row] -= 1;
     columns.value[column] -= 1;
 
@@ -339,4 +355,3 @@
   }
 
 </script>
-~/interfaces/Card
