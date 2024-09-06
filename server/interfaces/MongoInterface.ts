@@ -1,4 +1,5 @@
 import Card from "./Card";
+import Entry from "./Entry";
 import User from "./User";
 
 export default interface MongoInterface {
@@ -6,4 +7,6 @@ export default interface MongoInterface {
   disconnect(): Promise<void>;
   findUser(id: string): Promise<User>;
   findCard(id: string): Promise<Card>;
+  insertCard(id: string): Promise<Card>;
+  findEntry(theme: string): Promise<Entry>;
 }
