@@ -1,6 +1,7 @@
 <template>
   <img ref="starImg" src="~/assets/yellow-star.svg" class="d-none" />
-  <div class="d-flex flex-wrap gap-3">
+  <client-only>
+    <div class="d-flex flex-wrap gap-3" v-if="bingoCard.length > 0">
     <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
     <!-- System div -->
     <div class="d-flex flex-column justify-space-between py-2">
@@ -81,17 +82,18 @@
       </div>
     </div>
   </div>
+  </client-only>
 </template>
 
 <script setup lang="ts">
   import {onMounted, onUnmounted, ref} from "vue";
-  import type Card from "~/server/interfaces/Card";
   import type Cell from "~/server/interfaces/Cell";
+  const { getData, setData } = useNuxtApp().$locally;
   
   const props = defineProps<{
-    card: Card,
+    card: Cell[],
   }>();
-  const bingoCard = props.card;
+  const bingoCard = ref(props.card);
 
   const canvas = ref<HTMLCanvasElement>();
   const starImg = ref<CanvasImageSource>();
@@ -158,8 +160,8 @@
       ctx.lineWidth = 3;
       ctx.strokeRect(0, 0, SCALE.value, SCALE.value);
       
-      for (let i = 0; i < bingoCard.length; i++) {
-        drawCell(ctx, bingoCard[i]);
+      for (let i = 0; i < bingoCard.value.length; i++) {
+        drawCell(ctx, bingoCard.value[i]);
       }
     }
   }
@@ -242,7 +244,7 @@
     const x = event.offsetX;
     const y = event.offsetY;
     const [column, row] = getCellCoords(x, y);
-    const cell = bingoCard.find((cell: Cell) => cell.row == row && cell.column == column);
+    const cell = bingoCard.value.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
 
@@ -347,8 +349,8 @@
     wins.value.corners = 0;
     wins.value.blackout = 0;
 
-    for (let i = 0; i < bingoCard.length; i++) {
-      bingoCard[i].marked = false;
+    for (let i = 0; i < bingoCard.value.length; i++) {
+      bingoCard.value[i].marked = false;
     }
 
     drawCard();
