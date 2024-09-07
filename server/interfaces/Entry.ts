@@ -1,6 +1,6 @@
-import { Document, ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 
-export default interface Card extends Document, WithId<Document> {
+export default interface Entry {
   _id: ObjectId;
   phrases: string[];
   length: number;

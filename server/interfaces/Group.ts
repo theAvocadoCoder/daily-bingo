@@ -1,6 +1,6 @@
-import { Document, ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 
-export default interface Group extends Document, WithId<Document> {
+export default interface Group {
   _id: ObjectId;
   members: {
     username: string;

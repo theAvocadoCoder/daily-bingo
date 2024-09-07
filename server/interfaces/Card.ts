@@ -1,7 +1,7 @@
-import { Document, ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import Cell from "./Cell";
 
-export default interface Card extends Document, WithId<Document> {
+export default interface Card {
   _id: ObjectId;
   cells: Cell[];
   createdAt: Date;

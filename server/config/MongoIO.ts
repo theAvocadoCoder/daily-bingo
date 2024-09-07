@@ -13,9 +13,9 @@ import Entry from "../interfaces/Entry";
 export default class MongoIO implements MongoInterface {
   private client?: MongoClient;
   private db?: Db;
-  private userCollection?: Collection;
-  private cardCollection?: Collection;
-  private entryCollection?: Collection;
+  private userCollection?: Collection<User>;
+  private cardCollection?: Collection<Card>;
+  private entryCollection?: Collection<Entry>;
 
   /*************************************************
    * Constructor
@@ -64,8 +64,7 @@ export default class MongoIO implements MongoInterface {
       {$match: {_id: userId}}
     ]
 
-    let results: User | null;
-    results = await this.userCollection.aggregate<User>(pipeline).next();
+    const results = await this.userCollection.aggregate<User>(pipeline).next();
 
     if (results === null) {
       throw new Error("User not found: " + id);
@@ -86,8 +85,7 @@ export default class MongoIO implements MongoInterface {
       {$match: {_id: cardId}}
     ]
 
-    let results: Card | null;
-    results = await this.cardCollection.aggregate<Card>(pipeline).next();
+    const results = await this.cardCollection.aggregate<Card>(pipeline).next();
 
     if (results === null) {
       throw new Error("Card not found: " + id);
@@ -101,9 +99,7 @@ export default class MongoIO implements MongoInterface {
       throw new Error("insertCard - Database not connected");
     }
 
-    let results: InsertOneResult;
-
-    results = await this.cardCollection.insertOne(theCard);
+    const results = await this.cardCollection.insertOne(theCard);
     let id = results.insertedId.toHexString();
     return await this.findCard(id);
   } 

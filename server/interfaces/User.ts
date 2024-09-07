@@ -1,6 +1,6 @@
-import { Document, ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 
-export default interface User extends Document, WithId<Document> {
+export default interface User {
   _id: ObjectId;
   displayName: string;
   cards: {
