@@ -2,88 +2,88 @@
   <img ref="starImg" src="~/assets/yellow-star.svg" class="d-none" />
   <client-only>
     <div class="d-flex flex-wrap gap-3" v-if="bingoCard.length > 0">
-    <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
-    <!-- System div -->
-    <div class="d-flex flex-column justify-space-between py-2">
-      <!-- Info -->
-      <div class="d-flex flex-column justify-center align-start w-100">
-        <p :class="`${wins.rows === 5 ? 
-          'font-weight-medium text-green-darken-1'
-          : rows.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
-          : 'text-disabled'} w-100 mb-5`"
-        >
-          Rows:
-          <v-progress-linear 
-            :model-value="rows.reduce((p,c)=>p+c)/24*100" 
-            rounded
-            :height="8"
-          ></v-progress-linear>
-        </p>
-        <p :class="`${wins.columns === 5 ? 
-          'font-weight-medium text-green-darken-1'
-          : columns.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
-          : 'text-disabled'} w-100 mb-5`"
-        >
-          Columns: 
-          <v-progress-linear 
-            :model-value="columns.reduce((p,c)=>p+c)/24*100" 
-            rounded
-            :height="8"
-          ></v-progress-linear>
-        </p>
-        <p :class="`${wins.diagonals === 2 ? 
-          'font-weight-medium text-green-darken-1'
-          : fDiagonal + bDiagonal > 0 ? 'text-amber-darken-4' 
-          : 'text-disabled'} w-100 mb-5`"
-        >
-          Diagonals: 
-          <v-progress-linear 
-            :model-value="(bDiagonal + fDiagonal)/8*100" 
-            rounded
-            :height="8"
-          ></v-progress-linear>
-        </p>
-        <p :class="`${wins.corners ? 
-          'font-weight-medium text-green-darken-1' 
-          : corners !== 0 ? 'text-amber-darken-4'
-          : 'text-disabled'} w-100 mb-5`"
-        >
-          Corners: 
-          <v-progress-linear 
-            :model-value="corners/4*100" 
-            rounded
-            :height="8"
-          ></v-progress-linear>
-        </p>
-        <p :class="`${wins.blackout ? 
-          'font-weight-black text-green-darken-1' 
-          : 'text-disabled'} w-100 mb-5`"
-        >
-          Blackout
-        </p>
+      <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
+      <!-- System div -->
+      <div class="d-flex flex-column justify-space-between py-2">
+        <!-- Info -->
+        <div class="d-flex flex-column justify-center align-start w-100">
+          <p :class="`${wins.rows === 5 ? 
+            'font-weight-medium text-green-darken-1'
+            : rows.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
+            : 'text-disabled'} w-100 mb-5`"
+          >
+            Rows:
+            <v-progress-linear 
+              :model-value="rows.reduce((p,c)=>p+c)/24*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.columns === 5 ? 
+            'font-weight-medium text-green-darken-1'
+            : columns.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
+            : 'text-disabled'} w-100 mb-5`"
+          >
+            Columns: 
+            <v-progress-linear 
+              :model-value="columns.reduce((p,c)=>p+c)/24*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.diagonals === 2 ? 
+            'font-weight-medium text-green-darken-1'
+            : fDiagonal + bDiagonal > 0 ? 'text-amber-darken-4' 
+            : 'text-disabled'} w-100 mb-5`"
+          >
+            Diagonals: 
+            <v-progress-linear 
+              :model-value="(bDiagonal + fDiagonal)/8*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.corners ? 
+            'font-weight-medium text-green-darken-1' 
+            : corners !== 0 ? 'text-amber-darken-4'
+            : 'text-disabled'} w-100 mb-5`"
+          >
+            Corners: 
+            <v-progress-linear 
+              :model-value="corners/4*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.blackout ? 
+            'font-weight-black text-green-darken-1' 
+            : 'text-disabled'} w-100 mb-5`"
+          >
+            Blackout
+          </p>
+        </div>
+        <!-- Controls -->
+        <div class="w-100">
+          <ConfirmDialog
+            dialog-button-text="Reset"
+            dialog-button-color="light-green-darken-4"
+            dialog-title="Reset Bingo Card?"
+            dialog-text="This will clear all your markings from the card."
+            :action-buttons="[
+              {
+                buttonText: 'Reset Bingo Card',
+                onClick: resetCard
+              },
+              {
+                buttonText: 'Cancel',
+              }
+            ]"
+          />
+        </div>
       </div>
-      <!-- Controls -->
-      <div class="w-100">
-        <ConfirmDialog
-          dialog-button-text="Reset"
-          dialog-button-color="light-green-darken-4"
-          dialog-title="Reset Bingo Card?"
-          dialog-text="This will clear all your markings from the card."
-          :action-buttons="[
-            {
-              buttonText: 'Reset Bingo Card',
-              onClick: resetCard
-            },
-            {
-              buttonText: 'Cancel',
-            }
-          ]"
-        />
-      </div>
-    </div>
-  </div>
+    </div> 
   </client-only>
-</template>
+</template> 
 
 <script setup lang="ts">
   import {onMounted, onUnmounted, ref} from "vue";
@@ -129,7 +129,7 @@
 
   let saveCardInterval: ReturnType<typeof setInterval>;
 
-  onMounted(() => { 
+  onMounted(() => {
     for (let i = 0; i < bingoCard.value.length; i++) {
       if (bingoCard.value[i].marked) registerCell(bingoCard.value[i].row, bingoCard.value[i].column);
     }
@@ -247,6 +247,7 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
+    setData("dailyBingo", {...getData("dailyBingo"), cells: bingoCard.value}, true);
 
     drawCard();
   }
