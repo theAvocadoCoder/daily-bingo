@@ -7,10 +7,7 @@ export default defineEventHandler(async (event) => {
     const theUser = await mongo.findUser(userId);
     console.info("Get user %s completed", userId);
     setResponseStatus(event, 200)
-    return {
-      ...theUser,
-      greeting: "Hello there"
-    };
+    return theUser;
 
   } catch (error) {
     let message = getMessage(error);

@@ -2,7 +2,7 @@
   <div>
     <h1>Daily Bingo!</h1> 
     <p>
-      {{ user?.greeting }}, {{ user?.displayName }}
+      Welcome back, {{ user?.user?.displayName }}
     </p>
 
     <Bingo :card="dailyBingo?.cells" />

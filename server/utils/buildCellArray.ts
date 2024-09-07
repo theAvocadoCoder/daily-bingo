@@ -21,8 +21,8 @@ export default function (phrases: string[]) {
      }
 
     cells.push(cellObject);
-    column ++;
     if (column % 5 === 4) row ++;
+    column ++;
   }
 
   return cells;
