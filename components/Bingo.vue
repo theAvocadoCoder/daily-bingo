@@ -102,7 +102,6 @@
   const SCALE = ref(300);
   const LENGTH = 5;
   const CELLSIZE = ref((SCALE.value/LENGTH));
-  const FIRSTRENDER = ref(true);
 
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
@@ -131,10 +130,10 @@
   let saveCardInterval: ReturnType<typeof setInterval>;
 
   onMounted(() => { 
-    if (FIRSTRENDER.value) {
-      drawCard();
-      FIRSTRENDER.value = false;
+    for (let i = 0; i < bingoCard.value.length; i++) {
+      if (bingoCard.value[i].marked) registerCell(bingoCard.value[i].row, bingoCard.value[i].column);
     }
+    drawCard();
     window.onresize = handleResize;
     handleResize();
 
@@ -143,7 +142,6 @@
 
   onUnmounted(() => { 
     window.removeEventListener('resize', handleResize); 
-    FIRSTRENDER.value = true;
     clearInterval(saveCardInterval);
   });
 
@@ -172,11 +170,6 @@
 
     // Draw the highlight if marked
     if (cell.marked) {
-      // Register the cell if it's marked and it's the first render
-       if (FIRSTRENDER.value) {
-        registerCell(cell.row, cell.column);
-       }
-
       ctx.beginPath();
       ctx.fillStyle = highlightColor.value;
       ctx.arc(x + CELLSIZE.value / 2, y + CELLSIZE.value / 2, CELLSIZE.value / 2 - 10, 0, Math.PI * 2);
