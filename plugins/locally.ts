@@ -31,7 +31,6 @@ export default defineNuxtPlugin(() => {
                 localStorage.removeItem(key);
               }, timeInMs);
             }
-            console.log(key, timeInMs);
           }
         },
         clear() {

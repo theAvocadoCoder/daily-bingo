@@ -1,8 +1,30 @@
 <template>
-  <img ref="starImg" src="~/assets/yellow-star.svg" class="d-none" />
   <client-only>
     <div class="d-flex flex-wrap gap-3" v-if="bingoCard.length > 0">
-      <canvas class="cursor-pointer mx-auto" ref="canvas" :width="SCALE" :height="SCALE" @click="markCell"></canvas>
+      <div
+        class="d-flex flex-wrap justify-center align-center mx-auto"
+        style="width: min(85vw,30rem); height: min(85vw,30rem); border: 1px solid black; word-wrap: break-word; overflow: hidden;"
+      >
+        <template v-for="(cell, index) in bingoCard">
+          <div 
+            :id="`${index}`" 
+            class="position-relative d-flex justify-center align-center text-center cursor-pointer" 
+            style="width: 20%; height: 20%; user-select: none; border: 1px solid black; font-size: clamp(11px, 3svw, 16px); line-height: 1.2em;"
+            @click="markCell(cell)"
+          >
+            <span style="z-index: 2;">{{ cell.value }}</span>
+            <template v-if="cell.marked">
+              <span
+                class="position-absolute rounded-circle"
+                :style="`background-color: ${STATIC.highlightColor}; inset: 0.75rem;`"
+              ></span>
+            </template>
+            <template v-if="cell.row == 2 && cell.column == 2">
+              <img ref="starImg" src="~/assets/yellow-star.svg" class="position-absolute w-75 h-75" />
+            </template>
+          </div>
+        </template>
+      </div>
       <!-- System div -->
       <div class="d-flex flex-column justify-space-between py-2">
         <!-- Info -->
@@ -95,13 +117,13 @@
   }>();
   const bingoCard = ref(props.card);
 
-  const canvas = ref<HTMLCanvasElement>();
-  const starImg = ref<CanvasImageSource>();
-  const highlightColor = ref("#76FF03"); // MDI light-green-accent-3
-  const MAXWIDTH = 480;
-  const SCALE = ref(300);
-  const LENGTH = 5;
-  const CELLSIZE = ref((SCALE.value/LENGTH));
+  const STATIC = {
+    minWidth: 300,
+    maxWidth: 560,
+    length: 5,
+    highlightColor: "#76FF03", // MDI light-green-accent-3 
+    dpr: Math.ceil(window.devicePixelRatio),
+  }
 
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
@@ -133,110 +155,16 @@
     for (let i = 0; i < bingoCard.value.length; i++) {
       if (bingoCard.value[i].marked) registerCell(bingoCard.value[i].row, bingoCard.value[i].column);
     }
-    drawCard();
-    window.onresize = handleResize;
-    handleResize();
 
     saveCardInterval = setInterval(saveCard, 60_000);
   });
 
-  onUnmounted(() => { 
-    window.removeEventListener('resize', handleResize); 
+  onUnmounted(() => {
     clearInterval(saveCardInterval);
   });
 
-  function drawCard() {
-    if (canvas.value) {
-      const ctx = canvas.value.getContext("2d") as CanvasRenderingContext2D;
-
-      canvas.value.width = SCALE.value;
-      canvas.value.height = SCALE.value;
-      CELLSIZE.value = SCALE.value / 5;
-
-      ctx.clearRect(0, 0, SCALE.value, SCALE.value);
-      ctx.beginPath();
-      ctx.lineWidth = 3;
-      ctx.strokeRect(0, 0, SCALE.value, SCALE.value);
-      
-      for (let i = 0; i < bingoCard.value.length; i++) {
-        drawCell(ctx, bingoCard.value[i]);
-      }
-    }
-  }
-
-  function drawCell(ctx: CanvasRenderingContext2D, cell: Cell) {
-    const x = cell.column * CELLSIZE.value,
-      y = cell.row * CELLSIZE.value;
-
-    // Draw the highlight if marked
-    if (cell.marked) {
-      ctx.beginPath();
-      ctx.fillStyle = highlightColor.value;
-      ctx.arc(x + CELLSIZE.value / 2, y + CELLSIZE.value / 2, CELLSIZE.value / 2 - 10, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // Draw the free cell star
-    if (cell.row == 2 && cell.column == 2) {
-      ctx.drawImage(starImg.value as CanvasImageSource, x + 10, y + 10, CELLSIZE.value - 20, CELLSIZE.value - 20);
-    }
-
-    // Draw the cell border
-    ctx.beginPath();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "black";
-    ctx.strokeRect(x, y, CELLSIZE.value, CELLSIZE.value);
-
-    // Draw text
-    ctx.fillStyle = 'black';
-    ctx.font = SCALE.value > 400 
-      ? '14px Arial' 
-      : SCALE.value > 350 
-      ? '12px Arial' 
-      : SCALE.value > 300
-      ? '10px Arial'
-      : '6px Arial';
-    ctx.textAlign = 'center'; 
-    ctx.textBaseline = 'middle';
-
-    // Calculate vertical centering
-    const textLines = wrapText(ctx, cell.value, CELLSIZE.value - 8);
-    const lineHeight = parseInt(ctx.font, 10) + 2; // Line height based on font size
-    const textBlockHeight = textLines.length * lineHeight;
-    const textY = y + (CELLSIZE.value - textBlockHeight) / 2 + lineHeight / 2;
-
-    // Draw each line of text
-    textLines.forEach((line, index) => {
-      ctx.fillText(line, x + CELLSIZE.value / 2, textY + index * lineHeight);
-    });
-  }
-
-  function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
-    const words = text.split(' ');
-    let line = '';
-    const lines = [];
-
-    for (let i = 0; i < words.length; i++) {
-      const testLine = line + words[i] + ' ';
-      const metrics = ctx.measureText(testLine);
-      const testWidth = metrics.width;
-
-      if (testWidth > maxWidth && i > 0) {
-        lines.push(line);
-        line = words[i] + ' ';
-      } else {
-        line = testLine;
-      }
-    }
-
-    lines.push(line);
-    return lines;
-  }
-
-  function markCell(event: MouseEvent) {
-    const x = event.offsetX;
-    const y = event.offsetY;
-    const [column, row] = getCellCoords(x, y);
+  function markCell(_cell: Cell) {
+    const {column, row} = _cell;
     const cell = bingoCard.value.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
@@ -248,56 +176,34 @@
     }
     cell.marked = !cell.marked;
     setData("dailyBingo", {...getData("dailyBingo"), cells: bingoCard.value}, true);
-
-    drawCard();
   }
-
-  function getCellCoords(x: number, y: number) {
-    return [
-      Math.floor(x / CELLSIZE.value),
-      Math.floor(y / CELLSIZE.value)
-    ]
-  }
-
-  function handleResize () {
-    const newWidth = window.innerWidth * 0.7;
-    SCALE.value = newWidth > MAXWIDTH ? MAXWIDTH : newWidth;
-    setTimeout(()=>drawCard(),300);
-  };
-
+  
   function saveCard () {
     // TODO: write functionality to save card state
   }
 
   function registerCell(row: number, column: number) {
-    rows.value[row] += 1;
-    columns.value[column] += 1;
-
-    for (let i = 0; i < fDiagonalStyle.length; i++) {
-      if (row == fDiagonalStyle[i][0] && column == fDiagonalStyle[i][1]) fDiagonal.value += 1;
-    }
-    for (let i = 0; i < bDiagonalStyle.length; i++) {
-      if (row == bDiagonalStyle[i][0] && column == bDiagonalStyle[i][1]) bDiagonal.value += 1;
-    }
-    for (let i = 0; i < cornersStyle.length; i++) {
-      if (row == cornersStyle[i][0] && column == cornersStyle[i][1]) corners.value += 1;
-    }
-
-    updateWins();
+    modifyCell(row, column, true);
   }
 
   function unregisterCell(row: number, column: number) {
-    rows.value[row] -= 1;
-    columns.value[column] -= 1;
+    modifyCell(row, column, false);
+  }
+
+  function modifyCell(row: number, column: number, mark: boolean) {
+    const value = mark ? 1 : -1;
+
+    rows.value[row] += value;
+    columns.value[column] += value;
 
     for (let i = 0; i < fDiagonalStyle.length; i++) {
-      if (row == fDiagonalStyle[i][0] && column == fDiagonalStyle[i][1]) fDiagonal.value -= 1;
+      if (row == fDiagonalStyle[i][0] && column == fDiagonalStyle[i][1]) fDiagonal.value += value;
     }
     for (let i = 0; i < bDiagonalStyle.length; i++) {
-      if (row == bDiagonalStyle[i][0] && column == bDiagonalStyle[i][1]) bDiagonal.value -= 1;
+      if (row == bDiagonalStyle[i][0] && column == bDiagonalStyle[i][1]) bDiagonal.value += value;
     }
     for (let i = 0; i < cornersStyle.length; i++) {
-      if (row == cornersStyle[i][0] && column == cornersStyle[i][1]) corners.value -= 1;
+      if (row == cornersStyle[i][0] && column == cornersStyle[i][1]) corners.value += value;
     }
 
     updateWins();
@@ -329,7 +235,7 @@
   }
 
   function resetCard() {
-    for (let i = 0; i <= LENGTH; i++) {
+    for (let i = 0; i <= STATIC.length; i++) {
       rows.value[i] = 0;
       columns.value[i] = 0;
     }
@@ -347,7 +253,7 @@
       bingoCard.value[i].marked = false;
     }
 
-    drawCard();
+    // drawCard();
   }
 
 </script>
