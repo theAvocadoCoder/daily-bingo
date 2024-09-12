@@ -11,12 +11,7 @@
 
 <script setup lang="ts">
   import { useDisplay } from "vuetify";
-  import { onMounted, ref } from "vue";
 
-  const layout = ref("mobile");
   const { lgAndUp } = useDisplay();
-
-  onMounted(() => {
-    if (lgAndUp.value) layout.value = "desktop";
-  })
+  const layout = lgAndUp ? "desktop" : "mobile";
 </script>

@@ -6,7 +6,7 @@
     </p>
 
     <client-only>
-      <Bingo :card="dailyBingo?.card?.cells" />
+      <Bingo :card="(dailyBingo?.card?.cells as Cell[])" />
     </client-only>
   </div>
 </template>
@@ -15,6 +15,7 @@
   import {  onBeforeMount } from "vue";
   import { useDailyBingoStore } from "~/stores/dailyBingo";
   import { useUserStore } from "~/stores/user";
+  import type Cell from "~/server/interfaces/Cell";
 
   const dailyBingo = useDailyBingoStore();
   const user = useUserStore();
