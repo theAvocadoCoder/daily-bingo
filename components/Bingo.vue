@@ -2,7 +2,7 @@
   <client-only>
     <div class="flex flex-wrap gap-3" v-if="bingoCard.length > 0">
       <div
-        class="flex flex-wrap justify-center items-center mx-auto border border-black break-words overflow-hidden"
+        class="flex flex-wrap justify-center items-center rounded-lg lg:rounded-2xl mx-auto border border-black break-words overflow-hidden"
         style="width: min(85vw,30rem); height: min(85vw,30rem); word-wrap: break-word;"
       >
         <template v-for="(cell, index) in bingoCard">
@@ -27,12 +27,12 @@
       </div>
       <!-- System div -->
       <div class="flex flex-col justify-between py-2">
-        <!-- Info -->
+        <!-- Stats -->
         <div class="flex flex-col justify-center items-start w-full">
           <p :class="`${wins.rows === 5 ? 
             'font-medium text-green-600'
             : rows.filter(c=>c>0).length > 0 ? 'text-amber-500' 
-            : 'text-gray-500'} w-full mb-5`"
+            : 'text-gray-400'} w-full mb-5`"
           >
             Rows:
             <v-progress-linear 
@@ -44,7 +44,7 @@
           <p :class="`${wins.columns === 5 ? 
             'font-medium text-green-600'
             : columns.filter(c=>c>0).length > 0 ? 'text-amber-500' 
-            : 'text-gray-500'} w-full mb-5`"
+            : 'text-gray-400'} w-full mb-5`"
           >
             Columns: 
             <v-progress-linear 
@@ -56,7 +56,7 @@
           <p :class="`${wins.diagonals === 2 ? 
             'font-medium text-green-600'
             : fDiagonal + bDiagonal > 0 ? 'text-amber-500' 
-            : 'text-gray-500'} w-full mb-5`"
+            : 'text-gray-400'} w-full mb-5`"
           >
             Diagonals: 
             <v-progress-linear 
@@ -68,7 +68,7 @@
           <p :class="`${wins.corners ? 
             'font-medium text-green-600' 
             : corners !== 0 ? 'text-amber-500'
-            : 'text-gray-500'} w-full mb-5`"
+            : 'text-gray-400'} w-full mb-5`"
           >
             Corners: 
             <v-progress-linear 
@@ -79,7 +79,7 @@
           </p>
           <p :class="`${wins.blackout ? 
             'font-weight-black text-green-600' 
-            : 'text-gray-500'} w-full mb-5`"
+            : 'text-gray-400'} w-full mb-5`"
           >
             Blackout
           </p>
