@@ -13,5 +13,5 @@
   import { useDisplay } from "vuetify";
 
   const { lgAndUp } = useDisplay();
-  const layout = lgAndUp ? "desktop" : "mobile";
+  const layout = lgAndUp.value ? "desktop" : "mobile";
 </script>

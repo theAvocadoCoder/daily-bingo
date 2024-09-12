@@ -12,12 +12,11 @@ export default defineNuxtConfig({
   modules: [
     "vuetify-nuxt-module",
     "@nuxtjs/tailwindcss",
-    // "@pinia/nuxt",
   ],
   vuetify: {
     moduleOptions: {
       includeTransformAssetsUrls: true,
       disableVuetifyStyles: true,
-    }
+    },
   },
 });
