@@ -12,13 +12,14 @@
   "dependencies": {
     "@pinia/nuxt": "^0.5.4",
     "mongodb": "6.8",
-    "nuxt": "^3.13.0",
+    "nuxt": "3.10.0",
     "pinia": "^2.2.2",
     "vue": "latest"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.12.1",
-    "vuetify-nuxt-module": "^0.18.2"
+    "sass": "^1.78.0",
+    "vuetify-nuxt-module": "0.15.2"
   },
   "overrides": {
     "vue": "latest"
