@@ -1,22 +1,34 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  ssr: true,
+  // compatibilityDate: '2024-09-12',
   devtools: { enabled: true },
   build: {
     transpile: ['vuetify'],
   },
-  imports: {
-    dirs: ["./stores"],
+  features: {
+    inlineStyles: false
   },
   modules: [
     "vuetify-nuxt-module",
     "@nuxtjs/tailwindcss",
+    "@pinia/nuxt"
+  ],
+  pinia: {
+    storesDirs: ["./stores/**"]
+  },
+  css: [
+    "./assets/scss/settings.scss"
   ],
   vuetify: {
     moduleOptions: {
       includeTransformAssetsUrls: true,
-      disableVuetifyStyles: true,
+      // disableVuetifyStyles: true,
+      styles: {
+        configFile: "assets/scss/settings.scss"
+      }
     },
+    vuetifyOptions: "./vuetify.config.ts"
   },
 });
