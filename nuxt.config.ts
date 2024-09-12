@@ -17,6 +17,7 @@ export default defineNuxtConfig({
   vuetify: {
     moduleOptions: {
       includeTransformAssetsUrls: true,
+      disableVuetifyStyles: true,
     }
   },
 });

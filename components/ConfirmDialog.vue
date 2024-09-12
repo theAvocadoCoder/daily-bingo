@@ -1,13 +1,10 @@
 <template>
-  <div class="text-center pa-4">
-    <v-btn @click="dialog = true" :color="props.dialogButtonColor">
+  <div class="text-center p-4">
+    <v-btn @click="dialog = true" class="!bg-green-400 [&_span:first-child]:!bg-green-800/20">
       {{ props.dialogButtonText }}
     </v-btn>
 
-    <v-dialog
-      v-model="dialog"
-      width="auto"
-    >
+    <v-dialog v-model="dialog" width="auto">
       <v-card
         :max-width="props.maxWidth || 400"
         :prepend-icon="props.prependIcon || ''"
@@ -24,7 +21,7 @@
           <v-btn
             v-for="(button, index) in props.actionButtons"
             :key="index"
-            class="ms-auto"
+            class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
             @click="actionButtonHandler(index)"
           >
             {{ button.buttonText }}

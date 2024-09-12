@@ -1,38 +1,38 @@
 <template>
   <client-only>
-    <div class="d-flex flex-wrap gap-3" v-if="bingoCard.length > 0">
+    <div class="flex flex-wrap gap-3" v-if="bingoCard.length > 0">
       <div
-        class="d-flex flex-wrap justify-center align-center mx-auto"
-        style="width: min(85vw,30rem); height: min(85vw,30rem); border: 1px solid black; word-wrap: break-word; overflow: hidden;"
+        class="flex flex-wrap justify-center items-center mx-auto border border-black break-words overflow-hidden"
+        style="width: min(85vw,30rem); height: min(85vw,30rem); word-wrap: break-word;"
       >
         <template v-for="(cell, index) in bingoCard">
           <div 
             :id="`${index}`" 
-            class="position-relative d-flex justify-center align-center text-center cursor-pointer" 
-            style="width: 20%; height: 20%; user-select: none; border: 1px solid black; font-size: clamp(11px, 3svw, 16px); line-height: 1.2em;"
+            class="relative flex justify-center items-center text-center cursor-pointer w-1/5 h-1/5 select-none border border-black" 
+            style="font-size: clamp(11px, 3svw, 16px); line-height: 1.2em;"
             @click="markCell(cell)"
           >
             <span style="z-index: 2;">{{ cell.value }}</span>
             <template v-if="cell.marked">
               <span
-                class="position-absolute rounded-circle"
-                :style="`background-color: ${STATIC.highlightColor}; inset: 0.75rem;`"
+                :class="`absolute rounded-[50%] inset-3`"
+                :style="`background-color: ${STATIC.highlightColor};`"
               ></span>
             </template>
             <template v-if="cell.row == 2 && cell.column == 2">
-              <img ref="starImg" src="~/assets/yellow-star.svg" class="position-absolute w-75 h-75" />
+              <img ref="starImg" src="~/assets/yellow-star.svg" class="absolute w-3/4 h-3/4" />
             </template>
           </div>
         </template>
       </div>
       <!-- System div -->
-      <div class="d-flex flex-column justify-space-between py-2">
+      <div class="flex flex-col justify-between py-2">
         <!-- Info -->
-        <div class="d-flex flex-column justify-center align-start w-100">
+        <div class="flex flex-col justify-center items-start w-full">
           <p :class="`${wins.rows === 5 ? 
-            'font-weight-medium text-green-darken-1'
-            : rows.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
-            : 'text-disabled'} w-100 mb-5`"
+            'font-medium text-green-600'
+            : rows.filter(c=>c>0).length > 0 ? 'text-amber-500' 
+            : 'text-gray-500'} w-full mb-5`"
           >
             Rows:
             <v-progress-linear 
@@ -42,9 +42,9 @@
             ></v-progress-linear>
           </p>
           <p :class="`${wins.columns === 5 ? 
-            'font-weight-medium text-green-darken-1'
-            : columns.filter(c=>c>0).length > 0 ? 'text-amber-darken-4' 
-            : 'text-disabled'} w-100 mb-5`"
+            'font-medium text-green-600'
+            : columns.filter(c=>c>0).length > 0 ? 'text-amber-500' 
+            : 'text-gray-500'} w-full mb-5`"
           >
             Columns: 
             <v-progress-linear 
@@ -54,9 +54,9 @@
             ></v-progress-linear>
           </p>
           <p :class="`${wins.diagonals === 2 ? 
-            'font-weight-medium text-green-darken-1'
-            : fDiagonal + bDiagonal > 0 ? 'text-amber-darken-4' 
-            : 'text-disabled'} w-100 mb-5`"
+            'font-medium text-green-600'
+            : fDiagonal + bDiagonal > 0 ? 'text-amber-500' 
+            : 'text-gray-500'} w-full mb-5`"
           >
             Diagonals: 
             <v-progress-linear 
@@ -66,9 +66,9 @@
             ></v-progress-linear>
           </p>
           <p :class="`${wins.corners ? 
-            'font-weight-medium text-green-darken-1' 
-            : corners !== 0 ? 'text-amber-darken-4'
-            : 'text-disabled'} w-100 mb-5`"
+            'font-medium text-green-600' 
+            : corners !== 0 ? 'text-amber-500'
+            : 'text-gray-500'} w-full mb-5`"
           >
             Corners: 
             <v-progress-linear 
@@ -78,17 +78,16 @@
             ></v-progress-linear>
           </p>
           <p :class="`${wins.blackout ? 
-            'font-weight-black text-green-darken-1' 
-            : 'text-disabled'} w-100 mb-5`"
+            'font-weight-black text-green-600' 
+            : 'text-gray-500'} w-full mb-5`"
           >
             Blackout
           </p>
         </div>
         <!-- Controls -->
-        <div class="w-100">
+        <div class="w-full">
           <ConfirmDialog
             dialog-button-text="Reset"
-            dialog-button-color="light-green-darken-4"
             dialog-title="Reset Bingo Card?"
             dialog-text="This will clear all your markings from the card."
             :action-buttons="[
