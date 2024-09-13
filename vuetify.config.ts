@@ -12,20 +12,7 @@ export default defineVuetifyConfiguration({
 
   directives: true, // can take an array as well
 
-  // Global components
-  components: [
-    // 'VDialog',
-    // 'VExpansionPanel',
-    // 'VExpansionPanelText',
-    // 'VExpansionPanelTitle',
-  ],
-
   labComponents: true,
-  // labComponents: [
-  // 'VDataTable',
-  // 'VDatePickerControls',
-  // 'VDatePickerHeader',
-  // ],
 
   defaults: {
     global: {

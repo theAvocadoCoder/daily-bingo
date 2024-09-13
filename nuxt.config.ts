@@ -2,7 +2,7 @@
 
 export default defineNuxtConfig({
   ssr: true,
-  // compatibilityDate: '2024-09-12',
+  compatibilityDate: '2024-09-12',
   devtools: { enabled: true },
   build: {
     transpile: ['vuetify'],
