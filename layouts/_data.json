@@ -1,0 +1,22 @@
+{
+  "navItems": [
+    {
+      "to": "/groups",
+      "icon": "mdi-account-group",
+      "value": "groups",
+      "bg": "!bg-lime-50"
+    },
+    {
+      "to": "/",
+      "icon": "mdi-home",
+      "value": "home",
+      "bg": "!bg-lime-50"
+    },
+    {
+      "to": "/cards",
+      "icon": "mdi-star",
+      "value": "cards",
+      "bg": "!bg-lime-50"
+    }
+  ]
+}

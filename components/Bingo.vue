@@ -1,91 +1,57 @@
 <template>
   <client-only>
-    <div class="flex flex-wrap gap-3" v-if="bingoCard.length > 0">
-      <div
-        class="flex flex-wrap justify-center items-center rounded-lg lg:rounded-2xl mx-auto border border-black break-words overflow-hidden"
-        style="width: min(85vw,30rem); height: min(85vw,30rem); word-wrap: break-word;"
-      >
-        <template v-for="(cell, index) in bingoCard">
-          <div 
-            :id="`${index}`" 
-            class="relative flex justify-center items-center text-center cursor-pointer w-1/5 h-1/5 select-none border border-black" 
-            style="font-size: clamp(11px, 3svw, 16px); line-height: 1.2em;"
-            @click="markCell(cell)"
+    <div class="flex flex-wrap justify-center lg:justify-evenly xl:justify-center gap-3 sm:gap-5 md:gap-7 lg:gap-0 xl:gap-10 w-full">
+      <div>
+        <!-- Bingo container -->
+        <div class="bg-lime-700 grid grid-cols-1 grid-rows-11 w-[min(85vw,30rem)] h-fit rounded-2xl sm:rounded-3xl lg:rounded-4xl mx-auto border-2 md:border-4 border-lime-700">
+          <h1 class="row-span-1 flex items-center justify-center text-xl font-bold md:text-2xl text-stone-50">
+            Daily Bingo
+          </h1>
+          <!-- Card -->
+          <div
+            class="row-[2/-1] grid grid-cols-5 grid-rows-5 gap-0 p-0 w-full aspect-square overflow-hidden bg-stone-50 rounded-2xl sm:rounded-3xl lg:rounded-4xl"
+            style="word-wrap: break-word;"
           >
-            <span style="z-index: 2;">{{ cell.value }}</span>
-            <template v-if="cell.marked">
+            <!-- Cells -->
+            <div 
+              v-for="(cell, index) in bingoCard"
+              :id="`${index}`" 
+              :class="
+                `grid [&_*]:[grid-row:1] [&_*]:[grid-column:1] \
+                [&_*]:my-auto [&_*]:mx-auto \
+                p-1 ${cell.column?'-m-[1px]':'-m-[1px]'} \
+                w-full aspect-square cursor-pointer \
+                border border-black overflow-hidden \
+                ${cell.column % 5 == 4?'border-r-transparent':''} \
+                ${cell.column % 5 == 0?'border-l-transparent':''} \
+                ${cell.row % 5 == 0?'border-t-transparent':''} \
+                ${cell.row % 5 == 4?'border-b-transparent':''} `
+              " 
+              style="font-size: clamp(10px, 2svw, 16px); line-height: 1.2em;"
+              @click="markCell(cell)"
+            >
+              <!-- Mark -->
               <span
-                :class="`absolute rounded-[50%] inset-3`"
-                :style="`background-color: ${STATIC.highlightColor};`"
+                v-if="cell.marked"defaultCard.value
+                :class="`rounded-[50%] w-3/4 h-3/4`"
+                :style="`background-color: ${STATIC.highlightColor}`"
               ></span>
-            </template>
-            <template v-if="cell.row == 2 && cell.column == 2">
-              <img ref="starImg" src="~/assets/yellow-star.svg" class="absolute w-3/4 h-3/4" />
-            </template>
+              <!-- Star -->
+              <img 
+                v-if="cell.row == 2 && cell.column == 2"
+                ref="starImg"
+                src="~/assets/yellow-star.svg"
+                class="w-3/4 h-3/4"
+              />
+              <!-- Text -->
+              <span class="text-center select-none break-words">{{ 
+                cell.row == 2 && cell.column == 2 ? 'FREE' : cell.value 
+              }}</span>
+            </div>
           </div>
-        </template>
-      </div>
-      <!-- System div -->
-      <div class="flex flex-col justify-between py-2">
-        <!-- Stats -->
-        <div class="flex flex-col justify-center items-start w-full">
-          <p :class="`${wins.rows === 5 ? 
-            'font-medium text-green-600'
-            : rows.filter(c=>c>0).length > 0 ? 'text-amber-500' 
-            : 'text-gray-400'} w-full mb-5`"
-          >
-            Rows:
-            <v-progress-linear 
-              :model-value="rows.reduce((p,c)=>p+c)/24*100" 
-              rounded
-              :height="8"
-            ></v-progress-linear>
-          </p>
-          <p :class="`${wins.columns === 5 ? 
-            'font-medium text-green-600'
-            : columns.filter(c=>c>0).length > 0 ? 'text-amber-500' 
-            : 'text-gray-400'} w-full mb-5`"
-          >
-            Columns: 
-            <v-progress-linear 
-              :model-value="columns.reduce((p,c)=>p+c)/24*100" 
-              rounded
-              :height="8"
-            ></v-progress-linear>
-          </p>
-          <p :class="`${wins.diagonals === 2 ? 
-            'font-medium text-green-600'
-            : fDiagonal + bDiagonal > 0 ? 'text-amber-500' 
-            : 'text-gray-400'} w-full mb-5`"
-          >
-            Diagonals: 
-            <v-progress-linear 
-              :model-value="(bDiagonal + fDiagonal)/8*100" 
-              rounded
-              :height="8"
-            ></v-progress-linear>
-          </p>
-          <p :class="`${wins.corners ? 
-            'font-medium text-green-600' 
-            : corners !== 0 ? 'text-amber-500'
-            : 'text-gray-400'} w-full mb-5`"
-          >
-            Corners: 
-            <v-progress-linear 
-              :model-value="corners/4*100" 
-              rounded
-              :height="8"
-            ></v-progress-linear>
-          </p>
-          <p :class="`${wins.blackout ? 
-            'font-weight-black text-green-600' 
-            : 'text-gray-400'} w-full mb-5`"
-          >
-            Blackout
-          </p>
         </div>
         <!-- Controls -->
-        <div class="w-full">
+        <div class="w-full flex justify-evenly">
           <ConfirmDialog
             dialog-button-text="Reset"
             dialog-title="Reset Bingo Card?"
@@ -100,6 +66,81 @@
               }
             ]"
           />
+          <ConfirmDialog
+            dialog-button-text="Save"
+            dialog-title="Save Bingo Card?"
+            dialog-text="This will save the card to your collection."
+            :action-buttons="[
+              {
+                buttonText: 'Save Bingo Card',
+                onClick: saveCard
+              },
+              {
+                buttonText: 'Cancel',
+              }
+            ]"
+          />
+        </div>
+      </div>
+      <!-- System div -->
+      <div class="flex flex-col justify-between py-5 w-[max(80%,4rem)] md:max-w-56 lg:max-w-40 lg:!w-full xl:max-w-64">
+        <!-- Stats -->
+        <div class="flex flex-col justify-center items-start w-full">
+          <p :class="
+            `${wins.rows === 5 ? 
+            'font-bold text-lime-500'
+            : rows.filter(c=>c>0).length > 0 ? 'text-amber-500' 
+            : 'text-gray-400'} w-full mb-5`"
+          >
+            Rows:
+            <v-progress-linear 
+              :model-value="rows.reduce((p,c)=>p+c)/24*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.columns === 5 ? 
+            'font-bold text-lime-500'
+            : columns.filter(c=>c>0).length > 0 ? 'text-amber-500' 
+            : 'text-gray-400'} w-full mb-5`"
+          >
+            Columns: 
+            <v-progress-linear 
+              :model-value="columns.reduce((p,c)=>p+c)/24*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.diagonals === 2 ? 
+            'font-bold text-lime-500'
+            : fDiagonal + bDiagonal > 0 ? 'text-amber-500' 
+            : 'text-gray-400'} w-full mb-5`"
+          >
+            Diagonals: 
+            <v-progress-linear 
+              :model-value="(bDiagonal + fDiagonal)/8*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.corners ? 
+            'font-bold text-lime-500' 
+            : corners !== 0 ? 'text-amber-500'
+            : 'text-gray-400'} w-full mb-5`"
+          >
+            Corners: 
+            <v-progress-linear 
+              :model-value="corners/4*100" 
+              rounded
+              :height="8"
+            ></v-progress-linear>
+          </p>
+          <p :class="`${wins.blackout ? 
+            'font-weightbold text-lime-500' 
+            : 'text-gray-400'} w-full mb-5`"
+          >
+            Blackout
+          </p>
         </div>
       </div>
     </div> 
@@ -112,9 +153,13 @@
   const { getData, setData } = useNuxtApp().$locally;
   
   const props = defineProps<{
-    card: Cell[],
+    card?: Cell[],
   }>();
-  const bingoCard = ref(props.card);
+  // const defaultCard = ref<Cell[]>([]);
+  // for (let index = 0; index < 25; index++){
+  //   defaultCard.value.push({ marked: false, value: "", column: index % 5, row: Math.floor(index / 5)});
+  // }
+  const bingoCard = ref(props.card as Cell[]);
 
   const STATIC = {
     minWidth: 300,

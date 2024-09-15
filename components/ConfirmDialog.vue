@@ -1,6 +1,6 @@
 <template>
   <div class="text-center p-4">
-    <v-btn @click="dialog = true" class="!bg-green-400 [&_span:first-child]:!bg-green-800/20">
+    <v-btn @click="dialog = true" class="!bg-lime-700 !text-stone-50">
       {{ props.dialogButtonText }}
     </v-btn>
 

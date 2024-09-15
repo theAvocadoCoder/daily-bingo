@@ -1,9 +1,8 @@
 <template>
-  <div>
-    <h1>Daily Bingo!</h1> 
-    <p>
-      Welcome back, {{ user?.user?.displayName }}
-    </p>
+  <div class="bg-lime-50">
+    <!-- <p class="p-3 lg:p-5 text-lg lg:text-xl xl:text-2xl">
+      Hi, {{ user?.user?.displayName }}
+    </p> -->
 
     <client-only>
       <Bingo :card="(dailyBingo?.card?.cells as Cell[])" />
