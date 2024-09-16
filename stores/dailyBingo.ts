@@ -17,7 +17,7 @@ export const useDailyBingoStore = defineStore("dailyBingo", () => {
         card.value = dailyBingoInStorage;
       }
     } catch (error) {
-      console.error("Error fetching daily bingo:", error);
+      throw createError({ statusCode: 500, statusMessage: "Could not generate daily bingo card", fatal: true })
     }
   }
 

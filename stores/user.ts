@@ -18,7 +18,7 @@ export const useUserStore = defineStore("user", () => {
         user.value = userInStorage;
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      throw createError({ statusCode: 500, statusMessage: "User not found", fatal: true })
     }
   }
 
