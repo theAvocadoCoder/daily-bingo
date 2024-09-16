@@ -10,6 +10,17 @@ export default defineNuxtConfig({
   features: {
     inlineStyles: false
   },
+  app: {
+    head: {
+      title: "Daily Bingo",
+      meta: [
+        {
+          name: "description",
+          content: "A fun little app to share with friends. What's on your bingo card today?"
+        },
+      ],
+    }
+  },
   modules: [
     "vuetify-nuxt-module",
     "@nuxtjs/tailwindcss",
@@ -19,16 +30,27 @@ export default defineNuxtConfig({
     storesDirs: ["./stores/**"]
   },
   css: [
-    "./assets/scss/settings.scss"
+    "./assets/scss/settings.scss",
   ],
   vuetify: {
     moduleOptions: {
       includeTransformAssetsUrls: true,
-      // disableVuetifyStyles: true,
       styles: {
-        configFile: "assets/scss/settings.scss"
-      }
+        configFile: "assets/scss/settings.scss",
+      },
     },
-    vuetifyOptions: "./vuetify.config.ts"
+    vuetifyOptions: {
+      display: {
+        mobileBreakpoint: 'xs',
+        thresholds: {
+          xs: 0,
+          sm: 640,
+          md: 768,
+          lg: 1024,
+          xl: 1280,
+          xxl: 1536,
+        },
+      },
+    }
   },
 });
