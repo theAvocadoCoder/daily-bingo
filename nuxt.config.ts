@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   compatibilityDate: '2024-09-12',
   devtools: { enabled: true },
   build: {
@@ -53,4 +53,7 @@ export default defineNuxtConfig({
       },
     }
   },
+  nitro: {
+    preset: "netlify"
+  }
 });
