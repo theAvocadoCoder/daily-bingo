@@ -2,18 +2,18 @@
   <div class="flex flex-wrap justify-center lg:justify-evenly xl:justify-center gap-3 sm:gap-5 md:gap-7 lg:gap-0 xl:gap-10 w-full">
     <div>
       <!-- Bingo container -->
-      <div class="bg-lime-700 grid grid-cols-1 grid-rows-11 w-[min(85vw,30rem)] h-fit rounded-2xl sm:rounded-3xl lg:rounded-4xl mx-auto border-2 md:border-4 border-lime-700">
+      <div class="bg-lime-700 grid grid-cols-1 grid-rows-11 w-[min(85vw,30rem)] h-fit rounded-3xl sm:rounded-[2rem] lg:rounded-[3rem] mx-auto border-2 md:border-4 border-lime-700">
         <h1 class="row-span-1 flex items-center justify-center text-xl font-bold md:text-2xl text-stone-50">
-          Daily Bingo
+          {{ type === "dailyBingo" ? "DAILY BINGO" : "BINGO" }}
         </h1>
         <!-- Card -->
         <div
-          class="row-[2/-1] grid grid-cols-5 grid-rows-5 gap-0 p-0 w-full aspect-square overflow-hidden bg-stone-50 rounded-2xl sm:rounded-3xl lg:rounded-4xl"
+          class="row-[2/-1] grid grid-cols-5 grid-rows-5 gap-0 p-0 w-full aspect-square overflow-hidden bg-stone-50 rounded-2xl sm:rounded-[1.5rem] lg:rounded-[2.5rem]"
           style="word-wrap: break-word;"
         >
           <!-- Cells -->
           <div 
-            v-for="(cell, index) in bingoCard"
+            v-for="(cell, index) in card"
             :id="`${index}`" 
             :class="
               `grid [&_*]:[grid-row:1] [&_*]:[grid-column:1] \
@@ -85,7 +85,7 @@
     <div class="flex flex-col justify-between py-5 w-[max(80%,4rem)] md:max-w-56 lg:max-w-40 lg:!w-full xl:max-w-64">
       <!-- Stats -->
       <div class="flex flex-col justify-center items-start w-full">
-        <p v-if="isClient" v-for="stat in wins" :key="stat.name" :class="
+        <p v-for="stat in wins" :key="stat.name" :class="
           `${stat.value == stat.winCheck ? 
           'font-bold text-lime-500'
           : stat.notEmpty ? 'text-amber-500' 
@@ -109,16 +109,13 @@
   const { getData, setData } = useNuxtApp().$locally;
   
   const props = defineProps<{
-    card?: Cell[],
+    card: Cell[],
+    type?: string,
   }>();
-  // const defaultCard = ref<Cell[]>([]);
-  // for (let index = 0; index < 25; index++){
-  //   defaultCard.value.push({ marked: false, value: "", column: index % 5, row: Math.floor(index / 5)});
-  // }
-  const bingoCard = ref(props.card as Cell[]);
 
   const STATIC = {
-    length: 5,
+    length: 25,
+    scale: 5,
     highlightColor: "#76FF03", // MDI light-green-accent-3
   }
 
@@ -134,7 +131,6 @@
     [x: string]: Stat
   }
 
-  const isClient = ref(false);
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
   const fDiagonal = ref(0);
@@ -188,37 +184,26 @@
     corners: 4,
   };
 
+  // const defaultCard = [];
+
+  // for (let index = 0; index < STATIC.length; index++){
+  //   defaultCard.push({ marked: false, value: "", column: index % 5, row: Math.floor(index / 5)});
+  // }
+
+  // if (!props.card) props.card = defaultCard;
+
   // let saveCardInterval: ReturnType<typeof setInterval>;
 
   onMounted(() => {
-    for (let i = 0; i < bingoCard.value.length; i++) {
-      if (bingoCard.value[i].marked) registerCell(bingoCard.value[i].row, bingoCard.value[i].column);
+    for (let i = 0; i < props.card.length; i++) {
+      if (props.card[i].marked) registerCell(props.card[i].row, props.card[i].column);
     }
-
-    isClient.value = true
-
     // saveCardInterval = setInterval(saveCard, 60_000);
   });
 
-  // onUnmounted(() => {
-  //   clearInterval(saveCardInterval);
-  // });
-
-  // await useAsyncData("registerCells", () => {
-  //   for (let i = 0; i < bingoCard.value.length; i++) {
-  //     if (bingoCard.value[i].marked) registerCell(bingoCard.value[i].row, bingoCard.value[i].column);
-  //   }
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       resolve(false);
-  //       // resolve("Data fetched!");
-  //     }, 100);
-  //   });
-  // })
-
   function markCell(_cell: Cell) {
     const {column, row} = _cell;
-    const cell = bingoCard.value.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
+    const cell = props.card.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
 
@@ -228,7 +213,7 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
-    setData("dailyBingo", {...getData("dailyBingo"), cells: bingoCard.value}, true);
+    setData(props.type, props.card, true);
   }
   
   function saveCard () {
@@ -288,7 +273,7 @@
   }
 
   function resetCard() {
-    for (let i = 0; i <= STATIC.length; i++) {
+    for (let i = 0; i <= STATIC.scale; i++) {
       rows.value[i] = 0;
       columns.value[i] = 0;
     }
@@ -302,11 +287,11 @@
     wins.value.corners.value = 0;
     wins.value.blackout.value = 0;
 
-    for (let i = 0; i < bingoCard.value.length; i++) {
-      bingoCard.value[i].marked = false;
+    for (let i = 0; i < props.card.length; i++) {
+      props.card[i].marked = false;
     }
 
-    // drawCard();
+    setData(props.type, props.card, true);
   }
 
 </script>
