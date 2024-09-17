@@ -22,6 +22,8 @@
     >
       <v-list>
         <v-list-item
+          tag="nuxt-link"
+          to="/profile"
           prepend-avatar="https://upload.wikimedia.org/wikipedia/commons/b/be/Avocado_Coder.png"
           :subtitle="`@${user?.username}`"
           :title="user?.displayName"
@@ -69,18 +71,12 @@
 
 <script setup lang="ts">
   import { navItems } from "./_data.json";
+  const { getData } = useNuxtApp().$locally; 
 
-  const path = ref(useRoute().path)
+  const path = computed(() => useRoute().path);
+  const user = ref();
 
-  // Watch for changes in the route
-  watch(
-    () => useRoute().path,
-    (newPath) => {
-      path.value = newPath;  // Update currentPath whenever the route changes
-    }
-  );
-
-  const {data: user} = await useFetch("/api/users/66d8754397e9d9f8ccb56203");
-  
-
+  onMounted(() => {
+    user.value = getData("bingoUser")
+  })
 </script>

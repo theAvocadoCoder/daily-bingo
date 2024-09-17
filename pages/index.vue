@@ -1,24 +1,29 @@
 <template>
   <div class="bg-lime-50 h-full">
-    <!-- <p class="p-3 lg:p-5 text-lg lg:text-xl xl:text-2xl">
-      Hi, {{ user?.user?.displayName }}
-    </p> -->
-
-    <Bingo :card="(dailyBingo as unknown as Cell[])" />
+    <Loading v-if="cardStatus === 'pending'" />
+    <Bingo v-else :card="card" type="dailyBingo" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import type Card from "~/server/interfaces/Card";
-  import type Cell from "~/server/interfaces/Cell";
+  const { getData, setData } = useNuxtApp().$locally; 
 
-  const {data: user} = await useFetch("/api/users/66d8754397e9d9f8ccb56203")
-  const {data: dailyBingo} = await useFetch("/api/cards/daily");
+  let card = getData("dailyBingo");
+  let user = getData("bingoUser");
+  let cardStatus;
+  let userStatus;
 
-  // const dailyBingo = useDailyBingoStore();
-  // const user = useUserStore();
-
-  // await useAsyncData("dailyBingo", () => dailyBingo.fetchDailyBingo().then(()=>true));
-
-  // await useAsyncData("user", () => user.fetchUser().then(()=>true));
+  if (!card) {
+    const results = await useFetch("/api/cards/daily");
+    card = toRaw(results.data._value);
+    cardStatus = results.status;
+  }
+  if (!user) {
+    const results = await useFetch("/api/users/66d8754397e9d9f8ccb56203");
+    user = toRaw(results.data._value);
+    userStatus = results.status;
+  }
+  
+  setData("dailyBingo", card, false, [1, "d"]);
+  setData("bingoUser", user, false, [1, "d"]);
 </script>
