@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-09-12',
   devtools: { enabled: true },
+  runtimeConfig: {
+    authOrigin: process.env.AUTH_ORIGIN,
+    authSecret: process.env.AUTH_SECRET,
+    authClientId: process.env.AUTH_CLIENT_ID,
+    authClientSecret: process.env.AUTH_CLIENT_SECRET,
+    authIssuerBaseURL: process.env.AUTH_ISSUER_BASE_URL,
+  },
   build: {
     transpile: ['vuetify'],
   },
@@ -21,11 +28,7 @@ export default defineNuxtConfig({
       ],
     }
   },
-  modules: [
-    "vuetify-nuxt-module",
-    "@nuxtjs/tailwindcss",
-    "@pinia/nuxt"
-  ],
+  modules: ["vuetify-nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "@sidebase/nuxt-auth"],
   pinia: {
     storesDirs: ["./stores/**"]
   },
@@ -55,5 +58,13 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: "netlify"
+  },
+  auth: {
+    baseURL: `${process.env.AUTH_ORIGIN}/api/auth`,
+    provider: {
+      type: "authjs",
+      defaultProvider: "auth0",
+    },
+    globalAppMiddleware: true,
   }
 });
