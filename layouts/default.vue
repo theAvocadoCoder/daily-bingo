@@ -5,7 +5,7 @@
       prominent
     >
       <v-app-bar-nav-icon variant="text">
-        <nuxt-link to="/" class="text-2xl">DB</nuxt-link>
+        <nuxt-link to="/daily-card" class="text-2xl">DB</nuxt-link>
       </v-app-bar-nav-icon>
 
       <v-spacer></v-spacer>

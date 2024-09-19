@@ -7,7 +7,7 @@
       "bg": "!bg-lime-50"
     },
     {
-      "to": "/",
+      "to": "/daily-card",
       "icon": "mdi-home",
       "value": "home",
       "bg": "!bg-lime-50"
