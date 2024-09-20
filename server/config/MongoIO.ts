@@ -109,6 +109,31 @@ export default class MongoIO implements MongoInterface {
     return await this.findUser(id);
   }
 
+  /********************************************************************************
+   * Update a user by ID
+   * @param id 
+   * @param data to update
+   * @returns Updated User
+   */
+  public async updateUser(id: string, data: any): Promise<User> {
+    if (!this.userCollection) {
+      throw new Error("updateUser - Database not connected");
+    }
+
+    const userId = new ObjectId(id);
+    const filter = { _id: userId };
+    const update = { $set: data };
+    let theUser: User;
+    console.info("User %s updated with %s", userId, data)
+
+    const result = await this.userCollection.findOneAndUpdate(filter, update);
+    if (!result) {
+      throw new Error("Update User found No User to Update " + userId);
+    }
+
+    return this.findUser(id);
+  }
+
   /***********************************************
    * Get a card
    */
