@@ -36,15 +36,18 @@ export default NuxtAuthHandler({
       return session;
     },
     async redirect({url, baseUrl}) {
-      return `${baseUrl}`;
-    }
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
+    },
   },
 
   pages: {
-    signIn: '/auth/signin',
-    signOut: '/auth/signout',
+    signOut: '/',
+    newUser: '/auth/signup',
     error: '/auth/error',
     verifyRequest: '/auth/verify-request',
-    newUser: '/auth/signup'
   }
 })
