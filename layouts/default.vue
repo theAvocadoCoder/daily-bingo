@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-app-bar
-      class="!bg-stone-950 !text-stone-50 !px-5 !w-full"
+      class="!bg-stone-950 !text-stone-50 !px-5 !w-full [&>*:first-child]:!overflow-visible"
       prominent
     >
       <v-app-bar-nav-icon variant="text">
@@ -10,12 +10,19 @@
 
       <v-spacer></v-spacer>
 
-      <nuxt-link to="/profile" v-if="data">
-        <v-btn icon="mdi-account" variant="text"></v-btn>
-      </nuxt-link>
-      <nuxt-link :to="data ? '/auth/signout' : '/auth/signin'">
-        <v-btn v-if="data" icon="mdi-logout" variant="text"></v-btn>
-        <v-btn v-else append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
+      <v-avatar v-if="data" class="cursor-pointer" @click="handleToggleMenu" icon="mdi-account" :image="user?.picture"></v-avatar>
+      <div ref="menuRef" tabindex="0" @blur="handleToggleMenu" :class="`absolute z-10 ${menuIsOpen ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `">
+          <nuxt-link to="/profile">
+            <v-btn prepend-icon="mdi-account" variant="text" text="Profile"></v-btn>
+          </nuxt-link>
+
+          <nuxt-link to="/auth/signout">
+            <v-btn prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
+          </nuxt-link>
+      </div>
+        
+      <nuxt-link v-if="!data" to="/auth/signin">
+        <v-btn append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
       </nuxt-link>
     </v-app-bar>
 
@@ -28,9 +35,9 @@
         <v-list-item
           tag="nuxt-link"
           to="/profile"
-          prepend-avatar="https://upload.wikimedia.org/wikipedia/commons/b/be/Avocado_Coder.png"
+          :prepend-avatar="user?.picture"
           :subtitle="`@${user?.username}`"
-          :title="user?.displayName || user?.name.toLocaleUpperCase()"
+          :title="user?.display_name || user?.name.toLocaleUpperCase()"
         ></v-list-item>
       </v-list>
 
@@ -48,6 +55,18 @@
           <v-list-item-title>{{ item.value.toLocaleUpperCase() }}</v-list-item-title>
         </v-list-item>
       </v-list>
+
+      <template v-slot:append>
+        <div class="p-5">
+          <v-btn
+            block
+            tag="nuxt-link"
+            to="/auth/signout"
+            append-icon="mdi-logout"
+            text="Sign out"
+          ></v-btn>
+        </div>
+      </template>
     </v-navigation-drawer>
 
     <v-main class="h-full">
@@ -74,7 +93,6 @@
 </template>
 
 <script setup lang="ts">
-  // const { getData } = useNuxtApp().$locally; 
 
   const navItems = [
     {
@@ -97,11 +115,34 @@
     }
   ];
 
+  const menuIsOpen = ref(false);
+  const menuRef = ref();
+
   const { data } = useAuth();
-  console.log("data is ", data.value)
 
   const path = computed(() => useRoute().path);
-  const user = ref();
+  const user = computed(() => data.value?.user);
+
+  function handleToggleMenu(event: BlurEvent | MouseEvent) {    
+    if (event.type === "blur") {
+      if (menuRef.value && menuRef.value.contains(event.relatedTarget)) {
+        setTimeout(() => {
+          menuIsOpen.value = !menuIsOpen.value;
+        }, 200);
+        return;
+      }
+      menuIsOpen.value = !menuIsOpen.value;
+      return 
+    } 
+
+    menuIsOpen.value = !menuIsOpen.value;
+    nextTick(() => {
+      if (menuIsOpen.value && menuRef.value) {
+        // Focus the element when it becomes visible
+        menuRef.value?.focus();
+      }
+    });
+  }
 
   onMounted(() => {
     user.value = data.value?.user
