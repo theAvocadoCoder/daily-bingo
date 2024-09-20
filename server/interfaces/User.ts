@@ -1,15 +1,17 @@
 import { ObjectId } from "mongodb";
 
 export default interface User {
-  _id: ObjectId;
-  displayName: string;
-  cards: {
+  _id?: ObjectId;
+  cards?: {
     created: ObjectId[];
     played: ObjectId[];
   };
-  groups: {
-    groupName: string;
+  display_name?: string;
+  email: string;
+  email_verified?: boolean;
+  groups?: {
+    group_name: string;
     groupId: ObjectId;
   }[];
-  username: string;
+  username?: string;
 }
