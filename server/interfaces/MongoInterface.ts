@@ -6,6 +6,8 @@ export default interface MongoInterface {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   findUser(id: string): Promise<User>;
+  findUserByEmail(email: string): Promise<User | null>;
+  insertUser(theUser: {email: string, username: string}): Promise<User | null>;
   findCard(id: string): Promise<Card>;
   insertCard(id: string): Promise<Card>;
   findEntry(theme: string): Promise<Entry>;

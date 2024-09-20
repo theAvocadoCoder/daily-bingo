@@ -55,6 +55,7 @@ export default class MongoIO implements MongoInterface {
   /****************************************************
    * Get user
    */
+
   public async findUser(id: string): Promise<User> {
     if (!this.userCollection) {
       throw new Error("findUser - Database not connected");
@@ -71,6 +72,41 @@ export default class MongoIO implements MongoInterface {
     } else {
       return results;
     }
+  }
+
+  /****************************************************
+   * Get user by their email address
+   */
+
+  public async findUserByEmail(email: string): Promise<User | null> {
+    if (!this.userCollection) {
+      throw new Error("findUser - Database not connected");
+    }
+    
+    const pipeline = [
+      {$match: {email: email}}
+    ]
+
+    const results = await this.userCollection.aggregate<User>(pipeline).next();
+
+    return results;
+  }
+
+  /****************************************************
+   * Insert a new user
+   */
+
+  public async insertUser(theUser: {email: string, username: string}): Promise<User | null> {
+    if (!this.userCollection) {
+      throw new Error("findUser - Database not connected");
+    }
+    
+    let results: InsertOneResult;
+    let newUser: User;
+
+    results = await this.userCollection.insertOne(theUser);
+    let id = results.insertedId.toHexString();
+    return await this.findUser(id);
   }
 
   /***********************************************

@@ -18,20 +18,19 @@ export default NuxtAuthHandler({
   },
 
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (user) {
-        token = {
-          ...token,
-          ...user,
-        };
-      }
-
-      return token;
-    },
     async session({ session, token }) {
+      const user = await $fetch("/api/auth/confirm-or-register-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...session.user
+        })
+      });
       session.user = {
         ...token,
-        ...session.user,
+        ...user,
       };
 
       return session;
