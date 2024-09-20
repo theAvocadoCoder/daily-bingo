@@ -10,21 +10,15 @@
   const { data } = useAuth();
 
   let card = getData("dailyBingo");
-  let user = getData("bingoUser");
-  let cardStatus;
-  let userStatus;
+  let user = data.value?.user;
+  let cardStatus: string;
 
   if (!card) {
     const results = await useFetch("/api/cards/daily");
-    card = toRaw(results.data._value);
-    cardStatus = results.status;
+    card = toRaw(results.data.value);
+    cardStatus = results.status as unknown as string;
   }
-  if (!user) {
-    const results = await useFetch("/api/users/66d8754397e9d9f8ccb56203");
-    user = toRaw(results.data._value);
-    userStatus = results.status;
-  }
-  
+
   setData("dailyBingo", card, false, [1, "d"]);
   setData("bingoUser", user, false, [1, "d"]);
 </script>
