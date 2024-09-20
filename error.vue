@@ -1,11 +1,13 @@
 <template>
-  <div class="mt-7 max-w-sm mx-auto text-center">
-    <p class="mt7">{{ error.statusCode }}</p>
-    <p class="mt-7">Oops.</p>
-    <p class="mt-7">{{ error.message }}</p>
-    <button class="mt-7" @click="handleClearError">Go Home...</button>
-    
-  </div>
+  <NuxtLayout>
+    <div class="h-[calc(100dvh-3rem)] bg-lime-200 flex flex-col items-center justify-center gap-3 lg:gap-7">
+      <p class="font-bold text-3xl lg:text-5xl">{{ error.statusCode }}</p>
+      <p class="font-medium text-xl lg:text-3xl">Well, this is awkward...</p>
+      <p class="italic">{{ error.message }}</p>
+      <v-btn @click="handleClearError">Let's get you back home</v-btn>
+      
+    </div>
+  </NuxtLayout>
 </template>
 
 <script setup>
