@@ -5,7 +5,7 @@
     <v-btn v-else="$vuetify.display.lgAndUp" :loading="saving" :class="`!fixed bottom-20 right-5 z-20 ${editMode ? '!bg-zinc-100 !text-zinc-600' : '!bg-zinc-700 !text-lime-50'}`" :icon="editMode ? 'mdi-content-save' : 'mdi-pencil'" @click="handleSaveEdit"></v-btn>
     <div class="w-full">
       <div class="grid grid-cols-12">
-        <v-avatar class="col-span-4 lg:col-span-3 justify-self-center !border !border-slate-400 !bg-zinc-300" icon="mdi-account" :image="user.picture" size="108"></v-avatar>
+        <v-avatar @click="handleEditPicture" class="col-span-4 lg:col-span-3 justify-self-center !border !border-slate-400 !bg-zinc-300" icon="mdi-account" :image="user.picture" size="108"></v-avatar>
         <div class="col-span-8 lg:col-span-9 self-center flex flex-col ps-5">
           
           <v-form v-if="editMode" @submit.prevent="handleSaveEdit" class="w-fit">
@@ -32,6 +32,20 @@
 
   const editMode = ref(false);
   const saving = ref(false);
+
+  async function handleEditPicture() {
+    await $fetch("/api/users/picture", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      }, 
+      body: JSON.stringify({
+        "userId": `${user.value.sub}`,
+        "newPicture": "https://upload.wikimedia.org/wikipedia/commons/b/be/Avocado_Coder.png?s=480"
+      })
+    });
+    console.log("frontend function ran")
+  }
 
   async function handleSaveEdit() {
     if (editMode.value) {
