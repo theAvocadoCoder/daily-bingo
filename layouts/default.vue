@@ -143,8 +143,4 @@
       }
     });
   }
-
-  onMounted(() => {
-    user.value = data.value?.user
-  })
 </script>
