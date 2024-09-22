@@ -7,7 +7,6 @@
       <div class="grid grid-cols-12">
         <v-avatar @click="handleEditPicture" class="col-span-4 lg:col-span-3 justify-self-center !border !border-slate-400 !bg-zinc-300" icon="mdi-account" :image="user.picture" size="108"></v-avatar>
         <div class="col-span-8 lg:col-span-9 self-center flex flex-col ps-5">
-          
           <v-form v-if="editMode" @submit.prevent="handleSaveEdit" class="w-fit">
             <v-text-field
               class="min-w-32 m-0"
@@ -28,7 +27,10 @@
 <script setup lalng="ts"> 
   const { data, getSession } = useAuth();
   const user = computed(() => data.value?.user);
-  const edittedUser = ref({display_name: ''});
+  const edittedUser = ref({
+    display_name: `${user.value.display_name || ''}`,
+
+  });
 
   const editMode = ref(false);
   const saving = ref(false);
@@ -56,7 +58,7 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          display_name: edittedUser.value.display_name,
+          ...edittedUser.value,
         }),
       });
       await getSession(true);
