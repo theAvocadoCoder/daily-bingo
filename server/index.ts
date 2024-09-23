@@ -1,7 +1,17 @@
 import MongoIO from "./config/MongoIO";
+import { v2 as cloudinary } from 'cloudinary';
 
 const mongo = new MongoIO();
 (async () => {await mongo.connect()})();
+
+const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret } = useRuntimeConfig();
+
+// Configuration
+cloudinary.config({ 
+    cloud_name: cloudinaryCloudName, 
+    api_key: cloudinaryApiKey, 
+    api_secret: cloudinaryApiSecret,
+});
 
 function getMessage (error: any): string {
   let message = "Unknown Error";
@@ -10,6 +20,7 @@ function getMessage (error: any): string {
 }
 
 export {
+  cloudinary,
   mongo,
 
   getMessage,
