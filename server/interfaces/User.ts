@@ -14,4 +14,5 @@ export default interface User {
     groupId: ObjectId;
   }[];
   username?: string;
+  username_modified?: Date;
 }

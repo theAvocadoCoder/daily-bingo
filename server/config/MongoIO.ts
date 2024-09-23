@@ -120,6 +120,14 @@ export default class MongoIO implements MongoInterface {
       throw new Error("updateUser - Database not connected");
     }
 
+    const MS_PER_MONTH = 2_629_746_000;
+
+    const { username_modified } = await this.findUser(id);
+    if (username_modified && Date.now() - Date.parse(username_modified?.toDateString()) < MS_PER_MONTH) {
+      const { username, ...restOfData } = data;
+      data = restOfData;
+    }
+
     const userId = new ObjectId(id);
     const filter = { _id: userId };
     const update = { $set: data };
