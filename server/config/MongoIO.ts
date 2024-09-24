@@ -100,9 +100,16 @@ export default class MongoIO implements MongoInterface {
     if (!this.userCollection) {
       throw new Error("findUser - Database not connected");
     }
+
+    const randomFourDigits = Math.floor(Math.random() * 10000);
     
     let results: InsertOneResult;
-    let newUser: User;
+    let newUser: User = {
+      ...theUser,
+      cards: [],
+      display_name: `User${randomFourDigits}`,
+      groups: [],
+    };
 
     results = await this.userCollection.insertOne(theUser);
     let id = results.insertedId.toHexString();
