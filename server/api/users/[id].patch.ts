@@ -5,7 +5,14 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
 
   try {
-    const theUser = await mongo.updateUser(userId, body);
+    let theUser;
+    if (Object.keys(body).includes("card")) {
+      const [newBody, query] = Object.entries(body);
+      // @ts-expect-error
+      theUser = await mongo.updateUser(userId, newBody, query);
+    } else {
+      theUser = await mongo.updateUser(userId, body);
+    }
     console.info("Update user %s completed", userId);
     setResponseStatus(event, 200)
     return theUser;

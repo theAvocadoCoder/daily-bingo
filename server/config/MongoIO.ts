@@ -115,26 +115,32 @@ export default class MongoIO implements MongoInterface {
    * @param data to update
    * @returns Updated User
    */
-  public async updateUser(id: string, data: any): Promise<User> {
+  public async updateUser(id: string, data: any, query?: keyof User): Promise<User> {
     if (!this.userCollection) {
       throw new Error("updateUser - Database not connected");
     }
 
     const MS_PER_MONTH = 2_629_746_000;
 
-    const { username_modified } = await this.findUser(id);
-    if (username_modified && Date.now() - Date.parse(username_modified?.toDateString()) < MS_PER_MONTH) {
+    const user = await this.findUser(id);
+    if (user.username_modified && Date.now() - Date.parse(user.username_modified?.toDateString()) < MS_PER_MONTH) {
       const { username, ...restOfData } = data;
       data = restOfData;
     }
 
+    // TODO: Clean up how method of updating arrays in document. It's too clunky 
+    // And will produce bugs
+
     const userId = new ObjectId(id);
     const filter = { _id: userId };
-    const update = { $set: data };
+    const update = query ? { $set: {
+      ...user[query as ("cards" | "groups")],
+      data
+    } } : { $set: data };
     let theUser: User;
     console.info("User %s updated with %s", userId, data)
 
-    const result = await this.userCollection.findOneAndUpdate(filter, update);
+    const result = await this.userCollection.updateOne(filter, update);
     if (!result) {
       throw new Error("Update User found No User to Update " + userId);
     }
