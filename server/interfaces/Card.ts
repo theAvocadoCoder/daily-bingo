@@ -4,10 +4,13 @@ import Cell from "./Cell";
 export default interface Card {
   _id: ObjectId;
   cells: Cell[];
-  createdAt: Date;
-  creator?: ObjectId;
+  created_at: Date;
+  creator?: {
+    user_id: ObjectId;
+    username: string;
+  }
   groups: {
-    groupName: string;
-    groupId: ObjectId;
+    group_name: string;
+    group_id: ObjectId;
   }[];
 }
