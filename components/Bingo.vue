@@ -107,7 +107,11 @@
 <script setup lang="ts">
   import type Cell from "~/server/interfaces/Cell";
   const { getData, setData } = useNuxtApp().$locally;
+  const { data, getSession } = useAuth();
+
+  const sessionUser = computed(() => data.value?.user);
   
+  // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
   const props = defineProps<{
     card: Cell[],
     type?: string,
@@ -192,13 +196,10 @@
 
   // if (!props.card) props.card = defaultCard;
 
-  // let saveCardInterval: ReturnType<typeof setInterval>;
-
   onMounted(() => {
     for (let i = 0; i < props.card.length; i++) {
       if (props.card[i].marked) registerCell(props.card[i].row, props.card[i].column);
     }
-    // saveCardInterval = setInterval(saveCard, 60_000);
   });
 
   function markCell(_cell: Cell) {
@@ -213,11 +214,46 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
-    setData(props.type, props.card, true);
+    if (props.type == "dailyBingo") {
+      setData(props.type, props.card, true);
+    } else {
+      // TODO: Persist card when not a daily bingo card
+    }
   }
   
-  function saveCard () {
+  async function saveCard () {
     // TODO: write functionality to save card state
+    await $fetch("/api/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cells: props.card,
+        created_at: new Date().toISOString(),
+        creator: {
+          user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
+          username: props.type === "dailyBingo" ? "Daily Bingo" : `${sessionUser.value.username}`,
+        },
+        groups: []
+      }),
+    }).then(async (newCard) => {
+      await $fetch(`/api/users/${sessionUser.value._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cards: {
+            created_by: newCard.creator,
+            card_id: newCard._id,
+          },
+        }),
+      });
+      await getSession(true);
+      setData("bingoUser", sessionUser.value, true);
+      alert("card saved")
+    })
   }
 
   function registerCell(row: number, column: number) {
