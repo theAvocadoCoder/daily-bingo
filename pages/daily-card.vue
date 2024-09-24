@@ -20,5 +20,5 @@
   }
 
   setData("dailyBingo", card, false, [1, "d"]);
-  setData("bingoUser", user, false, [1, "d"]);
+  setData("bingoUser", user, false, [14, "d"]);
 </script>
