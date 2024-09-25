@@ -1,16 +1,17 @@
 import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
+  const cardId = getRouterParam(event, "id") as string;
   const card = await readBody(event);
 
   try {
-    const newCard = await mongo.insertCard(card);
-    console.info("Create card %s successful", newCard._id);
+    const theCard = await mongo.updateCard(cardId, card);
+    console.info("Update card %s successful", theCard._id);
     setResponseStatus(event, 200);
-    return newCard;
+    return theCard;
   } catch (error) {
     const message = getMessage(error);
-    console.info("Could not create %s's card because %s", card.creator.username, message);
+    console.info("Could not update card %s because %s", cardId, message);
     setResponseStatus(event, 500, message);
   }
 })

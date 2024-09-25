@@ -11,5 +11,6 @@ export default interface MongoInterface {
   updateUser(id: string, data: any): Promise<User>;
   findCard(id: string): Promise<Card>;
   insertCard(id: string): Promise<Card>;
+  updateCard(id: string, data: any): Promise<Card>;
   findEntry(theme: string): Promise<Entry>;
 }

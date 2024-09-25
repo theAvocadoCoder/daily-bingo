@@ -1,7 +1,7 @@
 /***********************************************
  * Class MongoIO implements all mongodb I-O
  */
-import { Collection, Db, InsertOneResult, MongoClient, ObjectId } from "mongodb";
+import { Collection, Db, InsertOneResult, MongoClient, ObjectId, UpdateFilter } from "mongodb";
 import MongoInterface from "../interfaces/MongoInterface";
 import User from "../interfaces/User";
 import Card from "../interfaces/Card";
@@ -187,6 +187,10 @@ export default class MongoIO implements MongoInterface {
     }
   }
 
+  /****************************************************
+   * Insert a new card
+   */
+
   public async insertCard(theCard: any): Promise<Card> {
     if (!this.cardCollection) {
       throw new Error("insertCard - Database not connected");
@@ -196,6 +200,31 @@ export default class MongoIO implements MongoInterface {
     let id = results.insertedId.toHexString();
     return await this.findCard(id);
   } 
+
+  /********************************************************************************
+   * Update a card by ID
+   * @param id 
+   * @param data to update
+   * @returns Updated card
+   */
+  public async updateCard(id: string, data: any): Promise<Card> {
+    if (!this.cardCollection) {
+      throw new Error("updateCard - Database not connected");
+    }
+
+    const cardId = new ObjectId(id);
+    const filter = { _id: cardId };
+    const update = { $set: data };
+
+    console.info("Card %s updated with %s", cardId, data)
+
+    const result = await this.cardCollection.findOneAndUpdate(filter, update);
+    if (!result) {
+      throw new Error("Update card found No Card to Update " + cardId);
+    }
+
+    return this.findCard(id);
+  }
 
   /***************************************************************
    * Get phrases
