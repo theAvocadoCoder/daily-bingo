@@ -122,7 +122,7 @@ export default class MongoIO implements MongoInterface {
    * @param data to update
    * @returns Updated User
    */
-  public async updateUser(id: string, data: any, query?: keyof User): Promise<User> {
+  public async updateUser(id: string, data: any): Promise<User> {
     if (!this.userCollection) {
       throw new Error("updateUser - Database not connected");
     }
@@ -130,21 +130,32 @@ export default class MongoIO implements MongoInterface {
     const MS_PER_MONTH = 2_629_746_000;
 
     const user = await this.findUser(id);
-    if (user.username_modified && Date.now() - Date.parse(user.username_modified?.toDateString()) < MS_PER_MONTH) {
-      const { username, ...restOfData } = data;
-      data = restOfData;
+    if (
+      data.username &&
+      user.username_modified &&
+      Date.now() - Date.parse(user.username_modified?.toDateString()) < MS_PER_MONTH
+    ) {
+      throw new Error("Username can only be updated once every 30 days");
     }
 
-    // TODO: Clean up how method of updating arrays in document. It's too clunky 
-    // And will produce bugs
+    const [field, value] = Object.entries(data)[0] as [keyof User, any];
 
     const userId = new ObjectId(id);
     const filter = { _id: userId };
-    const update = query ? { $set: {
-      ...user[query as ("cards" | "groups")],
-      data
-    } } : { $set: data };
-    let theUser: User;
+    let update: UpdateFilter<any>
+
+    if (Array.isArray(user[field])) {
+      const fieldToCompare = `${field.slice(0,-1)}_id`;
+      // check if document exists
+      if (user[field].filter(entry => entry[fieldToCompare] == value[fieldToCompare]).length > 1) {
+        // TODO: update the array entry in the user document
+      }
+      // addToSet updates the field only if the value doesn't already exist in the array
+      update = { $addToSet: data };
+    } else {
+      update = { $set: data };
+    }
+
     console.info("User %s updated with %s", userId, data)
 
     const result = await this.userCollection.updateOne(filter, update);
