@@ -114,7 +114,7 @@
 
       const edittedUser = {};
 
-      for (let property in userModel.value) {
+      for (let property of Object.keys(userModel.value)) {
         if (userModel.value[property] != sessionUser.value[property]) {
           // Only make request if the picture value has changed
           if (property == "picture") {
