@@ -1,7 +1,7 @@
 <template>
   <div class="bg-lime-50 h-full">
     <Loading v-if="cardStatus === 'pending'" />
-    <Bingo v-else :card="card" type="dailyBingo" />
+    <Bingo v-else :card="card.cells" type="dailyBingo" />
   </div>
 </template>
 
@@ -15,10 +15,9 @@
 
   if (!card) {
     const results = await useFetch("/api/cards/daily");
-    card = toRaw(results.data.value);
+    card = {cells: toRaw(results.data.value)};
     cardStatus = results.status as unknown as string;
+    setData("dailyBingo", {cells: card, saved: false}, false, [1, "d"]);
   }
-
-  setData("dailyBingo", card, false, [1, "d"]);
   setData("bingoUser", user, false, [14, "d"]);
 </script>

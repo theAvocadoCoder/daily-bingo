@@ -66,6 +66,7 @@
           ]"
         />
         <ConfirmDialog
+          v-if="!cardIsSaved"
           dialog-button-text="Save"
           dialog-title="Save Bingo Card?"
           dialog-text="This will save the card to your collection."
@@ -110,6 +111,8 @@
   const { data, getSession } = useAuth();
 
   const sessionUser = computed(() => data.value?.user);
+  const cardIsSaved = computed(() => getData(props.type).saved);
+  const card_id = computed(() => getData(props.type).card_id);
   
   // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
   const props = defineProps<{
@@ -214,46 +217,62 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
-    if (props.type == "dailyBingo") {
-      setData(props.type, props.card, true);
+    if (props.type == "dailyBingo" && cardIsSaved.value) {
+      saveCard();
     } else {
       // TODO: Persist card when not a daily bingo card
     }
   }
   
-  async function saveCard () {
-    // TODO: write functionality to save card state
-    await $fetch("/api/cards", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cells: props.card,
-        created_at: new Date().toISOString(),
-        creator: {
-          user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
-          username: props.type === "dailyBingo" ? "Daily Bingo" : `${sessionUser.value.username}`,
+  async function saveCard (event?) {
+    // TODO: Toast implementation for this
+    if (!cardIsSaved.value) {
+      // If the daily card hasn't been saved before, create it, then attach to user
+      await $fetch("/api/cards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        groups: []
-      }),
-    }).then(async (newCard) => {
-      await $fetch(`/api/users/${sessionUser.value._id}`, {
+        body: JSON.stringify({
+          cells: props.card,
+          created_at: new Date().toISOString(),
+          creator: {
+            user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
+            username: props.type === "dailyBingo" ? "Daily Bingo" : `@${sessionUser.value.username}`,
+          },
+          groups: []
+        }),
+      }).then(async (newCard) => {
+        await $fetch(`/api/users/${sessionUser.value._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            cards: {
+              created_by: newCard.creator,
+              card_id: newCard._id,
+            },
+          }),
+        });
+        const currentCard = getData(props.type)
+        setData(props.type, {...currentCard, cells: props.card, saved: true, card_id: newCard._id}, true);
+      });
+      await getSession(true);
+      setData("bingoUser", sessionUser.value, true);
+    } else {
+      // If the card exists, update it in DB
+      await $fetch(`/api/cards/${card_id.value}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cards: {
-            created_by: newCard.creator,
-            card_id: newCard._id,
-          },
-        }),
+          cells: props.card,
+        })
       });
-      await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
-      alert("card saved")
-    })
+    }
+    console.log("card saved");
   }
 
   function registerCell(row: number, column: number) {
@@ -327,7 +346,14 @@
       props.card[i].marked = false;
     }
 
-    setData(props.type, props.card, true);
+    const currentCard = getData(props.type);
+    setData(props.type, {...currentCard, cells: props.card}, true);
+
+    if (props.type == "dailyBingo" && cardIsSaved.value) {
+      saveCard();
+    } else {
+      // TODO: Persist card when not a daily bingo card
+    }
   }
 
 </script>
