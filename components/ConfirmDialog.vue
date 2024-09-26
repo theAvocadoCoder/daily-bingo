@@ -11,10 +11,12 @@
       >
         <v-card-title>{{ props.dialogTitle || '' }}</v-card-title>
         <v-card-text>
-          <p v-if="Array.isArray(props.dialogText)">
-            <span v-for="(line, index) in props.dialogText" :key="index">{{ line }}</span>
-          </p>
-          <p v-else>{{ props.dialogText }}</p>
+          <slot>
+            <p v-if="Array.isArray(props.dialogText)">
+              <span v-for="(line, index) in props.dialogText" :key="index">{{ line }}</span>
+            </p>
+            <p v-else>{{ props.dialogText || "" }}</p>
+          </slot>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -41,7 +43,7 @@
     dialogButtonText: string,
     dialogButtonColor?: string,
     dialogTitle?: string,
-    dialogText: string | string[],
+    dialogText?: string | string[],
     maxWidth?: string,
     prependIcon?: string,
     actionButtons: {
