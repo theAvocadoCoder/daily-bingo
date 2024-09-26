@@ -13,7 +13,7 @@
         >
           <!-- Cells -->
           <div 
-            v-for="(cell, index) in card"
+            v-for="(cell, index) in card.cells"
             :id="`${index}`" 
             :class="
               `grid [&_*]:[grid-row:1] [&_*]:[grid-column:1] \
@@ -80,6 +80,7 @@
           ]"
         >
           <v-text-field
+            v-if="!cardIsSaved"
             class="min-w-32 m-0"
             v-model="cardName"
             :placeholder="cardName"
@@ -113,19 +114,24 @@
 </template> 
 
 <script setup lang="ts">
-  import type Cell from "~/server/interfaces/Cell";
+  import type Card from "~/server/interfaces/Card";
   const { getData, setData } = useNuxtApp().$locally;
   const { data, getSession } = useAuth();
-
-  const sessionUser = computed(() => data.value?.user);
-  const cardIsSaved = computed(() => getData(props.type).saved);
-  const card_id = computed(() => getData(props.type).card_id);
   
   // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
   const props = defineProps<{
-    card: Cell[],
+    card: Card,
     type?: string,
+    saved?: boolean,
   }>();
+
+  const sessionUser = computed(() => data.value?.user);
+  const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type).saved);
+  const _id = computed(() => getData(props.type)._id);
+
+  const cardName = props.type == "dailyBingo" ?
+    ref('Daily Bingo') :
+    ref(`My Bingo #${Math.ceil(Math.random()*1000)}`);
 
   const STATIC = {
     length: 25,
@@ -144,10 +150,6 @@
   interface Wins  {
     [x: string]: Stat
   }
-
-  const cardName = ref(`${
-    props.type == "dailyBingo" ? 'Daily Bingo' : 'My Bingo'
-  } #${Math.ceil(Math.random()*1000)}`);
 
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
@@ -208,17 +210,17 @@
   //   defaultCard.push({ marked: false, value: "", column: index % 5, row: Math.floor(index / 5)});
   // }
 
-  // if (!props.card) props.card = defaultCard;
+  // if (!props.card.cells) props.card.cells = defaultCard;
 
   onMounted(() => {
-    for (let i = 0; i < props.card.length; i++) {
-      if (props.card[i].marked) registerCell(props.card[i].row, props.card[i].column);
+    for (let i = 0; i < props.card.cells.length; i++) {
+      if (props.card.cells[i].marked) registerCell(props.card.cells[i].row, props.card.cells[i].column);
     }
   });
 
   function markCell(_cell: Cell) {
     const {column, row} = _cell;
-    const cell = props.card.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
+    const cell = props.card.cells.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
 
@@ -228,10 +230,8 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
-    if (props.type == "dailyBingo" && cardIsSaved.value) {
+    if (cardIsSaved.value) {
       saveCard();
-    } else {
-      // TODO: Persist card when not a daily bingo card
     }
   }
   
@@ -245,7 +245,7 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cells: props.card,
+          cells: props.card.cells,
           created_at: new Date().toISOString(),
           creator: {
             user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
@@ -262,28 +262,29 @@
           body: JSON.stringify({
             cards: {
               created_by: newCard.creator,
-              card_id: newCard._id,
-              card_name: cardName.value,
+              _id: newCard._id,
+              card_name: cardName?.value,
             },
           }),
         });
         const currentCard = getData(props.type)
-        setData(props.type, {...currentCard, cells: props.card, saved: true, card_id: newCard._id}, true);
+        setData(props.type, {...currentCard, cells: props.card.cells, saved: true, _id: newCard._id}, true);
       });
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
     } else {
       // If the card exists, update it in DB
-      await $fetch(`/api/cards/${card_id.value}`, {
+      await $fetch(`/api/cards/${_id.value}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cells: props.card,
+          cells: props.card.cells,
         })
       });
     }
+    // TODO: This log should be a toast instead
     console.log("card saved");
   }
 
@@ -354,17 +355,15 @@
     wins.value.corners.value = 0;
     wins.value.blackout.value = 0;
 
-    for (let i = 0; i < props.card.length; i++) {
-      props.card[i].marked = false;
+    for (let i = 0; i < props.card.cells.length; i++) {
+      props.card.cells[i].marked = false;
     }
 
     const currentCard = getData(props.type);
-    setData(props.type, {...currentCard, cells: props.card}, true);
+    setData(props.type, {...currentCard, cells: props.card.cells}, true);
 
-    if (props.type == "dailyBingo" && cardIsSaved.value) {
+    if (cardIsSaved.value) {
       saveCard();
-    } else {
-      // TODO: Persist card when not a daily bingo card
     }
   }
 

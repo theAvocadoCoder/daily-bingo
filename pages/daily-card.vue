@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-lime-50 h-full">
+  <div class="bg-lime-50 h-full flex justify-center items-center">
     <Loading v-if="cardStatus === 'pending'" />
-    <Bingo v-else :card="card.cells" type="dailyBingo" />
+    <Bingo v-else :card="card" type="dailyBingo" />
   </div>
 </template>
 

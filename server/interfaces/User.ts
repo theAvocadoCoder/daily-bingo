@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 export default interface User {
   _id?: ObjectId;
   cards?: {
-    card_id: ObjectId;
+    _id: ObjectId;
     created_by: {
       user_id: ObjectId;
       username: string;
