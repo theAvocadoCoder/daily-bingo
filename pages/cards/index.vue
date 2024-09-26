@@ -7,7 +7,9 @@
     <ul class="flex flex-col gap-2">
       <li v-for="(card, index) in sessionUser.cards">
         <v-card
-          :title="`Bingo Card #${index+1}`"
+          tag="nuxt-link"
+          :to="`/cards/${card._id}`"
+          :title="card.card_name"
           :subtitle="`by ${card.created_by.username}`"
         ></v-card>
       </li>
