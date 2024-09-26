@@ -69,7 +69,6 @@
           v-if="!cardIsSaved"
           dialog-button-text="Save"
           dialog-title="Save Bingo Card?"
-          dialog-text="This will save the card to your collection."
           :action-buttons="[
             {
               buttonText: 'Save Bingo Card',
@@ -79,7 +78,15 @@
               buttonText: 'Cancel',
             }
           ]"
-        />
+        >
+          <v-text-field
+            class="min-w-32 m-0"
+            v-model="cardName"
+            :placeholder="cardName"
+            label="Card Name"
+            variant="underlined"
+          ></v-text-field>
+        </ConfirmDialog>
       </div>
     </div>
     <!-- System div -->
@@ -137,6 +144,10 @@
   interface Wins  {
     [x: string]: Stat
   }
+
+  const cardName = ref(`${
+    props.type == "dailyBingo" ? 'Daily Bingo' : 'My Bingo'
+  } #${Math.ceil(Math.random()*1000)}`);
 
   const rows = ref([0,0,0,0,0]);
   const columns = ref([0,0,0,0,0]);
@@ -252,6 +263,7 @@
             cards: {
               created_by: newCard.creator,
               card_id: newCard._id,
+              card_name: cardName.value,
             },
           }),
         });

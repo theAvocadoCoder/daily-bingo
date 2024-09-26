@@ -15,9 +15,9 @@
 
   if (!card) {
     const results = await useFetch("/api/cards/daily");
-    card = {cells: toRaw(results.data.value)};
+    card = {cells: toRaw(results.data.value), saved: false};
     cardStatus = results.status as unknown as string;
-    setData("dailyBingo", {cells: card, saved: false}, false, [1, "d"]);
+    setData("dailyBingo", card, false, [1, "d"]);
   }
   setData("bingoUser", user, false, [14, "d"]);
 </script>

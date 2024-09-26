@@ -8,6 +8,7 @@ export default interface User {
       user_id: ObjectId;
       username: string;
     };
+    card_name: string;
     thumbnail?: string;
   }[];
   display_name?: string;
