@@ -122,7 +122,7 @@ export default class MongoIO implements MongoInterface {
    * @param data to update
    * @returns Updated User
    */
-  public async updateUser(id: string, data: any): Promise<User> {
+  public async updateUser(id: string, data: any, additionalFilters?: any): Promise<User> {
     if (!this.userCollection) {
       throw new Error("updateUser - Database not connected");
     }
@@ -141,7 +141,7 @@ export default class MongoIO implements MongoInterface {
     const [field, value] = Object.entries(data)[0] as [keyof User, any];
 
     const userId = new ObjectId(id);
-    const filter = { _id: userId };
+    const filter = !!additionalFilters ? { _id: userId, ...additionalFilters } : { _id: userId };
     let update: UpdateFilter<any>
 
     if (Array.isArray(user[field])) {

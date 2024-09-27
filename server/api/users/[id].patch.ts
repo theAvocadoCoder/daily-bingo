@@ -6,8 +6,14 @@ export default defineEventHandler(async (event) => {
 
   try {
     let theUser;
-    for (let fieldItem of Object.keys(body)) {
-      theUser = await mongo.updateUser(userId, {[fieldItem]: body[fieldItem]});
+    if (body.filters) {
+      for (let fieldItem of Object.keys(body.data)) {
+        theUser = await mongo.updateUser(userId, {[fieldItem]: body.data[fieldItem]}, body.filters);
+      }
+    } else {
+      for (let fieldItem of Object.keys(body.data)) {
+        theUser = await mongo.updateUser(userId, {[fieldItem]: body.data[fieldItem]});
+      }
     }
     console.info("Update user %s completed", userId);
     setResponseStatus(event, 200)
