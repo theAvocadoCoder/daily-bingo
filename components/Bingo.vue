@@ -260,11 +260,13 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            cards: {
-              created_by: newCard.creator,
-              _id: newCard._id,
-              card_name: cardName?.value,
-            },
+            data: {
+              cards: {
+                created_by: newCard.creator,
+                _id: newCard._id,
+                card_name: cardName?.value,
+              },
+            }
           }),
         });
         const currentCard = getData(props.type)
