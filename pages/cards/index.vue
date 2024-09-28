@@ -30,7 +30,34 @@
             </div>
             <div>
               <v-btn :icon="editMode == card._id ? 'mdi-check' : 'mdi-pencil'" :disabled="editMode && editMode != card._id" variant="text" @click.prevent="handleSaveEdit(card._id)"></v-btn>
-              <v-btn icon="mdi-delete" :disabled="editMode && editMode != card._id" variant="text" @click.prevent="handleDelete(card._id)"></v-btn>
+              <v-btn icon="mdi-delete" :disabled="editMode && editMode != card._id" variant="text" @click.prevent="cancelDialog = true; selectedCardId = card._id"></v-btn>
+              <v-dialog v-model="cancelDialog" width="auto">
+                <v-card
+                  :max-width="400"
+                >
+                  <v-card-title>Delete Bingo Card?</v-card-title>
+                  <v-card-text>
+                    <p>
+                      This will permanently delete this card from your collection. If it is a group card, it will still be available on the group.
+                    </p>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
+                      @click="cancelDialog = false; selectedCardId = ''"
+                    >
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
+                      @click="handleDelete()"
+                    >
+                      Delete Card
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </div>
           </v-card-text>
         </v-card>
@@ -48,6 +75,8 @@
     card_name: ""
   })
 
+  const cancelDialog = ref(false);
+  const selectedCardId = ref();
   const editMode = ref(false);
   const saving = ref(false);
 
@@ -89,7 +118,25 @@
     }
   }
 
-  async function handleDelete(cardId) {
-    
+  async function handleDelete() {
+    saving.value = true;
+    cancelDialog.value = false;
+
+    await $fetch(`/api/users/${sessionUser.value._id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data: {
+          "cards": sessionUser.value.cards.find(card => card._id == selectedCardId.value),
+        }
+      }),
+    });
+
+    await getSession(true);
+    setData("bingoUser", sessionUser.value, true);
+    saving.value = false;
+    selectedCardId.value = '';
   }
 </script>

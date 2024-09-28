@@ -123,6 +123,7 @@ export default class MongoIO implements MongoInterface {
    * @returns Updated User
    */
   public async updateUser(id: string, data: any, additionalFilters?: any): Promise<User> {
+    // TODO: This method has gotten too vague and it no longer does just one thing. Figure out how to break it up
     if (!this.userCollection) {
       throw new Error("updateUser - Database not connected");
     }
@@ -145,13 +146,16 @@ export default class MongoIO implements MongoInterface {
     let update: UpdateFilter<any>
 
     if (Array.isArray(user[field])) {
-      const fieldToCompare = `${field.slice(0,-1)}_id`;
-      // check if document exists
-      if (user[field].filter(entry => entry[fieldToCompare] == value[fieldToCompare]).length > 1) {
-        // TODO: update the array entry in the user document
+      // If document exists, delete
+      if (user[field].find(entry => entry._id == value._id)) {
+        console.log("The doc exists", field, value)
+        update = { $pull: {
+          [field]: value
+        } }
+      } else {
+        // addToSet updates the field only if the value doesn't already exist in the array
+        update = { $addToSet: data };
       }
-      // addToSet updates the field only if the value doesn't already exist in the array
-      update = { $addToSet: data };
     } else {
       update = { $set: data };
     }
