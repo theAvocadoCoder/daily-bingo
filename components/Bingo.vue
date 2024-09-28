@@ -57,12 +57,12 @@
           dialog-text="This will clear all your markings from the card."
           :action-buttons="[
             {
+              buttonText: 'Cancel',
+            },
+            {
               buttonText: 'Reset Bingo Card',
               onClick: resetCard
             },
-            {
-              buttonText: 'Cancel',
-            }
           ]"
         />
         <ConfirmDialog
@@ -71,12 +71,12 @@
           dialog-title="Save Bingo Card?"
           :action-buttons="[
             {
+              buttonText: 'Cancel',
+            },
+            {
               buttonText: 'Save Bingo Card',
               onClick: saveCard
             },
-            {
-              buttonText: 'Cancel',
-            }
           ]"
         >
           <v-text-field

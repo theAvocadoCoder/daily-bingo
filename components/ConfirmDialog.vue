@@ -23,7 +23,7 @@
           <v-btn
             v-for="(button, index) in props.actionButtons"
             :key="index"
-            class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
+            :class="`mb-auto ${button.onClick ? 'hover:!bg-lime-900 !bg-lime-700 text-white' : 'hover:!bg-gray-900/20 !bg-gray-300/50'}`"
             @click="actionButtonHandler(index)"
           >
             {{ button.buttonText }}
