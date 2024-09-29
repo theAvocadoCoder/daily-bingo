@@ -1,9 +1,11 @@
 <template>
-  <div class="flex flex-col gap-3 justify-center items-center">
-    <h1 class="self-start text-lg lg:text-xl">
-      {{cardName}}
-    </h1>
-
+  <div class="flex flex-col gap-3 justify-center items-center bg-lime-50">
+    <div class="flex flex-col sm:flex-row sm:items-center w-full md:gap-10">
+      <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
+      <h1 class="text-lg lg:text-xl grow text-center md:text-left">
+        {{cardName}}
+      </h1>
+    </div>
     <Loading v-if="cardStatus === 'pending'" />
     <Bingo v-else :card="card" type="currentCard" saved />
   </div>
