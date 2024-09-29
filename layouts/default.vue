@@ -10,16 +10,22 @@
 
       <v-spacer></v-spacer>
 
-      <v-avatar v-if="data" class="cursor-pointer" @click="handleToggleMenu" icon="mdi-account" :image="user?.picture"></v-avatar>
-      <div ref="menuRef" tabindex="0" @blur="handleToggleMenu" :class="`absolute z-10 ${menuIsOpen ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `">
-          <nuxt-link to="/profile">
-            <v-btn prepend-icon="mdi-account" variant="text" text="Profile"></v-btn>
-          </nuxt-link>
+      <v-btn v-if="data" @click="handleToggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
+        <v-avatar icon="mdi-account" :image="user?.picture"></v-avatar>
+      </v-btn>
+      <ul
+        ref="menuRef"
+        @blur="handleToggleMenu"
+        :class="`absolute z-10 ${menuIsOpen ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `"  
+      >
+        <li>
+          <v-btn tabindex="0" tag="nuxt-link" to="/profile" prepend-icon="mdi-account" variant="text" text="Profile"></v-btn>
+        </li>
 
-          <nuxt-link to="/auth/signout">
-            <v-btn prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
-          </nuxt-link>
-      </div>
+        <li>
+          <v-btn tabindex="0" tag="nuxt-link" to="/auth/signout" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
+        </li>
+      </ul>
         
       <nuxt-link v-if="!data" to="/auth/signin">
         <v-btn append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
@@ -123,24 +129,33 @@
   const path = computed(() => useRoute().path);
   const user = computed(() => data.value?.user);
 
+  onMounted(() => {
+    window.addEventListener("keydown", handleA11yMenuBlur);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("keydown", handleA11yMenuBlur);
+  });
+
+  function handleA11yMenuBlur(event: KeyDownEvent) {
+    if (event.key === "Escape") {
+      if ((menuRef && menuRef.value.contains(document.activeElement)) || menuIsOpen.value) {
+        menuIsOpen.value = false;
+      }
+    }
+  }
+
   function handleToggleMenu(event: BlurEvent | MouseEvent) {    
     if (event.type === "blur") {
-      if (menuRef.value && menuRef.value.contains(event.relatedTarget)) {
-        setTimeout(() => {
-          menuIsOpen.value = !menuIsOpen.value;
-        }, 200);
-        return;
-      }
+      setTimeout(() => {
+        menuIsOpen.value = false;
+      }, 200);
+    } else {
       menuIsOpen.value = !menuIsOpen.value;
-      return 
-    } 
-
-    menuIsOpen.value = !menuIsOpen.value;
-    nextTick(() => {
-      if (menuIsOpen.value && menuRef.value) {
+      nextTick(() => {
         // Focus the element when it becomes visible
         menuRef.value?.focus();
-      }
-    });
+      });
+    }
   }
 </script>
