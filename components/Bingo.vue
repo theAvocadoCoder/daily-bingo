@@ -116,6 +116,7 @@
 <script setup lang="ts">
   import type Card from "~/server/interfaces/Card";
   const { getData, setData } = useNuxtApp().$locally;
+  const $toast = useNuxtApp();
   const { data, getSession } = useAuth();
   
   // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
@@ -236,7 +237,6 @@
   }
   
   async function saveCard (event?) {
-    // TODO: Toast implementation for this
     if (!cardIsSaved.value) {
       // If the daily card hasn't been saved before, create it, then attach to user
       await $fetch("/api/cards", {
@@ -274,6 +274,7 @@
       });
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
+      $toast.success(`${cardName.value} saved`);
     } else {
       // If the card exists, update it in DB
       await $fetch(`/api/cards/${_id.value}`, {
@@ -286,8 +287,6 @@
         })
       });
     }
-    // TODO: This log should be a toast instead
-    console.log("card saved");
   }
 
   function registerCell(row: number, column: number) {

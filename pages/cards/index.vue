@@ -44,13 +44,13 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                      class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
+                      class="mb-auto hover:!bg-gray-900/20 !bg-gray-300/50"
                       @click="cancelDialog = false; selectedCardId = ''"
                     >
                       Cancel
                     </v-btn>
                     <v-btn
-                      class="mb-auto hover:!bg-gray-900/10 [&_span:first-child]:!bg-gray-300/10"
+                      class="mb-auto hover:!bg-lime-900 !bg-lime-700 text-white"
                       @click="handleDelete()"
                     >
                       Delete Card
@@ -68,6 +68,7 @@
 
 <script setup lang="ts">
   const { setData } = useNuxtApp().$locally;
+  const { $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
 
   const sessionUser = computed(() => data.value?.user);
@@ -136,6 +137,7 @@
 
     await getSession(true);
     setData("bingoUser", sessionUser.value, true);
+    $toast.success("Card deleted");
     saving.value = false;
     selectedCardId.value = '';
   }
