@@ -8,6 +8,7 @@ const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret } = useRuntim
 
 // Configuration
 cloudinary.config({ 
+    secure: true,
     cloud_name: cloudinaryCloudName, 
     api_key: cloudinaryApiKey, 
     api_secret: cloudinaryApiSecret,
