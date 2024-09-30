@@ -10,12 +10,13 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn v-if="data" @click="handleToggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
+      <v-btn v-if="data" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
         <v-avatar icon="mdi-account" :image="user?.picture"></v-avatar>
       </v-btn>
       <ul
+        tabindex="0"
         ref="menuRef"
-        @blur="handleToggleMenu"
+        @focusout="handleFocusOut"
         :class="`absolute z-10 ${menuIsOpen ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `"  
       >
         <li>
@@ -138,22 +139,32 @@
   });
 
   function handleA11yMenuBlur(event: KeyDownEvent) {
-    if (event.key === "Escape") {
-      if ((menuRef && menuRef.value.contains(document.activeElement)) || menuIsOpen.value) {
-        menuIsOpen.value = false;
+    if (event.key === "Escape" || event.key === "Enter") {
+      if ((menuRef && menuRef.value.matches("ul:has(&:focus, > li:focus, > li > a:active)")) || menuIsOpen.value) {
+        setTimeout(() => {
+          menuIsOpen.value = false;
+        }, 200); // Delay to allow router events take priority
       }
     }
   }
 
-  function handleToggleMenu(event: BlurEvent | MouseEvent) {    
-    if (event.type === "blur") {
+  function handleFocusOut(event: FocusEvent) {
+    // Close if focus is not on a menu item or if a menu item was clicked
+    if (
+      !menuRef.value?.contains(event.relatedTarget as Node)
+      || Array.from(menuRef.value.children).find(child => child.matches("li:has(&:active, > a:active)"))
+    ) {
       setTimeout(() => {
         menuIsOpen.value = false;
-      }, 200);
-    } else {
-      menuIsOpen.value = !menuIsOpen.value;
+      }, 200); // Delay to allow router events take priority
+    }
+  }
+
+  function toggleMenu() {
+    menuIsOpen.value = !menuIsOpen.value;
+    if (menuIsOpen.value) {
       nextTick(() => {
-        // Focus the element when it becomes visible
+        // Focus the menu when it's opened
         menuRef.value?.focus();
       });
     }
