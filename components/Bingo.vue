@@ -13,7 +13,7 @@
         >
           <!-- Cells -->
           <div 
-            v-for="(cell, index) in card.cells"
+            v-for="(cell, index) in bingoCard.cells"
             :id="`${index}`" 
             :class="
               `grid [&_*]:[grid-row:1] [&_*]:[grid-column:1] \
@@ -129,6 +129,7 @@
   const sessionUser = computed(() => data.value?.user);
   const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type).saved);
   const _id = computed(() => getData(props.type)._id);
+  const bingoCard = ref(props.card as Card);
 
   const cardName = props.type == "dailyBingo" ?
     ref('Daily Bingo') :
@@ -205,23 +206,15 @@
     corners: 4,
   };
 
-  // const defaultCard = [];
-
-  // for (let index = 0; index < STATIC.length; index++){
-  //   defaultCard.push({ marked: false, value: "", column: index % 5, row: Math.floor(index / 5)});
-  // }
-
-  // if (!props.card.cells) props.card.cells = defaultCard;
-
   onMounted(() => {
-    for (let i = 0; i < props.card.cells.length; i++) {
-      if (props.card.cells[i].marked) registerCell(props.card.cells[i].row, props.card.cells[i].column);
+    for (let i = 0; i < bingoCard.value.cells.length; i++) {
+      if (bingoCard.value.cells[i].marked) registerCell(bingoCard.value.cells[i].row, bingoCard.value.cells[i].column);
     }
   });
 
   function markCell(_cell: Cell) {
     const {column, row} = _cell;
-    const cell = props.card.cells.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
+    const cell = bingoCard.value.cells.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
     // if free cell, don't mark
     if (row == 2 && column == 2) return;
 
@@ -237,6 +230,7 @@
   }
   
   async function saveCard (event?) {
+    const currentCard = getData(props.type);
     if (!cardIsSaved.value) {
       // If the daily card hasn't been saved before, create it, then attach to user
       await $fetch("/api/cards", {
@@ -245,7 +239,7 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cells: props.card.cells,
+          cells: bingoCard.value.cells,
           created_at: new Date().toISOString(),
           creator: {
             user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
@@ -269,8 +263,7 @@
             }
           }),
         });
-        const currentCard = getData(props.type)
-        setData(props.type, {...currentCard, cells: props.card.cells, saved: true, _id: newCard._id}, true);
+        setData(props.type, {...currentCard, cells: bingoCard.value.cells, saved: true, _id: newCard._id}, true);
       });
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
@@ -283,10 +276,11 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cells: props.card.cells,
+          cells: bingoCard.value.cells,
         })
       });
     }
+    setData(props.type, {...currentCard, cells: bingoCard.value.cells}, true);
   }
 
   function registerCell(row: number, column: number) {
@@ -356,12 +350,12 @@
     wins.value.corners.value = 0;
     wins.value.blackout.value = 0;
 
-    for (let i = 0; i < props.card.cells.length; i++) {
-      props.card.cells[i].marked = false;
+    for (let i = 0; i < bingoCard.value.cells.length; i++) {
+      bingoCard.value.cells[i].marked = false;
     }
 
     const currentCard = getData(props.type);
-    setData(props.type, {...currentCard, cells: props.card.cells}, true);
+    setData(props.type, {...currentCard, cells: bingoCard.value.cells}, true);
 
     if (cardIsSaved.value) {
       saveCard();
