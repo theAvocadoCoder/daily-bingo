@@ -14,11 +14,7 @@ export default function (phrases: string[]) {
     };
     cellObject.column = column % 5;
     cellObject.row = row % 5;
-    if (i === Math.floor(phrases.length / 2)) {
-      cellObject.value = "Free";
-     } else {
-      cellObject.value = phrases[i];
-     }
+    cellObject.value = phrases[i];
 
     cells.push(cellObject);
     if (column % 5 === 4) row ++;

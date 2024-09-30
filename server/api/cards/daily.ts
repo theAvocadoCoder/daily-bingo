@@ -8,7 +8,10 @@ export default defineEventHandler(async (event) => {
     const theEntry = await mongo.findEntry("general");
     console.info("Get entry general completed");
 
-    const card = buildCellArray(getRandomPhrases(theEntry.phrases, 25));
+    const randomPhrases = getRandomPhrases(theEntry.phrases, 24);
+    randomPhrases.splice(Math.floor(randomPhrases.length / 2), 0, "Free");
+
+    const card = buildCellArray(randomPhrases);
 
     setResponseStatus(event, 200)
     return card;
