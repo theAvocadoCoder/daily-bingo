@@ -1,12 +1,30 @@
 <template>
   <div class="h-full bg-lime-50 relative">
     <v-btn tag="nuxt-link" to="/cards/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
-    <h1>
+    <h1 class="sr-only">
       Your Cards
     </h1>
 
+    <v-text-field
+      v-model="searchValue"
+      rounded
+      color="zinc-200/80"
+      variant="outlined"
+      label="Search cards"
+      aria-role="search"
+      @focusout="handleSearchFocusOut"
+    >
+      <template v-slot:append-inner>
+        <v-btn
+          variant="text"
+          @click="searchValue !== null ? searchValue = null : ''"
+          :icon="searchValue === null ? 'mdi-magnify' : 'mdi-close'"
+        ></v-btn>
+      </template>
+    </v-text-field>
+
     <ul class="flex flex-col gap-2">
-      <li v-for="(card, index) in sessionUser.cards">
+      <li v-for="(card, index) in displayedCards">
         <v-card
           class="!bg-lime-300 hover:!bg-lime-500/80"
           :tag="editMode == card._id ? 'div' : 'nuxt-link'"
@@ -63,6 +81,18 @@
           </v-card-text>
         </v-card>
       </li>
+      <template v-if="displayedCards.length == 0">
+        <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold">
+          <template v-if="searchValue !== null">
+            <span>You have no cards that match this search.</span>
+            <span>Try <nuxt-link to="/cards/new">creating one</nuxt-link></span>
+          </template>
+          <template v-else>
+            <span>You haven't saved any cards yet.</span> 
+            <span>Try saving <nuxt-link to="/daily-card">your daily bingo card</nuxt-link></span>
+          </template>
+        </li> 
+      </template>
     </ul>
   </div>
 </template>
@@ -75,12 +105,31 @@
   const sessionUser = computed(() => data.value?.user);
   const cardModel = ref({
     card_name: ""
-  })
+  });
 
+  const searchValue = ref<null | string>(null);
   const cancelDialog = ref(false);
   const selectedCardId = ref();
   const editMode = ref(false);
   const saving = ref(false);
+
+
+  const displayedCards = computed(() => {
+    if (searchValue.value === null) {
+      return sessionUser.value.cards;
+    } else {
+      return sessionUser.value.cards.filter(card => (
+        card.card_name.toLocaleLowerCase().includes(searchValue.value.toLocaleLowerCase())
+      ));
+    }
+  });
+
+  function handleSearchFocusOut() {
+    // If the search value is empty, set it to null
+    if (searchValue.value === "" || searchValue.value.trim().length < 1) {
+      searchValue.value = null
+    }
+  }
 
   function handleCancelEdit() {
     cardModel.value.card_name = "";
