@@ -36,11 +36,11 @@ export default defineEventHandler(async (event) => {
             Authorization: `${token_type} ${access_token}`,
             "Content-Type": "application/json",
           },
-          body: `{"user_metadata": {"picture": "${results.url}"}}`
+          body: `{"user_metadata": {"picture": "${results.secure_url}"}}`
         });
 
         console.info("Update user %s photo successful", userAuthId);
-        return results.url;
+        return results.secure_url;
       }
     })
     .catch (error => {
