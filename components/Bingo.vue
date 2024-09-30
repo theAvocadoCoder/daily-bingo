@@ -18,7 +18,7 @@
             :class="
               `grid [&_*]:[grid-row:1] [&_*]:[grid-column:1] \
               [&_*]:my-auto [&_*]:mx-auto \
-              p-1 ${cell.column?'-m-[1px]':'-m-[1px]'} \
+              ${cell.column?'-m-[1px]':'-m-[1px]'} \
               w-full aspect-square cursor-pointer \
               border border-black overflow-hidden \
               ${cell.column % 5 == 4?'border-r-transparent':''} \
@@ -26,7 +26,7 @@
               ${cell.row % 5 == 0?'border-t-transparent':''} \
               ${cell.row % 5 == 4?'border-b-transparent':''} `
             " 
-            style="font-size: clamp(10px, 2svw, 16px); line-height: 1.2em;"
+            style="font-size: clamp(10px, 1.5svw, 14px); line-height: 1.2em;"
             @click="markCell(cell)"
           >
             <!-- Mark -->
@@ -43,7 +43,7 @@
               class="w-3/4 h-3/4"
             />
             <!-- Text -->
-            <span class="text-center select-none break-words">{{ 
+            <span class="text-center select-none break-words inset-2 h-fit w-fit">{{ 
               cell.row == 2 && cell.column == 2 ? 'FREE' : cell.value 
             }}</span>
           </div>
