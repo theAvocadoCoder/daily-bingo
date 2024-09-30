@@ -69,7 +69,7 @@
                       Cancel
                     </v-btn>
                     <v-btn
-                      class="mb-auto hover:!bg-lime-900 !bg-lime-700 text-white"
+                      class="mb-auto hover:!bg-red-600 !bg-red-700 !font-bold text-white"
                       @click="handleDelete()"
                     >
                       Delete Card
