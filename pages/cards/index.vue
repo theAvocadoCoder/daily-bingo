@@ -101,13 +101,14 @@
   const { setData } = useNuxtApp().$locally;
   const { $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
+  const route = useRoute();
 
   const sessionUser = computed(() => data.value?.user);
   const cardModel = ref({
     card_name: ""
   });
 
-  const searchValue = ref<null | string>(null);
+  const searchValue = ref<null | string>(route?.query?.s ? route.query.s : null);
   const cancelDialog = ref(false);
   const selectedCardId = ref();
   const editMode = ref(false);
@@ -126,7 +127,7 @@
 
   function handleSearchFocusOut() {
     // If the search value is empty, set it to null
-    if (searchValue.value === "" || searchValue.value.trim().length < 1) {
+    if (searchValue.value && (searchValue.value === "" || searchValue.value.trim().length < 1)) {
       searchValue.value = null
     }
   }
