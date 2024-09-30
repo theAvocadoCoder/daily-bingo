@@ -116,7 +116,7 @@
 <script setup lang="ts">
   import type Card from "~/server/interfaces/Card";
   const { getData, setData } = useNuxtApp().$locally;
-  const $toast = useNuxtApp();
+  const {$toast} = useNuxtApp();
   const { data, getSession } = useAuth();
   
   // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
