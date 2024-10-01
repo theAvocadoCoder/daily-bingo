@@ -26,7 +26,7 @@
     <ul class="flex flex-col gap-2">
       <li v-for="(card, index) in displayedCards">
         <v-card
-          class="!bg-lime-300 hover:!bg-lime-500/80"
+          class="!bg-lime-100 hover:!bg-lime-200/80"
           :tag="editMode == card._id ? 'div' : 'nuxt-link'"
           @click.prevent="editMode == card._id"
           :to="`/cards/${card._id}`"
