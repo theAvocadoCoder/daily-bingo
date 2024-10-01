@@ -1,10 +1,11 @@
 import MongoIO from "./config/MongoIO";
 import { v2 as cloudinary } from 'cloudinary';
+import Ably from "ably";
 
 const mongo = new MongoIO();
 (async () => {await mongo.connect()})();
 
-const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret } = useRuntimeConfig();
+const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret, ablyRoot } = useRuntimeConfig();
 
 // Configuration
 cloudinary.config({ 
@@ -14,6 +15,9 @@ cloudinary.config({
     api_secret: cloudinaryApiSecret,
 });
 
+// Create the client
+const ably = new Ably.Realtime(ablyRoot);
+
 function getMessage (error: any): string {
   let message = "Unknown Error";
   if (error instanceof Error) message = error.message;
@@ -21,6 +25,7 @@ function getMessage (error: any): string {
 }
 
 export {
+  ably,
   cloudinary,
   mongo,
 

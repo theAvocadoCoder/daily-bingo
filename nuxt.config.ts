@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
     cloudinaryUrl: process.env.CLOUDINARY_URL,
+    ablyRoot: process.env.ABLY_ROOT,
   },
   build: {
     transpile: ['vuetify'],
