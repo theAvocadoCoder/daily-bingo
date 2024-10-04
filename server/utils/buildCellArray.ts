@@ -1,4 +1,4 @@
-import Cell from "../interfaces/Cell";
+import Cell from "~/interfaces/Cell";
 
 export default function (phrases: string[]) {
   let row = 0;

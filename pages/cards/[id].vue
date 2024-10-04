@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
   import { ObjectId } from "mongodb";
-  import type User from "~/server/interfaces/User";
+  import type User from "~/interfaces/User";
   const { getData, setData } = useNuxtApp().$locally;
   const {data} = useAuth();
   const route = useRoute();

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type User from "~/server/interfaces/User";
+import type User from "~/interfaces/User";
 
 export const useUserStore = defineStore("user", () => {
   const { getData, setData } = useNuxtApp().$locally; 

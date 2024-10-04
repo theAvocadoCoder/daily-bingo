@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
-import type Card from "~/server/interfaces/Card";
+import type Card from "~/interfaces/Card";
 
 export const useDailyBingoStore = defineStore("dailyBingo", () => {
   const { getData, setData } = useNuxtApp().$locally; 

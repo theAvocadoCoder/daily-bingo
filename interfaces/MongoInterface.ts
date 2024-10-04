@@ -1,6 +1,6 @@
-import Card from "./Card";
-import Entry from "./Entry";
-import User from "./User";
+import type Card from "./Card";
+import type Entry from "./Entry";
+import type User from "./User";
 
 export default interface MongoInterface {
   connect(): Promise<void>;

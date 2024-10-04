@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-  import type User from "~/server/interfaces/User";
+  import type User from "~/interfaces/User";
   const navItems = [
     {
       "to": "/groups",

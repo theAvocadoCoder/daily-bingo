@@ -114,9 +114,9 @@
 </template> 
 
 <script setup lang="ts">
-  import type Card from "~/server/interfaces/Card";
-  import type Cell from "~/server/interfaces/Cell";
-  import type User from "~/server/interfaces/User";
+  import type Card from "~/interfaces/Card";
+  import type Cell from "~/interfaces/Cell";
+  import type User from "~/interfaces/User";
   const { getData, setData } = useNuxtApp().$locally;
   const {$toast} = useNuxtApp();
   const { data, getSession } = useAuth();

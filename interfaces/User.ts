@@ -15,8 +15,13 @@ export default interface User {
   email: string;
   email_verified?: boolean;
   groups?: {
+    _id: ObjectId;
+    created_by: {
+      user_id: ObjectId;
+      username: string;
+    };
     group_name: string;
-    groupId: ObjectId;
+    thumbnail?: string;
   }[];
   picture?: string;
   username?: string;

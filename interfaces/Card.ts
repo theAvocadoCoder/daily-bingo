@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import Cell from "./Cell";
+import type Cell from "./Cell";
 
 export default interface Card {
   _id: ObjectId;

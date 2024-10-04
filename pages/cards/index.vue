@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
   import { ObjectId } from "mongodb";
-  import type User from "~/server/interfaces/User";
+  import type User from "~/interfaces/User";
   const { setData } = useNuxtApp().$locally;
   const { $toast } = useNuxtApp();
   const { data, getSession } = useAuth();

@@ -2,10 +2,10 @@
  * Class MongoIO implements all mongodb I-O
  */
 import { Collection, Db, InsertOneResult, MongoClient, ObjectId, UpdateFilter } from "mongodb";
-import MongoInterface from "../interfaces/MongoInterface";
-import User from "../interfaces/User";
-import Card from "../interfaces/Card";
-import Entry from "../interfaces/Entry";
+import MongoInterface from "~/interfaces/MongoInterface";
+import User from "~/interfaces/User";
+import Card from "~/interfaces/Card";
+import Entry from "~/interfaces/Entry";
 
 /*************************************************
  * Class Properties
