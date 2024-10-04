@@ -11,7 +11,7 @@
       <v-spacer></v-spacer>
 
       <v-btn v-if="data" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
-        <v-avatar icon="mdi-account" :image="user?.picture"></v-avatar>
+        <v-avatar icon="mdi-account" :image="sessionUser?.picture"></v-avatar>
       </v-btn>
       <ul
         tabindex="0"
@@ -42,9 +42,9 @@
         <v-list-item
           tag="nuxt-link"
           to="/profile"
-          :prepend-avatar="user?.picture"
-          :subtitle="`@${user?.username}`"
-          :title="user?.display_name || user?.name.toLocaleUpperCase()"
+          :prepend-avatar="sessionUser?.picture"
+          :subtitle="`@${sessionUser?.username}`"
+          :title="sessionUser?.display_name || sessionUser?.name.toLocaleUpperCase()"
         ></v-list-item>
       </v-list>
 
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-
+  import type User from "~/server/interfaces/User";
   const navItems = [
     {
       "to": "/groups",
@@ -123,12 +123,12 @@
   ];
 
   const menuIsOpen = ref(false);
-  const menuRef = ref();
+  const menuRef = ref<HTMLUListElement>();
 
   const { data } = useAuth();
 
   const path = computed(() => useRoute().path);
-  const user = computed(() => data.value?.user);
+  const sessionUser = computed(() => data.value?.user as {name: string} & User);
 
   onMounted(() => {
     window.addEventListener("keydown", handleA11yMenuBlur);
@@ -138,9 +138,9 @@
     window.removeEventListener("keydown", handleA11yMenuBlur);
   });
 
-  function handleA11yMenuBlur(event: KeyDownEvent) {
+  function handleA11yMenuBlur(event: KeyboardEvent) {
     if (event.key === "Escape" || event.key === "Enter") {
-      if ((menuRef && menuRef.value.matches("ul:has(&:focus, > li:focus, > li > a:active)")) || menuIsOpen.value) {
+      if ((menuRef && menuRef.value?.matches("ul:has(&:focus, > li:focus, > li > a:active)")) || menuIsOpen.value) {
         setTimeout(() => {
           menuIsOpen.value = false;
         }, 200); // Delay to allow router events take priority

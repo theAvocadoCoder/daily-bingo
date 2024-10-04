@@ -13,4 +13,5 @@ export default interface Card {
     group_name: string;
     group_id: ObjectId;
   }[];
+  name: string;
 }

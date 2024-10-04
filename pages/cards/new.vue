@@ -49,12 +49,12 @@
 
   const entryRules = [
     // Check that each entry entry is not more than 32 characters
-    value => {
+    (value: string[]) => {
       return !value.find(entry => entry.length > 32)
       || 'An entry must contain no more than 32 characters'
     },
     // Check that each word is not more than 9 characters
-    value => {
+    (value: string[]) => {
       return !value.find(entry => {
         return entry.split(/\.|\s|,\s|;\s|:\s/g).find(word => word.length > 9)
       })
@@ -62,7 +62,7 @@
     }
   ];
   const cardNameRules = [
-    value => !!value || 'You have to call it something'
+    (value: string) => !!value || 'You have to call it something'
   ];
 
   async function handleSave() {
@@ -76,22 +76,26 @@
         user: sessionUser.value
       })
     }).then(async (savedCard) => {
-      await $fetch(`/api/users/${sessionUser.value._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: {
-            cards: {
-              created_by: savedCard.creator,
-              _id: savedCard._id,
-              card_name: savedCard.name,
-            },
-          }
-        }),
-      });
+      if (savedCard) {
+        // @ts-expect-error
+        await $fetch(`/api/users/${sessionUser.value?._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            data: {
+              cards: {
+                created_by: savedCard.creator,
+                _id: savedCard._id,
+                card_name: savedCard.name,
+              },
+            }
+          }),
+        });
+      }
     });
+    // @ts-expect-error
     await getSession(true);
     setData("bingoUser", sessionUser.value, true);
 

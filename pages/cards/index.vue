@@ -81,7 +81,7 @@
           </v-card-text>
         </v-card>
       </li>
-      <template v-if="displayedCards.length == 0">
+      <template v-if="displayedCards?.length == 0">
         <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold">
           <template v-if="searchValue !== null">
             <span>You have no cards that match this search.</span>
@@ -98,29 +98,31 @@
 </template>
 
 <script setup lang="ts">
+  import { ObjectId } from "mongodb";
+  import type User from "~/server/interfaces/User";
   const { setData } = useNuxtApp().$locally;
   const { $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
   const route = useRoute();
 
-  const sessionUser = computed(() => data.value?.user);
+  const sessionUser = computed(() => data.value?.user as User);
   const cardModel = ref({
     card_name: ""
   });
 
-  const searchValue = ref<null | string>(route?.query?.s ? route.query.s : null);
+  const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
   const cancelDialog = ref(false);
   const selectedCardId = ref();
-  const editMode = ref(false);
+  const editMode = ref<ObjectId | boolean>(false);
   const saving = ref(false);
 
 
   const displayedCards = computed(() => {
     if (searchValue.value === null) {
-      return sessionUser.value.cards;
+      return sessionUser.value?.cards;
     } else {
-      return sessionUser.value.cards.filter(card => (
-        card.card_name.toLocaleLowerCase().includes(searchValue.value.toLocaleLowerCase())
+      return sessionUser.value?.cards?.filter(card => (
+        card.card_name.toLocaleLowerCase().includes((searchValue.value as string).toLocaleLowerCase())
       ));
     }
   });
@@ -137,12 +139,12 @@
     editMode.value = false;
   }
 
-  async function handleSaveEdit(cardId?) {
+  async function handleSaveEdit(cardId?: ObjectId) {
     if (editMode.value == cardId) {
       saving.value = true;
 
-      if (cardModel.value.card_name == "") {
-        const previousCardName = sessionUser.value.cards.find(card => card._id == cardId).card_name;
+      if (cardModel.value && cardModel.value.card_name == "") {
+        const previousCardName = sessionUser.value?.cards?.find(card => card._id == cardId)?.card_name || "";
         cardModel.value.card_name = previousCardName;
       }
 
@@ -161,12 +163,13 @@
         }),
       });
 
+      // @ts-expect-error
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
       saving.value = false;
       editMode.value = false;
     } else {
-      editMode.value = cardId;
+      editMode.value = cardId || false;
     }
   }
 
@@ -181,11 +184,12 @@
       },
       body: JSON.stringify({
         data: {
-          "cards": sessionUser.value.cards.find(card => card._id == selectedCardId.value),
+          "cards": sessionUser.value?.cards?.find(card => card._id == selectedCardId.value),
         }
       }),
     });
 
+    // @ts-expect-error
     await getSession(true);
     setData("bingoUser", sessionUser.value, true);
     $toast.success("Card deleted");

@@ -115,6 +115,8 @@
 
 <script setup lang="ts">
   import type Card from "~/server/interfaces/Card";
+  import type Cell from "~/server/interfaces/Cell";
+  import type User from "~/server/interfaces/User";
   const { getData, setData } = useNuxtApp().$locally;
   const {$toast} = useNuxtApp();
   const { data, getSession } = useAuth();
@@ -126,9 +128,9 @@
     saved?: boolean,
   }>();
 
-  const sessionUser = computed(() => data.value?.user);
-  const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type).saved);
-  const _id = computed(() => getData(props.type)._id);
+  const sessionUser = computed(() => data.value?.user as User);
+  const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type as string).saved);
+  const _id = computed(() => getData(props.type as string)._id);
   const bingoCard = ref(props.card as Card);
 
   const cardName = props.type == "dailyBingo" ?
@@ -229,8 +231,8 @@
     }
   }
   
-  async function saveCard (event?) {
-    const currentCard = getData(props.type);
+  async function saveCard () {
+    const currentCard = getData(props.type as string);
     if (!cardIsSaved.value) {
       // If the daily card hasn't been saved before, create it, then attach to user
       await $fetch("/api/cards", {
@@ -242,8 +244,8 @@
           cells: bingoCard.value.cells,
           created_at: new Date().toISOString(),
           creator: {
-            user_id: props.type === "dailyBingo" ? null : `${sessionUser.value._id}`,
-            username: props.type === "dailyBingo" ? "Daily Bingo" : `@${sessionUser.value.username}`,
+            user_id: props.type === "dailyBingo" ? null : `${sessionUser.value?._id}`,
+            username: props.type === "dailyBingo" ? "Daily Bingo" : `@${sessionUser.value?.username}`,
           },
           groups: []
         }),
@@ -256,15 +258,16 @@
           body: JSON.stringify({
             data: {
               cards: {
-                created_by: newCard.creator,
-                _id: newCard._id,
+                created_by: newCard?.creator,
+                _id: newCard?._id,
                 card_name: cardName?.value,
               },
             }
           }),
         });
-        setData(props.type, {...currentCard, cells: bingoCard.value.cells, saved: true, _id: newCard._id}, true);
+        setData(props.type as string, {...currentCard, cells: bingoCard.value.cells, saved: true, _id: newCard?._id}, true);
       });
+      // @ts-expect-error
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
       $toast.success(`${cardName.value} saved`);
@@ -280,7 +283,7 @@
         })
       });
     }
-    setData(props.type, {...currentCard, cells: bingoCard.value.cells}, true);
+    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
   }
 
   function registerCell(row: number, column: number) {
@@ -354,8 +357,8 @@
       bingoCard.value.cells[i].marked = false;
     }
 
-    const currentCard = getData(props.type);
-    setData(props.type, {...currentCard, cells: bingoCard.value.cells}, true);
+    const currentCard = getData(props.type as string);
+    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
 
     if (cardIsSaved.value) {
       saveCard();
