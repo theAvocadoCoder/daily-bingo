@@ -15,5 +15,6 @@ export default interface MongoInterface {
   findCard(id: string): Promise<Card>;
   insertCard(theCard: Partial<Card>): Promise<Card>;
   updateCard(id: string, card: Partial<Card>): Promise<Card>;
+  updateCardReferences(id: string, operation: number): Promise<Card>;
   findEntry(theme: string): Promise<Entry>;
 }

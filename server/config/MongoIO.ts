@@ -365,10 +365,40 @@ export default class MongoIO implements MongoInterface {
 
     const result = await this.cardCollection.findOneAndUpdate(filter, update);
     if (!result) {
-      throw new Error("Update card found No Card to Update " + cardId);
+      throw new Error("Update card found No Card to Update " + card_id);
+    } else {
+      console.info("Card %s updated with %s", card_id, card);
+      return this.findCard(id);
     }
+  }
 
-    return this.findCard(id);
+  /**************************************************************
+   * Increment or decrement the card's references
+   * 
+   * @param {string} id the card id
+   * @param {number} operation whether to increment or decrement the references
+   * 
+   * @returns {Promise<Card>} the updated card
+   */
+  public async updateCardReferences(id: string, operation: number): Promise<Card> {
+    if (!this.cardCollection) {
+      throw new Error("updateCard - Database not connected");
+    }
+    
+    const card_id = new ObjectId(id);
+    const filter = { _id: card_id };
+    const update = { $inc: {
+      references: operation,
+    } };
+
+    const result = await this.cardCollection.findOneAndUpdate(filter, update);
+
+    if (!result) {
+      throw new Error("Update card found No Card to Update " + card_id);
+    } else {
+      console.info("Card %s's reference updated", card_id);
+      return this.findCard(id);
+    }
   }
 
   /***************************************************************

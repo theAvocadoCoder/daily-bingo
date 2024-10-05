@@ -208,23 +208,56 @@
     saving.value = true;
     cancelDialog.value = false;
 
-    await $fetch(`/api/users/${sessionUser.value._id}`, {
+    const theCard = displayedCards.value?.find(card => card._id == selectedCardId.value) as Card;
+
+    let deleteObject = null;
+
+    if (theCard?.creator?.user_id === sessionUser.value._id) {
+      deleteObject = {
+        card: { isDeleted: true },
+      };
+    }
+
+    await $fetch(`/api/cards/${theCard?._id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        data: {
-          "cards": sessionUser.value?.cards?.find(card => card._id == selectedCardId.value),
-        }
+        operation: -1,
+        ...deleteObject,
       }),
-    });
+    }).then(async () => {
+      return await $fetch<User>(`/api/users/${sessionUser.value._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data: theCard._id,
+          operation: "cards-delete"
+        }),
+      });
+    }).then(async (theUser) => {
+      userCards.value = await $fetch<Card[]>("/api/cards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache",
+          "Expires": "0",
+        },
+        body: JSON.stringify({
+          cards: theUser?.cards,
+        }),
+      });
 
-    // @ts-expect-error
-    await getSession(true);
-    setData("bingoUser", sessionUser.value, true);
-    $toast.success("Card deleted");
-    saving.value = false;
-    selectedCardId.value = '';
+      // @ts-expect-error
+      await getSession(true);
+      setData("bingoUser", sessionUser.value, true);
+      $toast.success("Card deleted");
+      saving.value = false;
+      selectedCardId.value = '';
+    });
   }
 </script>

@@ -2,10 +2,16 @@ import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
   const cardId = getRouterParam(event, "id") as string;
-  const card = await readBody(event);
+  const {card, operation} = await readBody(event);
 
   try {
-    const theCard = await mongo.updateCard(cardId, card);
+    let theCard;
+    if (operation) {
+      theCard = await mongo.updateCardReferences(cardId, operation);
+      if (card) theCard = await mongo.updateCard(cardId, card);
+    } else {
+      theCard = await mongo.updateCard(cardId, card);
+    }
     console.info("Update card %s successful", theCard._id);
     setResponseStatus(event, 200);
     return theCard;
