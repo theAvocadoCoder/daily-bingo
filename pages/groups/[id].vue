@@ -1,5 +1,5 @@
 <template>
   <h1>
-    Your Groups
+    Group name
   </h1>
 </template>
