@@ -7,7 +7,7 @@ const mongo = new MongoIO();
 
 const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret, ablyRoot } = useRuntimeConfig();
 
-// Configuration
+// Cloudinary Configuration
 cloudinary.config({ 
     secure: true,
     cloud_name: cloudinaryCloudName, 
@@ -15,8 +15,11 @@ cloudinary.config({
     api_secret: cloudinaryApiSecret,
 });
 
-// Create the client
-const ably = new Ably.Realtime(ablyRoot);
+// Create the Ably client
+const ably = new Ably.Realtime({
+  key: ablyRoot
+});
+(async () => {await ably.connection.once("connected")})();
 
 function getMessage (error: any): string {
   let message = "Unknown Error";
