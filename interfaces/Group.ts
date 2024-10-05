@@ -6,14 +6,14 @@ export default interface Group {
   _id: ObjectId;
   cards?: {
     _id: ObjectId;
-    created_by: {
+    creator: {
       user_id: ObjectId;
       username: string;
     };
     card_name: string;
     thumbnail?: string;
   }[];
-  created_by: {
+  creator: {
     user_id: ObjectId;
     username: string;
   };

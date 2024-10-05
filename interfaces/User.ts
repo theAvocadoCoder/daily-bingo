@@ -4,7 +4,7 @@ export default interface User {
   _id?: ObjectId;
   cards?: {
     _id: ObjectId;
-    created_by: {
+    creator: {
       user_id: ObjectId;
       username: string;
     };
@@ -16,7 +16,7 @@ export default interface User {
   email_verified?: boolean;
   groups?: {
     _id: ObjectId;
-    created_by: {
+    creator: {
       user_id: ObjectId;
       username: string;
     };

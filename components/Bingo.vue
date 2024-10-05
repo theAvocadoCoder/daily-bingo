@@ -258,7 +258,7 @@
           body: JSON.stringify({
             data: {
               cards: {
-                created_by: newCard?.creator,
+                creator: newCard?.creator,
                 _id: newCard?._id,
                 card_name: cardName?.value,
               },

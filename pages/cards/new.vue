@@ -86,7 +86,7 @@
           body: JSON.stringify({
             data: {
               cards: {
-                created_by: savedCard.creator,
+                creator: savedCard.creator,
                 _id: savedCard._id,
                 card_name: savedCard.name,
               },
