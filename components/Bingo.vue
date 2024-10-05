@@ -121,7 +121,6 @@
   const {$toast} = useNuxtApp();
   const { data, getSession } = useAuth();
   
-  // TODO: figure out how to refactor this component so it doesn't modify the props unless via the parent
   const props = defineProps<{
     card: Card,
     type?: string,
@@ -131,7 +130,7 @@
   const sessionUser = computed(() => data.value?.user as User);
   const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type as string).saved);
   const _id = computed(() => getData(props.type as string)._id);
-  const bingoCard = ref(props.card as Card);
+  const bingoCard = computed(() => getData(props.type as string));
 
   const cardName = props.type == "dailyBingo" ?
     ref('Daily Bingo') :
@@ -226,13 +225,14 @@
       registerCell(cell.row, cell.column);
     }
     cell.marked = !cell.marked;
-    if (cardIsSaved.value) {
-      saveCard();
-    }
+
+    const currentCard = getData(props.type as string);
+    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
+
+    if (cardIsSaved.value) saveCard();
   }
   
   async function saveCard () {
-    const currentCard = getData(props.type as string);
     if (!cardIsSaved.value) {
       // If the daily card hasn't been saved before, create it, then attach to user
       await $fetch<Card>("/api/cards/new", {
@@ -259,12 +259,14 @@
             operation: "cards-insert",
           }),
         });
-        setData(props.type as string, {...currentCard, cells: bingoCard.value.cells, saved: true, _id: newCard?._id}, true);
+        const currentCard = getData(props.type as string);
+        setData(props.type as string, {...currentCard, saved: true, _id: newCard?._id}, true);
+
+        // @ts-expect-error
+        await getSession(true);
+        setData("bingoUser", sessionUser.value, true);
+        $toast.success(`${cardName.value} saved`);
       });
-      // @ts-expect-error
-      await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
-      $toast.success(`${cardName.value} saved`);
     } else {
       // If the card exists, update it in DB
       await $fetch(`/api/cards/${_id.value}`, {
@@ -278,8 +280,9 @@
           }
         })
       });
+      const currentCard = getData(props.type as string);
+      setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
     }
-    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
   }
 
   function registerCell(row: number, column: number) {
@@ -356,9 +359,7 @@
     const currentCard = getData(props.type as string);
     setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
 
-    if (cardIsSaved.value) {
-      saveCard();
-    }
+    if (cardIsSaved) saveCard();
   }
 
 </script>
