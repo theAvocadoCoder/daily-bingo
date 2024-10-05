@@ -2,17 +2,24 @@ import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
   const userId = getRouterParam(event, "id") as string;
-  const body = await readBody(event);
+  const {data, operation} = await readBody(event);
 
   try {
     let theUser;
-    if (body.filters) {
-      for (let fieldItem of Object.keys(body.data)) {
-        theUser = await mongo.updateUser(userId, {[fieldItem]: body.data[fieldItem]}, body.filters);
+    if (operation?.includes("cards")) {
+      if (operation?.includes("insert")) {
+        theUser = await mongo.insertUserCard(userId, data);
+      } else if (operation?.includes("update")) {
+        // for (let fieldItem of Object.keys(data)) {
+        //   theUser = await mongo.updateUserCard(userId, {[fieldItem]: data[fieldItem]});
+        // }
+      } else if (operation?.includes("delete")) {
+        theUser = await mongo.deleteUserCard(userId, data);
       }
+    } else if (operation?.includes("groups")) {
     } else {
-      for (let fieldItem of Object.keys(body.data)) {
-        theUser = await mongo.updateUser(userId, {[fieldItem]: body.data[fieldItem]});
+      for (let fieldItem of Object.keys(data)) {
+        theUser = await mongo.updateUser(userId, {[fieldItem]: data[fieldItem]});
       }
     }
     console.info("Update user %s completed", userId);

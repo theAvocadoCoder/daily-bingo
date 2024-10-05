@@ -37,19 +37,19 @@
                 <v-text-field
                   class="min-w-32 m-0"
                   v-model="cardModel.card_name"
-                  :placeholder="card.card_name"
+                  :placeholder="card.name"
                   label="Card Name"
                   variant="underlined"
                 ></v-text-field>
                 <v-btn icon="mdi-close" variant="text" :disabled="saving" @click.prevent="handleCancelEdit"></v-btn>
                 <v-btn type="submit" :loading="saving" @click.prevent="handleSaveEdit(card._id)">Save</v-btn>
               </v-form>
-              <v-card-title v-else class="!text-lg truncate max-w-32 min-[330px]:max-w-40 min-[425px]:max-w-64 sm:max-w-72 md:max-w-96">{{ card.card_name }}</v-card-title>
+              <v-card-title v-else class="!text-lg truncate max-w-32 min-[330px]:max-w-40 min-[425px]:max-w-64 sm:max-w-72 md:max-w-96">{{ card.name }}</v-card-title>
               <v-card-subtitle>by {{ `${ card.creator.user_id ? '@' : '' }${ card.creator.username }` }}</v-card-subtitle>
             </div>
             <div>
-              <v-btn :icon="editMode == card._id ? 'mdi-check' : 'mdi-pencil'" :disabled="editMode && editMode != card._id" variant="text" @click.prevent="handleSaveEdit(card._id)"></v-btn>
-              <v-btn icon="mdi-delete" :disabled="editMode && editMode != card._id" variant="text" @click.prevent="cancelDialog = true; selectedCardId = card._id"></v-btn>
+              <v-btn v-if="card.creator?.user_id === sessionUser._id || card.creator?.username === 'Daily Bingo'" :icon="editMode == card._id ? 'mdi-check' : 'mdi-pencil'" :disabled="!!editMode && editMode != card._id" variant="text" @click.prevent="handleSaveEdit(card._id)"></v-btn>
+              <v-btn icon="mdi-delete" :disabled="!!editMode && editMode != card._id" variant="text" @click.prevent="cancelDialog = true; selectedCardId = card._id"></v-btn>
               <v-dialog v-model="cancelDialog" width="auto">
                 <v-card
                   :max-width="400"
@@ -57,7 +57,7 @@
                   <v-card-title>Delete Bingo Card?</v-card-title>
                   <v-card-text>
                     <p>
-                      This will permanently delete this card from your collection. If it is a group card, it will still be available on the group.
+                      This will permanently delete this card from your collection. The card will still be available on groups it has been shared to, and in the collections of users who have saved it.
                     </p>
                   </v-card-text>
                   <v-card-actions>
@@ -81,6 +81,9 @@
           </v-card-text>
         </v-card>
       </li>
+      <template v-if="!displayedCards">
+        <Loading />
+      </template>
       <template v-if="displayedCards?.length == 0">
         <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold">
           <template v-if="searchValue !== null">
@@ -98,8 +101,8 @@
 </template>
 
 <script setup lang="ts">
-  import { ObjectId } from "mongodb";
   import type User from "~/interfaces/User";
+  import type Card from "~/interfaces/Card";
   const { setData } = useNuxtApp().$locally;
   const { $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
@@ -113,16 +116,29 @@
   const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
   const cancelDialog = ref(false);
   const selectedCardId = ref();
-  const editMode = ref<ObjectId | boolean>(false);
+  const editMode = ref<unknown | boolean>(false);
   const saving = ref(false);
 
+  const userCards = ref<Card[]>();
+
+  // const {data: results} = await useFetch<Card[]>("/api/cards", {
+  userCards.value = await $fetch<Card[]>("/api/cards", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cards: sessionUser.value?.cards
+    }),
+  });
+  // userCards.value = toRaw(results.value as Card[]);
 
   const displayedCards = computed(() => {
     if (searchValue.value === null) {
-      return sessionUser.value?.cards;
+      return userCards.value;
     } else {
-      return sessionUser.value?.cards?.filter(card => (
-        card.card_name.toLocaleLowerCase().includes((searchValue.value as string).toLocaleLowerCase())
+      return userCards.value?.filter(card => (
+        card.name.toLocaleLowerCase().includes((searchValue.value as string).toLocaleLowerCase())
       ));
     }
   });
@@ -139,33 +155,48 @@
     editMode.value = false;
   }
 
-  async function handleSaveEdit(cardId?: ObjectId) {
+  async function handleSaveEdit(cardId?: unknown) {
+    const theCard = displayedCards.value?.find(card => card._id == cardId);
+
     if (editMode.value == cardId) {
       saving.value = true;
 
       if (cardModel.value && cardModel.value.card_name == "") {
-        const previousCardName = sessionUser.value?.cards?.find(card => card._id == cardId)?.card_name || "";
+        const previousCardName = theCard?.name || "";
         cardModel.value.card_name = previousCardName;
       }
 
-      await $fetch(`/api/users/${sessionUser.value._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: {
-            "cards.$.card_name": cardModel.value.card_name,
+      if (theCard?.creator?.user_id === sessionUser.value._id || theCard?.creator.username === "Daily Bingo") {
+        await $fetch(`/api/cards/${theCard?._id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
           },
-          filters: {
-            "cards._id": cardId,
-          }
-        }),
-      });
+          body: JSON.stringify({
+            card: {
+              name: cardModel.value.card_name,
+            },
+          }),
+        });
 
-      // @ts-expect-error
-      await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
+        // @ts-expect-error
+        await getSession(true);
+
+        userCards.value = await $fetch<Card[]>("/api/cards", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+            "Expires": "0",
+          },
+          body: JSON.stringify({
+            cards: sessionUser.value?.cards,
+          }),
+        });
+      }
+      // setData("bingoUser", sessionUser.value, true);
+      cardModel.value.card_name = "";
       saving.value = false;
       editMode.value = false;
     } else {

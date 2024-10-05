@@ -3,14 +3,13 @@ import buildCellArray from "~/server/utils/buildCellArray";
 import getRandomPhrases from "~/server/utils/getRandomPhrases";
 
 export default defineEventHandler(async (event) => {
-  const { card_name, cells, user } = await readBody(event);
+  const { name, cells, creator } = await readBody(event);
 
   try {
     if (cells.length < 24) {
       const remainder = 24 - cells.length;
 
       const theEntry = await mongo.findEntry("general");
-      console.info("Get entry general completed");
 
       const randomPhrases = getRandomPhrases(theEntry.phrases, remainder);
       cells.push(...randomPhrases);
@@ -20,12 +19,10 @@ export default defineEventHandler(async (event) => {
     const card = {
       cells: buildCellArray(cells),
       created_at: new Date().toISOString(),
-      creator: {
-        user_id: user._id,
-        username: user.username,
-      },
-      groups: [],
-      name: card_name,
+      creator,
+      isDeleted: false,
+      name,
+      references: 1,
     };
 
     const newCard = await $fetch("/api/cards", {
@@ -34,7 +31,9 @@ export default defineEventHandler(async (event) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        ...card
+        card: {
+          ...card
+        }
       })
     });
 
@@ -43,7 +42,7 @@ export default defineEventHandler(async (event) => {
     
   } catch (error) {
     let message = getMessage(error);
-    console.info("Create card %s failed because %s", card_name, message);
+    console.info("Create card %s failed because %s", name, message);
     setResponseStatus(event, 500, message);
   }
 })

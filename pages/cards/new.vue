@@ -4,7 +4,7 @@
     <h1 class="sr-only">Create a New Card</h1>
     <v-text-field
       class=""
-      v-model="newCard.card_name"
+      v-model="newCard.name"
       label="Card Name"
       :rules="cardNameRules"
     >
@@ -37,13 +37,16 @@
 </template>
 
 <script setup lang="ts">
+  import type Card from '~/interfaces/Card';
+  import type User from '~/interfaces/User';
+
   const { setData } = useNuxtApp().$locally;
   const { data, getSession } = useAuth();
-  const sessionUser = computed(() => data.value?.user);
+  const sessionUser = computed(() => data.value?.user as User);
   const router = useRouter();
   const { $toast } = useNuxtApp();
   const newCard = ref({
-    card_name: "",
+    name: "",
     cells: []
   });
 
@@ -66,31 +69,28 @@
   ];
 
   async function handleSave() {
-    await $fetch("/api/cards/new", {
+    await $fetch<Card>("/api/cards/new", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...newCard.value,
-        user: sessionUser.value
+        creator: {
+          user_id: sessionUser.value?._id,
+          username: sessionUser.value?.username,
+        },
       })
     }).then(async (savedCard) => {
       if (savedCard) {
-        // @ts-expect-error
         await $fetch(`/api/users/${sessionUser.value?._id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            data: {
-              cards: {
-                creator: savedCard.creator,
-                _id: savedCard._id,
-                card_name: savedCard.name,
-              },
-            }
+            data: savedCard._id,
+            operation: "cards-insert",
           }),
         });
       }
@@ -99,7 +99,7 @@
     await getSession(true);
     setData("bingoUser", sessionUser.value, true);
 
-    router.push(`/cards?s=${newCard.value.card_name}`);
-    $toast.success(`${newCard.value.card_name} created`);
+    router.push(`/cards?s=${newCard.value.name}`);
+    $toast.success(`${newCard.value.name} created`);
   }
 </script>

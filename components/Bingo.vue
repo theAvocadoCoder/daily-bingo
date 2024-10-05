@@ -235,19 +235,18 @@
     const currentCard = getData(props.type as string);
     if (!cardIsSaved.value) {
       // If the daily card hasn't been saved before, create it, then attach to user
-      await $fetch("/api/cards", {
+      await $fetch<Card>("/api/cards/new", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           cells: bingoCard.value.cells,
-          created_at: new Date().toISOString(),
           creator: {
             user_id: props.type === "dailyBingo" ? null : `${sessionUser.value?._id}`,
             username: props.type === "dailyBingo" ? "Daily Bingo" : `@${sessionUser.value?.username}`,
           },
-          groups: []
+          name: cardName.value,
         }),
       }).then(async (newCard) => {
         await $fetch(`/api/users/${sessionUser.value._id}`, {
@@ -256,13 +255,8 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            data: {
-              cards: {
-                creator: newCard?.creator,
-                _id: newCard?._id,
-                card_name: cardName?.value,
-              },
-            }
+            data: newCard?._id,
+            operation: "cards-insert",
           }),
         });
         setData(props.type as string, {...currentCard, cells: bingoCard.value.cells, saved: true, _id: newCard?._id}, true);
@@ -279,7 +273,9 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          cells: bingoCard.value.cells,
+          card: {
+            cells: bingoCard.value.cells,
+          }
         })
       });
     }

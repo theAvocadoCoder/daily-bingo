@@ -13,24 +13,19 @@
 </template>
 
 <script setup lang="ts">
-  import { ObjectId } from "mongodb";
-  import type User from "~/interfaces/User";
   const { getData, setData } = useNuxtApp().$locally;
-  const {data} = useAuth();
   const route = useRoute();
 
   const card = ref(getData("currentCard"));
-  const cardStatus = ref<string>(card ? "" : "pending");
+  const cardStatus = ref<string>(card.value ? "" : "pending");
 
-  const cardId = route.params.id as unknown as ObjectId;
+  const cardId = route.params.id as unknown;
 
-  const sessionUser = computed(() => data.value?.user as User);
-  const cardName = sessionUser.value?.cards?.find(card => card._id == cardId)?.card_name;
+  const cardName = computed(() => card.value.name);
 
   if (!card.value) {
-    const results = await useFetch(`/api/cards/${cardId}`);
-    card.value = toRaw(results.data.value);
-    cardStatus.value = results.status as unknown as string;
+    card.value = await $fetch(`/api/cards/${cardId}`);
+    cardStatus.value = "";
     setData("currentCard", card.value, false);
   }
 
