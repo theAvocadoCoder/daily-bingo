@@ -8,7 +8,7 @@ export default interface Card {
   creator: {
     user_id: ObjectId;
     username: string;
-  }
+  };
   isDeleted: boolean;
   name: string;
   references: number;

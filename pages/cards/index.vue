@@ -121,7 +121,6 @@
 
   const userCards = ref<Card[]>();
 
-  // const {data: results} = await useFetch<Card[]>("/api/cards", {
   userCards.value = await $fetch<Card[]>("/api/cards", {
     method: "POST",
     headers: {
@@ -131,13 +130,13 @@
       cards: sessionUser.value?.cards
     }),
   });
-  // userCards.value = toRaw(results.value as Card[]);
 
   const displayedCards = computed(() => {
+    const cards = Array.isArray(userCards.value) ? userCards.value : [];
     if (searchValue.value === null) {
-      return userCards.value;
+      return cards;
     } else {
-      return userCards.value?.filter(card => (
+      return cards?.filter(card => (
         card.name.toLocaleLowerCase().includes((searchValue.value as string).toLocaleLowerCase())
       ));
     }
