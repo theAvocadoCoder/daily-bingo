@@ -85,7 +85,7 @@
         <Loading />
       </template>
       <template v-if="displayedgroups?.length == 0">
-        <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold">
+        <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold text-center">
           <template v-if="searchValue !== null">
             <span>You have no groups that match this search.</span>
             <span>Try <nuxt-link to="/groups/new">creating one</nuxt-link></span>
