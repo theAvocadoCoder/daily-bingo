@@ -25,13 +25,13 @@
 
     <ul class="flex flex-col gap-2">
       <li v-for="(group, index) in displayedgroups">
-        <v-group
+        <v-card
           class="!bg-lime-100 hover:!bg-lime-200/80"
           :tag="editMode == group._id ? 'div' : 'nuxt-link'"
           @click.prevent="editMode == group._id"
           :to="`/groups/${group._id}`"
         >
-          <v-group-text class="flex justify-between items-center !py-3 !px-2">
+          <v-card-text class="flex justify-between items-center !py-3 !px-2">
             <div>
               <v-form v-if="editMode === group._id" @submit.prevent="handleSaveEdit(group._id)" @click.prevent class="flex items-center w-fit px-4">
                 <v-text-field
@@ -44,23 +44,23 @@
                 <v-btn icon="mdi-close" variant="text" :disabled="saving" @click.prevent="handleCancelEdit"></v-btn>
                 <v-btn type="submit" :loading="saving" @click.prevent="handleSaveEdit(group._id)">Save</v-btn>
               </v-form>
-              <v-group-title v-else class="!text-lg truncate max-w-32 min-[330px]:max-w-40 min-[425px]:max-w-64 sm:max-w-72 md:max-w-96">{{ group.name }}</v-group-title>
-              <v-group-subtitle>by {{ `${ group.creator.user_id ? '@' : '' }${ group.creator.username }` }}</v-group-subtitle>
+              <v-card-title v-else class="!text-lg truncate max-w-32 min-[330px]:max-w-40 min-[425px]:max-w-64 sm:max-w-72 md:max-w-96">{{ group.name }}</v-card-title>
+              <v-card-subtitle>by {{ `${ group.creator.user_id ? '@' : '' }${ group.creator.username }` }}</v-card-subtitle>
             </div>
             <div>
               <v-btn v-if="group.creator?.user_id === sessionUser._id || group.creator?.username === 'Daily Bingo'" :icon="editMode == group._id ? 'mdi-check' : 'mdi-pencil'" :disabled="!!editMode && editMode != group._id" variant="text" @click.prevent="handleSaveEdit(group._id)"></v-btn>
               <v-btn icon="mdi-delete" :disabled="!!editMode && editMode != group._id" variant="text" @click.prevent="cancelDialog = true; selectedGroupId = group._id"></v-btn>
               <v-dialog v-model="cancelDialog" width="auto">
-                <v-group
+                <v-card
                   :max-width="400"
                 >
-                  <v-group-title>Delete Bingo group?</v-group-title>
-                  <v-group-text>
+                  <v-card-title>Delete Bingo group?</v-card-title>
+                  <v-card-text>
                     <p>
                       This will permanently delete this group from your collection. The group will still be available on groups it has been shared to, and in the collections of users who have saved it.
                     </p>
-                  </v-group-text>
-                  <v-group-actions>
+                  </v-card-text>
+                  <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
                       class="mb-auto hover:!bg-gray-900/20 !bg-gray-300/50"
@@ -74,12 +74,12 @@
                     >
                       Delete group
                     </v-btn>
-                  </v-group-actions>
-                </v-group>
+                  </v-card-actions>
+                </v-card>
               </v-dialog>
             </div>
-          </v-group-text>
-        </v-group>
+          </v-card-text>
+        </v-card>
       </li>
       <template v-if="!displayedgroups">
         <Loading />
@@ -119,10 +119,9 @@
   const editMode = ref<unknown | boolean>(false);
   const saving = ref(false);
 
-  const usergroups = ref<Group[]>();
+  const userGroups = ref<Group[]>();
 
-  // const {data: results} = await useFetch<Group[]>("/api/groups", {
-  usergroups.value = await $fetch<Group[]>("/api/groups", {
+  userGroups.value = await $fetch<Group[]>("/api/groups", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -131,13 +130,13 @@
       groups: sessionUser.value?.groups
     }),
   });
-  // usergroups.value = toRaw(results.value as Group[]);
 
   const displayedgroups = computed(() => {
+    const groups = Array.isArray(userGroups.value) ? userGroups.value : [];
     if (searchValue.value === null) {
-      return usergroups.value;
+      return groups;
     } else {
-      return usergroups.value?.filter(group => (
+      return groups?.filter(group => (
         group.name.toLocaleLowerCase().includes((searchValue.value as string).toLocaleLowerCase())
       ));
     }
@@ -182,7 +181,7 @@
         // @ts-expect-error
         await getSession(true);
 
-        usergroups.value = await $fetch<Group[]>("/api/groups", {
+        userGroups.value = await $fetch<Group[]>("/api/groups", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -239,7 +238,7 @@
         }),
       });
     }).then(async (theUser) => {
-      usergroups.value = await $fetch<Group[]>("/api/groups", {
+      userGroups.value = await $fetch<Group[]>("/api/groups", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
