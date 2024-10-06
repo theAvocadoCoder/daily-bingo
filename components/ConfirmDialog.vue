@@ -1,6 +1,6 @@
 <template>
   <div class="text-center p-4">
-    <v-btn @click="dialog = true" class="!bg-lime-700 !text-stone-50">
+    <v-btn @click="dialog = true" :loading="props.loading" class="!bg-lime-700 !text-stone-50">
       {{ props.dialogButtonText }}
     </v-btn>
 
@@ -49,7 +49,8 @@
     actionButtons: {
       buttonText: string,
       onClick?: () => void
-    }[]
+    }[],
+    loading?: boolean,
   }>();
 
   function actionButtonHandler(index: number) {
