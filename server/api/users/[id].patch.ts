@@ -17,6 +17,15 @@ export default defineEventHandler(async (event) => {
         theUser = await mongo.deleteUserCard(userId, data);
       }
     } else if (operation?.includes("groups")) {
+      if (operation?.includes("insert")) {
+        theUser = await mongo.insertUserGroup(userId, data);
+      } else if (operation?.includes("update")) {
+        // for (let fieldItem of Object.keys(data)) {
+        //   theUser = await mongo.updateUserGroup(userId, {[fieldItem]: data[fieldItem]});
+        // }
+      } else if (operation?.includes("delete")) {
+        theUser = await mongo.deleteUserGroup(userId, data);
+      }
     } else {
       for (let fieldItem of Object.keys(data)) {
         theUser = await mongo.updateUser(userId, {[fieldItem]: data[fieldItem]});
