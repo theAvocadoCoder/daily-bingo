@@ -4,7 +4,7 @@ type Role = "admin" | "super-admin" | "user";
 
 export default interface Group {
   _id: ObjectId;
-  cards?: {
+  cards: {
     _id: ObjectId;
     creator: {
       user_id: ObjectId;
@@ -17,23 +17,22 @@ export default interface Group {
     user_id: ObjectId;
     username: string;
   };
-  history?: {
+  history: {
     message: string;
-    attached: {
-      _id: ObjectId;
-      card_name: string;
-    }[];
+    attached: ObjectId[];
     sender: {
       user_id: string;
       username: string;
       picture: string;
     };
   }[];
+  isDeleted: boolean;
   members: {
     user_id: ObjectId;
     username: string;
     role: Role;
   }[];
   name: string;
-  thumbnail?: string;
+  references: number;
+  picture?: string;
 }

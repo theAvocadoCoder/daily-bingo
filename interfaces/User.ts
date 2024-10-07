@@ -6,7 +6,7 @@ export default interface User {
   display_name?: string;
   email: string;
   email_verified?: boolean;
-  groups?: UserGroup[];
+  groups?: ObjectId[];
   picture?: string;
   username?: string;
   username_modified?: Date;
@@ -23,12 +23,12 @@ export default interface User {
 //   thumbnail?: string;
 // }
 
-export type UserGroup = {
-  _id: ObjectId;
-  creator: {
-    user_id: ObjectId;
-    username: string;
-  };
-  group_name: string;
-  thumbnail?: string;
-}
+// export type UserGroup = {
+//   _id: ObjectId;
+//   creator: {
+//     user_id: ObjectId;
+//     username: string;
+//   };
+//   group_name: string;
+//   thumbnail?: string;
+// }
