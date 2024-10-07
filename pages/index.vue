@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-lime-50 h-full">
+  <div class="h-fit">
     <div class="flex flex-col justify-center items-center">
       <h1 class="text-3xl lg:text-5xl font-bold">Daily Bingo!</h1>
       <p class="italic text-sm">brought to you by <span class="font-medium [font-style:initial]">World of Avocado</span></p>

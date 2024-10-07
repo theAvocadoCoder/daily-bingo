@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-lime-50 relative">
+  <div class="h-fit relative">
     <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
     <h1 class="sr-only">Create a New Card</h1>
     <v-text-field
