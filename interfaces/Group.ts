@@ -19,11 +19,11 @@ export default interface Group {
   };
   history: {
     message: string;
-    attached: ObjectId[];
+    attached?: ObjectId[];
     sender: {
       user_id: string;
       username: string;
-      picture: string;
+      picture?: string;
     };
   }[];
   isDeleted: boolean;

@@ -38,7 +38,10 @@
               <v-avatar icon="mdi-group" :image="group.picture === '' ? sessionUser.picture : group.picture" size="64"></v-avatar>
               <div class="w-full truncate max-w-full">
                 <v-card-title class="!text-lg">{{ group.name }}</v-card-title>
-                <v-card-subtitle>by {{ `${ group.creator.user_id ? '@' : '' }${ group.creator.username }` }}</v-card-subtitle>
+                <v-card-subtitle>
+                  <span class="font-bold" v-if="group.history[group.history.length - 1]?.sender.user_id">{{ `@${ group.history[group.history.length - 1]?.sender.username }: ` }}</span>
+                  <span>{{ `${ group.history[group.history.length - 1]?.message }` }}</span>
+                </v-card-subtitle>
               </div>
             </div>
             <div>

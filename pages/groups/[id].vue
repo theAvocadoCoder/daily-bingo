@@ -1,5 +1,0 @@
-<template>
-  <h1>
-    Group name
-  </h1>
-</template>
