@@ -76,8 +76,10 @@
       </template>
     </v-navigation-drawer>
 
-    <v-main class="h-full">
-      <slot />
+    <v-main class="">
+      <v-app class="!h-full p-5 xl:p-10 !bg-lime-50">
+        <slot />
+      </v-app>
     </v-main>
 
     <v-bottom-navigation

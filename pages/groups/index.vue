@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full bg-lime-50 [&>*]:mx-auto relative">
+  <div class="h-fit [&>*]:mx-auto relative">
     <v-btn tag="nuxt-link" to="/groups/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
     <h1 class="sr-only">
       Your groups
