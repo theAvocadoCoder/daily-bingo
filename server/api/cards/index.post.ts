@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
       return newCard;
     } catch (error) {
       const message = getMessage(error);
-      console.info("Could not create %s's card because %s", card.creator.username, message);
+      console.info("Could not retrieve cards because %s", message);
       setResponseStatus(event, 500, message);
     }
   }
