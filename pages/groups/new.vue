@@ -10,7 +10,7 @@
           <!-- Image Preview -->
           <v-img
             v-if="imageUploaded"
-            :src="sessionUser.picture"
+            :src="newGroup.picture"
             alt="Image preview"
             class="w-28 h-28 object-cover"
           />
@@ -73,7 +73,7 @@
   const { $toast } = useNuxtApp();
   const creating = ref(false);
   const newGroup = ref({
-    picture: sessionUser.picture,
+    picture: sessionUser.value.picture,
     name: ""
   });
   const imageUploaded = ref(false);
@@ -97,55 +97,60 @@
 
   function handleImageChange(event) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
+    if (file) imageToDataURL(file);
+  }
 
-      reader.onload = (e) => {
-        newGroup.value.picture = e.target.result;
-      };
+  function imageToDataURL(img) {
+    const reader = new FileReader();
 
-      reader.readAsDataURL(file);
-      imageUploaded.value = true;
-    }
+    reader.onload = (e) => {
+      userModel.value.picture = e.target.result;
+    };
+
+    reader.readAsDataURL(img);
+    imageUploaded.value = true;
   }
 
   async function handleSave() {
     if (validateGroupName()) {
       creating.value = true;
-      // await $fetch<Group>("/api/groups/new", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     picture: newGroup.value.picture,
-      //     name: newGroup.value.name.trim(),
-      //     creator: {
-      //       user_id: sessionUser.value?._id,
-      //       username: sessionUser.value?.username,
-      //     },
-      //   })
-      // }).then(async (savedGroup) => {
-      //   if (savedGroup) {
-      //     await $fetch(`/api/users/${sessionUser.value?._id}`, {
-      //       method: "PATCH",
-      //       headers: {
-      //         "Content-Type": "application/json",
-      //       },
-      //       body: JSON.stringify({
-      //         data: savedGroup._id,
-      //         operation: "groups-insert",
-      //       }),
-      //     });
-      //   }
-      // });
+      if (imageUploaded.value !== true) {
+        newGroup.value.picture = "";
+      }
+      await $fetch<Group>("/api/groups/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          creator: {
+            user_id: sessionUser.value?._id,
+            username: sessionUser.value?.username,
+          },
+          name: newGroup.value.name.trim(),
+          picture: newGroup.value.picture,
+        })
+      }).then(async (savedGroup) => {
+        if (savedGroup) {
+          await $fetch(`/api/users/${sessionUser.value?._id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              data: savedGroup._id,
+              operation: "groups-insert",
+            }),
+          });
+        }
+      });
       // @ts-expect-error
       await getSession(true);
       setData("bingoUser", sessionUser.value, true);
       creating.value = false;
 
-      // router.push(`/groups?s=${newGroup.value.name.trim()}`);
-      $toast.warning(`${newGroup.value.name} not created. Create group feature not yet implemented.`);
+      router.push(`/groups?s=${newGroup.value.name.trim()}`);
+      $toast.success(`${newGroup.value.name} created.`);
     } else {
       $toast.error('Could not create new group');
     }
