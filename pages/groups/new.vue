@@ -97,18 +97,16 @@
 
   function handleImageChange(event) {
     const file = event.target.files[0];
-    if (file) imageToDataURL(file);
-  }
+    if (file) {
+      const reader = new FileReader();
 
-  function imageToDataURL(img) {
-    const reader = new FileReader();
+      reader.onload = (e) => {
+        userModel.value.picture = e.target.result;
+      };
 
-    reader.onload = (e) => {
-      userModel.value.picture = e.target.result;
-    };
-
-    reader.readAsDataURL(img);
-    imageUploaded.value = true;
+      reader.readAsDataURL(file);
+      imageUploaded.value = true;
+    }
   }
 
   async function handleSave() {
