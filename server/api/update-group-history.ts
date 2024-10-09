@@ -3,11 +3,12 @@ import Ably from "ably";
 
 export default defineEventHandler(async (event) => {
   const { channel: channelName, messages: encodedMessages } = await readBody(event);
-  const messages = await Ably.Realtime.Message.fromEncodedArray(encodedMessages);
+  // const messages = await Ably.Realtime.Message.fromEncodedArray(encodedMessages);
   const groupId = channelName.split("-")[1];
 
-  console.log("encoded messages", encodedMessages);
-  console.log("decoded messages", JSON.parse(encodedMessages[0].data));
+  const messages = encodedMessages.forEach((message: any) => {
+    return JSON.parse(message.data);
+  });
 
   try {
     const updatedGroup = await $fetch(`/api/groups/${groupId}`, {
