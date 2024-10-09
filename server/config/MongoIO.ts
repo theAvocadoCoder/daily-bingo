@@ -8,6 +8,8 @@ import Card from "~/interfaces/Card";
 import Group from "~/interfaces/Group";
 import Entry from "~/interfaces/Entry";
 
+const { dbName: runtimeDbName } = useRuntimeConfig();
+
 /*************************************************
  * Class Properties
  */
@@ -29,7 +31,7 @@ export default class MongoIO implements MongoInterface {
    */
   public async connect(): Promise<void> {
     const connectionString = process.env.ATLAS_URI as string;
-    const dbName = process.env.DB_NAME;
+    const dbName = runtimeDbName;
 
     this.client = new MongoClient(connectionString);
     await this.client.connect();

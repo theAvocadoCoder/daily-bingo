@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     authClientSecret: process.env.AUTH_CLIENT_SECRET,
     authIssuerBaseURL: process.env.AUTH_ISSUER_BASE_URL,
     auth0Domain: process.env.AUTH_0_DOMAIN,
+    dbName: process.env.DB_NAME,
     cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
