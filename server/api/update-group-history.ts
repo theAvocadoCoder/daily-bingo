@@ -7,8 +7,12 @@ export default defineEventHandler(async (event) => {
   const groupId = channelName.split("-")[1];
 
   const messages = encodedMessages.forEach((message: any) => {
+    console.log("message", message);
+    console.log("message-data", message.data);
     return JSON.parse(message.data);
   });
+
+  console.log(messages)
 
   try {
     const updatedGroup = await $fetch(`/api/groups/${groupId}`, {
