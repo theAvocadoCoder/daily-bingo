@@ -6,9 +6,7 @@ export default defineEventHandler(async (event) => {
   // const messages = await Ably.Realtime.Message.fromEncodedArray(encodedMessages);
   const groupId = channelName.split("-")[1];
 
-  const messages = encodedMessages.forEach((message: any) => {
-    console.log("message", message);
-    console.log("message-data", message.data);
+  const messages = encodedMessages.map((message: any) => {
     return JSON.parse(message.data);
   });
 
