@@ -101,7 +101,8 @@
       sender: {
         user_id: sessionUser.value?._id,
         username: sessionUser.value?.username,
-      }
+      },
+      attached: []
     };
     
     const channel = ably.value?.channels.get(`group-${group.value?._id}`);
