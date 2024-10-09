@@ -29,8 +29,7 @@
         <v-card
           class="!bg-transparent hover:!bg-lime-700/10 !border-b !py-3 !border-b-lime-950/20"
           elevation="0"
-          :tag="editMode == group._id ? 'div' : 'nuxt-link'"
-          @click.prevent="editMode == group._id"
+          tag="nuxt-link"
           :to="`/groups/${group._id}`"
         >
           <v-card-text class="flex justify-between items-center !py-3 !px-2">
@@ -78,21 +77,13 @@
 <script setup lang="ts">
   import type User from "~/interfaces/User";
   import type Group from "~/interfaces/Group";
-  const { setData } = useNuxtApp().$locally;
-  const { $toast } = useNuxtApp();
-  const { data, getSession } = useAuth();
+
+  const { data } = useAuth();
   const route = useRoute();
 
   const sessionUser = computed(() => data.value?.user as User);
-  const groupModel = ref({
-    group_name: ""
-  });
 
   const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
-  const cancelDialog = ref(false);
-  const selectedGroupId = ref();
-  const editMode = ref<unknown | boolean>(false);
-  const saving = ref(false);
 
   const userGroups = ref<Group[]>();
 
@@ -129,116 +120,5 @@
     if (searchValue.value && (searchValue.value === "" || searchValue.value.trim().length < 1)) {
       searchValue.value = null
     }
-  }
-
-  function handleCancelEdit() {
-    groupModel.value.group_name = "";
-    editMode.value = false;
-  }
-
-  async function handleSaveEdit(groupId?: unknown) {
-    const thegroup = displayedGroups.value?.find(group => group._id == groupId);
-
-    if (editMode.value == groupId) {
-      saving.value = true;
-
-      if (groupModel.value && groupModel.value.group_name == "") {
-        const previousgroupName = thegroup?.name || "";
-        groupModel.value.group_name = previousgroupName;
-      }
-
-      if (thegroup?.creator?.user_id === sessionUser.value._id || thegroup?.creator.username === "Daily Bingo") {
-        await $fetch(`/api/groups/${thegroup?._id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            group: {
-              name: groupModel.value.group_name,
-            },
-          }),
-        });
-
-        // @ts-expect-error
-        await getSession(true);
-
-        userGroups.value = await $fetch<Group[]>("/api/groups", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
-            "Expires": "0",
-          },
-          body: JSON.stringify({
-            groups: sessionUser.value?.groups,
-          }),
-        });
-      }
-      // setData("bingoUser", sessionUser.value, true);
-      groupModel.value.group_name = "";
-      saving.value = false;
-      editMode.value = false;
-    } else {
-      editMode.value = groupId || false;
-    }
-  }
-
-  async function handleDelete() {
-    saving.value = true;
-    cancelDialog.value = false;
-
-    const thegroup = displayedGroups.value?.find(group => group._id == selectedGroupId.value) as Group;
-
-    let deleteObject = null;
-
-    if (thegroup?.creator?.user_id === sessionUser.value._id) {
-      deleteObject = {
-        group: { isDeleted: true },
-      };
-    }
-
-    await $fetch(`/api/groups/${thegroup?._id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        operation: -1,
-        ...deleteObject,
-      }),
-    }).then(async () => {
-      return await $fetch<User>(`/api/users/${sessionUser.value._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: thegroup._id,
-          operation: "groups-delete"
-        }),
-      });
-    }).then(async (theUser) => {
-      userGroups.value = await $fetch<Group[]>("/api/groups", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-          "Pragma": "no-cache",
-          "Expires": "0",
-        },
-        body: JSON.stringify({
-          groups: theUser?.groups,
-        }),
-      });
-
-      // @ts-expect-error
-      await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
-      $toast.success("group deleted");
-      saving.value = false;
-      selectedGroupId.value = '';
-    });
   }
 </script>
