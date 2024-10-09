@@ -38,7 +38,7 @@
               <div class="w-full truncate max-w-full">
                 <v-card-title class="!text-lg">{{ group.name }}</v-card-title>
                 <v-card-subtitle>
-                  <span class="font-bold" v-if="getLastMessage(group?.history)?.sender.user_id">{{ `@${ group.history[group.history.length - 1]?.sender.username }: ` }}</span>
+                  <span class="font-bold" v-if="getLastMessage(group?.history)?.sender?.user_id">{{ `@${ group.history[group.history.length - 1]?.sender.username }: ` }}</span>
                   <span>{{ `${ getLastMessage(group?.history)?.text }` }}</span>
                 </v-card-subtitle>
               </div>
