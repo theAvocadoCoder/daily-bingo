@@ -1,7 +1,7 @@
 /***********************************************
  * Class MongoIO implements all mongodb I-O
  */
-import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId } from "mongodb";
+import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId, UpdateFilter } from "mongodb";
 import MongoInterface from "~/interfaces/MongoInterface";
 import User from "~/interfaces/User";
 import Card from "~/interfaces/Card";
@@ -644,9 +644,10 @@ export default class MongoIO implements MongoInterface {
 
     const group_id = new ObjectId(id);
     const filter = { _id: group_id };
-    const update = { $addToSet: { history: messages } };
+    const updateField: UpdateFilter<Partial<Group>> = { history: { $each: messages } };
+    const update = { $push: updateField };
 
-    const result = await this.groupCollection.findOneAndUpdate(filter, update);
+    const result = await this.groupCollection.updateOne(filter, update);
     if (!result) {
       throw new Error("Insert group mesaages found No Group to Update " + group_id);
     } else {
