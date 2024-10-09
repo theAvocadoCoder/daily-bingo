@@ -2,6 +2,16 @@ import { ObjectId } from "mongodb";
 
 type Role = "admin" | "super-admin" | "user";
 
+export interface Message {
+  text: string;
+  attached?: ObjectId[];
+  sender: {
+    user_id: string;
+    username: string;
+    picture?: string;
+  };
+}
+
 export default interface Group {
   _id: ObjectId;
   cards: {
@@ -17,15 +27,7 @@ export default interface Group {
     user_id: ObjectId;
     username: string;
   };
-  history: {
-    text: string;
-    attached?: ObjectId[];
-    sender: {
-      user_id: string;
-      username: string;
-      picture?: string;
-    };
-  }[];
+  history: Message[];
   isDeleted: boolean;
   members: {
     user_id: ObjectId;

@@ -1,5 +1,6 @@
 import type Card from "./Card";
 import type Group from "./Group";
+import type { Message } from "./Group";
 import type Entry from "./Entry";
 import type User from "./User";
 
@@ -29,6 +30,8 @@ export default interface MongoInterface {
   insertGroup(theGroup: Partial<Group>): Promise<Group>;
   updateGroup(id: string, group: Partial<Group>): Promise<Group>;
   updateGroupReferences(id: string, operation: number): Promise<Group>;
+
+  insertGroupMessages(id: string, messages: Partial<Message>[]): Promise<Group>;
 
   findEntry(theme: string): Promise<Entry>;
 }

@@ -5,7 +5,7 @@ import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId } fr
 import MongoInterface from "~/interfaces/MongoInterface";
 import User from "~/interfaces/User";
 import Card from "~/interfaces/Card";
-import Group from "~/interfaces/Group";
+import Group, { Message } from "~/interfaces/Group";
 import Entry from "~/interfaces/Entry";
 
 const { dbName: runtimeDbName } = useRuntimeConfig();
@@ -602,7 +602,7 @@ export default class MongoIO implements MongoInterface {
     }
   }
 
-  /***************************************************************2
+  /***************************************************************
    * Increment or decrement the group's references
    * 
    * @param {string} id the group id
@@ -627,6 +627,30 @@ export default class MongoIO implements MongoInterface {
       throw new Error("Update group references found no group to update " + group_id);
     } else {
       console.info("Group %s's reference updated", group_id);
+      return await this.findGroup(id);
+    }
+  }
+
+  /*************************************************************** 
+   * Add message(s) to the group history
+   * 
+   * @param {string} id the group id
+   * @param {Partial<Message>[]} messages the messages to insert
+  */
+  public async insertGroupMessages(id: string, messages: Partial<Message>[]): Promise<Group> {
+    if (!this.groupCollection) {
+      throw new Error("insertGroupMessages - Database not connected");
+    }
+
+    const group_id = new ObjectId(id);
+    const filter = { _id: group_id };
+    const update = { $AddToSet: { history: messages } };
+
+    const result = await this.groupCollection.findOneAndUpdate(filter, update);
+    if (!result) {
+      throw new Error("Insert group mesaages found No Group to Update " + group_id);
+    } else {
+      console.info ("Group %s updated with %s", group_id, `${messages[0]}...`);
       return await this.findGroup(id);
     }
   }
