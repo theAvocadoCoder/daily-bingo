@@ -3,7 +3,7 @@ import Ably from "ably";
 
 export default defineEventHandler(async (event) => {
   const { channel: channelName, messages: encodedMessages } = await readBody(event);
-  const messages = Ably.Realtime.Message.fromEncodedArray(encodedMessages);
+  const messages = await Ably.Realtime.Message.fromEncodedArray(encodedMessages);
   const groupId = channelName.split("-")[1];
 
   try {
