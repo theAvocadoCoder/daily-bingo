@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const updatedGroup = await $fetch(`/api/groups/${groupId}`, {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
