@@ -25,7 +25,7 @@
     </v-text-field>
 
     <ul class="flex flex-col gap-2 max-w-3xl">
-      <li v-for="(group, index) in displayedgroups">
+      <li v-for="(group, index) in displayedGroups">
         <v-card
           class="!bg-transparent hover:!bg-lime-700/10 !border-b !py-3 !border-b-lime-950/20"
           elevation="0"
@@ -39,27 +39,27 @@
               <div class="w-full truncate max-w-full">
                 <v-card-title class="!text-lg">{{ group.name }}</v-card-title>
                 <v-card-subtitle>
-                  <span class="font-bold" v-if="group.history[group.history.length - 1]?.sender.user_id">{{ `@${ group.history[group.history.length - 1]?.sender.username }: ` }}</span>
-                  <span>{{ `${ group.history[group.history.length - 1]?.message }` }}</span>
+                  <span class="font-bold" v-if="getLastMessage(group?.history)?.sender.user_id">{{ `@${ group.history[group.history.length - 1]?.sender.username }: ` }}</span>
+                  <span>{{ `${ getLastMessage(group?.history)?.text }` }}</span>
                 </v-card-subtitle>
               </div>
             </div>
             <div>
               <v-badge
-                v-if="group.history.length"
+                v-if="group.history?.length"
                 class="bg-lime-600 rounded-full [&_span]:!text-sm lg:[&_span]:!text-lg [&_span]:!text-white [&_span]:!font-bold inline-flex justify-center items-center w-fit px-0.5 py-1"
                 color="transparent"
-                :content="group.history.length"
+                :content="group.history?.length"
                 inline
               ></v-badge>
             </div>
           </v-card-text>
         </v-card>
       </li>
-      <template v-if="!displayedgroups">
+      <template v-if="!displayedGroups">
         <Loading />
       </template>
-      <template v-if="displayedgroups?.length == 0">
+      <template v-if="displayedGroups?.length == 0">
         <li class="text-zinc-600 [&_a]:text-lime-600 [&_a]:font-bold text-center">
           <template v-if="searchValue !== null">
             <span>You have no groups that match this search.</span>
@@ -106,7 +106,7 @@
     }),
   });
 
-  const displayedgroups = computed(() => {
+  const displayedGroups = computed(() => {
     const groups = Array.isArray(userGroups.value) ? userGroups.value : [];
     if (searchValue.value === null) {
       return groups;
@@ -116,6 +116,13 @@
       ));
     }
   });
+
+  function getLastMessage(history) {
+    if (!history || !Array.isArray(history)) return;
+
+    const length = history.length;
+    return history[length - 1];
+  }
 
   function handleSearchFocusOut() {
     // If the search value is empty, set it to null
@@ -130,7 +137,7 @@
   }
 
   async function handleSaveEdit(groupId?: unknown) {
-    const thegroup = displayedgroups.value?.find(group => group._id == groupId);
+    const thegroup = displayedGroups.value?.find(group => group._id == groupId);
 
     if (editMode.value == groupId) {
       saving.value = true;
@@ -182,7 +189,7 @@
     saving.value = true;
     cancelDialog.value = false;
 
-    const thegroup = displayedgroups.value?.find(group => group._id == selectedGroupId.value) as Group;
+    const thegroup = displayedGroups.value?.find(group => group._id == selectedGroupId.value) as Group;
 
     let deleteObject = null;
 

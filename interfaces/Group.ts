@@ -18,7 +18,7 @@ export default interface Group {
     username: string;
   };
   history: {
-    message: string;
+    text: string;
     attached?: ObjectId[];
     sender: {
       user_id: string;
