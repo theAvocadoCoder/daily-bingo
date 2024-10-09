@@ -644,7 +644,7 @@ export default class MongoIO implements MongoInterface {
 
     const group_id = new ObjectId(id);
     const filter = { _id: group_id };
-    const update = { $AddToSet: { history: messages } };
+    const update = { $addToSet: { history: messages } };
 
     const result = await this.groupCollection.findOneAndUpdate(filter, update);
     if (!result) {
