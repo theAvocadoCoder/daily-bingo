@@ -1,5 +1,5 @@
 <template>
-  <div class="relative h-full flex flex-col bg-zinc-300">
+  <div class="relative h-full w-screen flex flex-col bg-zinc-300">
     <v-app-bar
       class="!fixed !top-0 !bg-stone-950 !text-stone-50 !px-5 !w-full [&>*:first-child]:!overflow-visible"
       prominent
@@ -16,13 +16,17 @@
     </v-app-bar>
 
     <main class="contents">
-      <v-app class="!h-full py-5 xl:py-10 !bg-transparent">
+      <v-app class="!h-full !w-full py-5 xl:py-10 !bg-transparent">
         <!-- Messages -->
-        <div class="mt-28 mb-20">
+        <div class="mt-28 mb-20 w-full h-full">
+          <span v-if="!group">
+            <Loading />
+          </span>
+
           <!-- Message -->
-          <div v-for="message in group?.history" :class="`${getMessageStyle(message?.sender?.user_id)} mb-5`">
+          <div v-else v-for="message in messages" :key="message.id" :class="`${getMessageStyle(message?.sender?.user_id)} mb-5`">
             <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
-            <p>{{ message.message }}</p>
+            <p>{{ message.text }}</p>
           </div>
         </div>
 
@@ -30,10 +34,10 @@
         <div class="fixed bottom-0 w-full left-0 bg-stone-800 py-2">
           <v-form @submit.prevent="sendMessage" class="w-full mx-auto max-w-5xl flex justify-center items-center gap-5 lg:gap-10">
             <v-text-field
-            class="w-full [&_input]:!bg-white pb-0 bg-white"
-            v-model="newMessage"
-            placeholder="Message"
-            hide-details="true"
+              class="w-full [&_input]:!bg-white pb-0 bg-white"
+              v-model="newMessage"
+              placeholder="Message"
+              hide-details="true"
             />
             <v-btn :loading="sending" type="submit" class="!bg-lime-500" icon="mdi-send" />
           </v-form>
@@ -45,34 +49,35 @@
 
 <script setup lang="ts">
   import type User from "~/interfaces/User";
-  const { getData, setData } = useNuxtApp().$locally;
-  const route = useRoute();
-  const { data, getSession } = useAuth();
-  const newMessage = ref("");
-  const sending = ref(false);
 
   definePageMeta({
     layout: "chat"
   })
 
-  const group = ref(getData("currentGroup"));
-  const groupStatus = ref<string>(group.value ? "" : "pending");
+  const { getData, setData } = useNuxtApp().$locally;
+
+  const { data, getSession } = useAuth();
+  const route = useRoute();
 
   const groupId = route.params.id as unknown;
 
-  const groupName = computed(() => group.value.name);
+  const group = ref(await $fetch(`/api/groups/${groupId}`));
+  const groupName = computed(() => group.value?.name);
   const sessionUser = computed(() => data.value?.user as User);
 
-  if (!group.value) {
-    group.value = await $fetch(`/api/groups/${groupId}`);
-    groupStatus.value = "";
-    setData("currentGroup", group.value, false);
-  }
+  setData("currentGroup", group.value, false);
+
+  const sending = ref(false);
+  const newMessage = ref("");
+  const messages = ref(group.value?.history);
+  const ably = ref();
 
   // Scroll to bottom of chat
-  setTimeout(() => {
+  setTimeout(scrollToBottom, 50);
+
+  function scrollToBottom() {
     window.scrollTo(0, document.documentElement.scrollHeight);
-  }, 50);
+  }
 
   function getMessageStyle(id) {
     if (id === sessionUser.value._id) {
@@ -90,36 +95,54 @@
   async function sendMessage() {
     if (newMessage.value?.trim() === '') return
     sending.value = true;
-    await $fetch(`/api/groups/${group.value?._id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        group: {
-          history: [
-            ...group.value?.history,
-            {
-              message: newMessage.value,
-              sender: {
-                user_id: sessionUser.value?._id,
-                username: sessionUser.value?.username,
-              }
-            }
-          ],
-        }
-      })
-    });
+
+    const messageData = {
+      text: newMessage.value?.trim(),
+      sender: {
+        user_id: sessionUser.value?._id,
+        username: sessionUser.value?.username,
+      }
+    };
+    
+    const channel = ably.value?.channels.get(`group-${group.value?._id}`);
+
+    // Publish message
+    await channel.publish("message", messageData);
+    scrollToBottom();
+
     newMessage.value = "";
     sending.value = false;
+
     group.value = await $fetch(`/api/groups/${groupId}`);
     setData("currentGroup", group.value, false);
   }
 
-  onUnmounted(() => {
+  onMounted(async () => {
+    if (ably.value) return;
+
+    const { $ably } = useNuxtApp();
+    ably.value = await $ably(sessionUser.value?._id);
+
+    const channel = ably.value?.channels.get(`group-${group.value?._id}`);
+
+    // Subscribe to the message event
+    channel.subscribe('message', (message) => {
+      if (message.data === messages.value[messages.value.length - 1]) return 
+      messages.value?.push({
+        ...message.data
+      });
+    });
+  })
+
+  onUnmounted(async () => {
     setData("currentGroup", null, false);
-  });
-  
+
+    ably.value?.connection.close();
+
+    await ably.value?.connection.once("closed", function () {
+      console.log("Closed the connection to Ably.")
+    });
+  })
 </script>
 
 <style scoped>
