@@ -25,7 +25,7 @@
     </v-text-field>
 
     <ul class="flex flex-col gap-2 max-w-3xl">
-      <li v-for="(group, index) in displayedGroups">
+      <li v-for="(group) in displayedGroups">
         <v-card
           class="!bg-transparent hover:!bg-lime-700/10 !border-b !py-3 !border-b-lime-950/20"
           elevation="0"
@@ -108,11 +108,11 @@
     }
   });
 
-  function getLastMessage(history) {
+  function getLastMessage(history: Group['history']) {
     if (!history || !Array.isArray(history)) return;
 
     const length = history.length;
-    return history[length - 1];
+    return history[length - 1] || "";
   }
 
   function handleSearchFocusOut() {

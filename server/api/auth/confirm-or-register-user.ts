@@ -1,3 +1,4 @@
+import User from "~/interfaces/User";
 import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
@@ -7,7 +8,17 @@ export default defineEventHandler(async (event) => {
   try {
     const theUser = await mongo.findUserByEmail(email);
     if (theUser === null) {
-      const newUser = await mongo.insertUser({email, username: name});
+
+      const randomFourDigits = Math.floor(Math.random() * 10000);
+
+      const userDetails: Partial<User> = {
+        cards: [],
+        display_name: `User${randomFourDigits}`,
+        email,
+        groups: [],
+        username: name,
+      }
+      const newUser = await mongo.insertUser(userDetails);
       console.info("Create user %s completed", email);
       setResponseStatus(event, 200);
       return newUser;

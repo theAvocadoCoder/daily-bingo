@@ -10,7 +10,7 @@
           <!-- Image Preview -->
           <v-img
             v-if="imageUploaded"
-            :src="newGroup.picture"
+            :src="`${newGroup.picture}`"
             alt="Image preview"
             class="w-28 h-28 object-cover"
           />
@@ -72,8 +72,11 @@
   const router = useRouter();
   const { $toast } = useNuxtApp();
   const creating = ref(false);
-  const newGroup = ref({
-    picture: sessionUser.value.picture,
+  const newGroup = ref<{
+    picture: string | ArrayBuffer,
+    name: string
+  }>({
+    picture: sessionUser.value.picture || "",
     name: ""
   });
   const imageUploaded = ref(false);
@@ -95,13 +98,13 @@
     }
   }
 
-  function handleImageChange(event) {
-    const file = event.target.files[0];
+  function handleImageChange(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.item(0);
     if (file) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        userModel.value.picture = e.target.result;
+        newGroup.value.picture = (e.target as FileReader).result as string | ArrayBuffer;
       };
 
       reader.readAsDataURL(file);

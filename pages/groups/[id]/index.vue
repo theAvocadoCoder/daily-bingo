@@ -9,7 +9,7 @@
       </v-btn>
 
       <v-app-bar-title>
-        {{ group?.name }}
+        {{ groupName }}
       </v-app-bar-title>
 
       <v-spacer></v-spacer>
@@ -24,7 +24,7 @@
           </span>
 
           <!-- Message -->
-          <div v-else v-for="message in messages" :key="message.id" :class="`${getMessageStyle(message?.sender?.user_id)} mb-5`">
+          <div v-else v-for="message in messages" :key="getId(message)" :class="`${getMessageStyle(message?.sender?.user_id)} mb-5`">
             <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
             <p>{{ message.text }}</p>
           </div>
@@ -37,7 +37,7 @@
               class="w-full [&_input]:!bg-white pb-0 bg-white"
               v-model="newMessage"
               placeholder="Message"
-              hide-details="true"
+              :hide-details="true"
             />
             <v-btn :loading="sending" type="submit" class="!bg-lime-500" icon="mdi-send" />
           </v-form>
@@ -48,20 +48,25 @@
 </template>
 
 <script setup lang="ts">
+  import type { Message as AblyMessage } from "ably";
+  import type Group from "~/interfaces/Group";
+  import type { Message } from "~/interfaces/Group";
   import type User from "~/interfaces/User";
 
   definePageMeta({
     layout: "chat"
   })
 
-  const { getData, setData } = useNuxtApp().$locally;
+  const { setData } = useNuxtApp().$locally;
 
-  const { data, getSession } = useAuth();
+  const { data } = useAuth();
   const route = useRoute();
 
   const groupId = route.params.id as unknown;
 
-  const group = ref(await $fetch(`/api/groups/${groupId}`));
+  const group = ref<Group>();
+  group.value = await $fetch<Group>(`/api/groups/${groupId}`);
+
   const groupName = computed(() => group.value?.name);
   const sessionUser = computed(() => data.value?.user as User);
 
@@ -79,8 +84,13 @@
     window.scrollTo(0, document.documentElement.scrollHeight);
   }
 
-  function getMessageStyle(id) {
-    if (id === sessionUser.value._id) {
+  function getId(message: Message) {
+    const randomFourDigits = Math.floor(Math.random() * 10000);
+    return `${message.sender.user_id}-${message.text.slice(5)}-${randomFourDigits}`;
+  }
+
+  function getMessageStyle(id: string) {
+    if (id === sessionUser.value._id?.toHexString()) {
       // Session user message
       return `ownMessage relative bg-lime-700 border-lime-700 text-zinc-200 w-fit px-4 ml-auto mr-10 rounded-md rounded-tr-none`;
     } else if (id === null) {
@@ -114,7 +124,7 @@
     newMessage.value = "";
     sending.value = false;
 
-    group.value = await $fetch(`/api/groups/${groupId}`);
+    group.value = await $fetch<Group>(`/api/groups/${groupId}`);
     setData("currentGroup", group.value, false);
   }
 
@@ -122,12 +132,12 @@
     if (ably.value) return;
 
     const { $ably } = useNuxtApp();
-    ably.value = await $ably(sessionUser.value?._id);
+    ably.value = await $ably(sessionUser.value?._id?.toHexString() || sessionUser.value?.username);
 
     const channel = ably.value?.channels.get(`group-${group.value?._id}`);
 
     // Subscribe to the message event
-    channel.subscribe('message', (message) => {
+    channel.subscribe('message', (message: AblyMessage) => {
       if (message.data === messages.value[messages.value.length - 1]) return 
       messages.value?.push({
         ...message.data

@@ -54,9 +54,12 @@
   const router = useRouter();
   const { $toast } = useNuxtApp();
   const creating = ref(false);
-  const newCard = ref({
+  const newCard = ref<{
+    name: string,
+    cells: string[]
+  }>({
     name: "",
-    cells: []
+    cells: [],
   });
   const currentEntry = ref("");
 

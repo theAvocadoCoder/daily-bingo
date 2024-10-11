@@ -2,13 +2,13 @@ import { ObjectId } from "mongodb";
 
 export default interface User {
   _id?: ObjectId;
-  cards?: ObjectId[];
-  display_name?: string;
+  cards: ObjectId[];
+  display_name: string;
   email: string;
   email_verified?: boolean;
-  groups?: ObjectId[];
+  groups: ObjectId[];
   picture?: string;
-  username?: string;
+  username: string;
   username_modified?: Date;
 }
 
