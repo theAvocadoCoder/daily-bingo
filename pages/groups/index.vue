@@ -34,7 +34,31 @@
         >
           <v-card-text class="flex justify-between items-center !py-3 !px-2">
             <div class="contents">
-              <v-avatar icon="mdi-group" :image="group.picture === '' ? sessionUser.picture : group.picture" size="64"></v-avatar>
+              <v-avatar
+                icon="mdi-group"
+                :image="group.picture === '' ? '/img/default-group-img.webp' : group.picture"
+                size="64"
+                @click.prevent="groupDialog = true"
+              ></v-avatar>
+              <v-dialog v-model="groupDialog" width="auto">
+                <v-card max-width="400">
+                  <v-card-title>{{ group.name }}</v-card-title>
+                  <v-avatar
+                    icon="mdi-group"
+                    :image="group.picture === '' ? '/img/default-group-img.webp' : group.picture"
+                    size="104"
+                    @click.prevent="groupDialog = true"
+                  ></v-avatar>
+                  <div class="">
+                    <v-btn
+                      icon="mdi-information-outline"
+                      tag="nuxt-link"
+                      :to="`/groups/${group._id}/details`"
+                    ></v-btn>
+                  </div>
+                </v-card>
+              </v-dialog>
+              
               <div class="w-full truncate max-w-full">
                 <v-card-title class="!text-lg">{{ group.name }}</v-card-title>
                 <v-card-subtitle>
@@ -80,6 +104,8 @@
 
   const { data } = useAuth();
   const route = useRoute();
+
+  const groupDialog = ref(false);
 
   const sessionUser = computed(() => data.value?.user as User);
 

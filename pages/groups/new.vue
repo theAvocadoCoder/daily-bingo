@@ -76,7 +76,7 @@
     picture: string | ArrayBuffer,
     name: string
   }>({
-    picture: sessionUser.value.picture || "",
+    picture: "/img/default-group-img.webp",
     name: ""
   });
   const imageUploaded = ref(false);
@@ -116,7 +116,19 @@
     if (validateGroupName()) {
       creating.value = true;
       if (imageUploaded.value !== true) {
-        newGroup.value.picture = "";
+        // Set the default image if the user does not select an image
+        const defaultGroupImagePath = "/img/default-group-img.webp";
+        const defaultGroupImageBlob = await fetch(defaultGroupImagePath).then(res => res.blob());
+        if (defaultGroupImageBlob) {
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            newGroup.value.picture = (e.target as FileReader).result as string | ArrayBuffer;
+          };
+
+          reader.readAsDataURL(defaultGroupImageBlob);
+          imageUploaded.value = true;
+        }
       }
       await $fetch<Group>("/api/groups/new", {
         method: "POST",
