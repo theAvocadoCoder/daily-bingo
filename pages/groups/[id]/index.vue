@@ -8,9 +8,86 @@
         <v-avatar :image="group?.picture || sessionUser?.picture"></v-avatar>
       </v-btn>
 
-      <v-app-bar-title>
+      <v-app-bar-title @click="groupDetailsDialog = true">
         {{ groupName }}
       </v-app-bar-title>
+
+      <v-dialog
+        v-model="groupDetailsDialog"
+        transition="dialog-top-transition"
+        fullscreen
+      >
+        <!-- <template v-slot:activator="{ props: activatorProps }">
+          <v-btn
+            prepend-icon="mdi-cog"
+            size="small"
+            text="Settings"
+            v-bind="activatorProps"
+          ></v-btn>
+        </template> -->
+
+        <v-card>
+          <v-toolbar>
+            <v-btn
+              icon="mdi-close"
+              @click="groupDetailsDialog = false"
+            ></v-btn>
+
+            <v-toolbar-title>{{ groupName }}</v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-toolbar-items>
+              <v-btn
+                text="Save"
+                variant="text"
+                @click="groupDetailsDialog = false"
+              ></v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+
+          <v-list
+            lines="two"
+            subheader
+          >
+            <v-list-subheader>User Controls</v-list-subheader>
+
+            <v-list-item
+              subtitle="Set the content filtering level to restrict apps that can be downloaded"
+              title="Content filtering"
+              link
+            ></v-list-item>
+
+            <v-list-item
+              subtitle="Require password for purchase or use password to restrict purchase"
+              title="Password"
+              link
+            ></v-list-item>
+
+            <v-divider></v-divider>
+
+            <v-list-subheader>General</v-list-subheader>
+
+            <v-list-item
+              subtitle="Notify me about updates to apps or games that I downloaded"
+              title="Notifications"
+            >
+            </v-list-item>
+
+            <v-list-item
+              subtitle="Auto-update apps at any time. Data charges may apply"
+              title="Sound"
+            >
+            </v-list-item>
+
+            <v-list-item
+              subtitle="Automatically add home screen widgets"
+              title="Auto-add widgets"
+            >
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-dialog>
 
       <v-spacer></v-spacer>
     </v-app-bar>
@@ -64,6 +141,8 @@
 
   const groupId = route.params.id as unknown;
 
+  const groupDetailsDialog = ref(false);
+
   const group = ref<Group>();
   group.value = await $fetch<Group>(`/api/groups/${groupId}`);
 
@@ -90,7 +169,7 @@
   }
 
   function getMessageStyle(id: string) {
-    if (id === sessionUser.value._id?.toHexString()) {
+    if (id === `${sessionUser.value._id}`) {
       // Session user message
       return `ownMessage relative bg-lime-700 border-lime-700 text-zinc-200 w-fit px-4 ml-auto mr-10 rounded-md rounded-tr-none`;
     } else if (id === null) {
@@ -132,7 +211,7 @@
     if (ably.value) return;
 
     const { $ably } = useNuxtApp();
-    ably.value = await $ably(sessionUser.value?._id?.toHexString() || sessionUser.value?.username);
+    ably.value = await $ably(`${sessionUser.value?._id}` || sessionUser.value?.username);
 
     const channel = ably.value?.channels.get(`group-${group.value?._id}`);
 
