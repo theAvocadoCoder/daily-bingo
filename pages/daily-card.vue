@@ -2,7 +2,7 @@
   <div class="h-fit flex justify-center items-center relative">
     <v-btn tag="nuxt-link" to="/cards/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
     <Loading v-if="cardStatus === 'pending'" />
-    <Bingo v-else :card="card" type="dailyBingo" />
+    <Bingo v-else type="dailyBingo" />
   </div>
 </template>
 

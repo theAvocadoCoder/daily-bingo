@@ -122,7 +122,6 @@
   const { data, getSession } = useAuth();
   
   const props = defineProps<{
-    card: Card,
     type?: string,
     saved?: boolean,
   }>();

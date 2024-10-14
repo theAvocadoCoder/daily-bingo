@@ -8,7 +8,7 @@
       </h1>
     </div>
     <Loading v-if="cardStatus === 'pending'" />
-    <Bingo v-else :card="card" type="currentCard" saved />
+    <Bingo v-else type="currentCard" saved />
   </div>
 </template>
 
