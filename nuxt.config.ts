@@ -35,7 +35,7 @@ export default defineNuxtConfig({
       ],
     }
   },
-  modules: ["vuetify-nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "@sidebase/nuxt-auth"],
+  modules: ["vuetify-nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "@sidebase/nuxt-auth", "@nuxt/test-utils/module"],
   pinia: {
     storesDirs: ["./stores/**"]
   },
