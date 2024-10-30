@@ -1,7 +1,7 @@
 export default defineNuxtPlugin(() => {
   return {
     provide: {
-      locally: {
+      storage: {
         getData(key: string) {
           if (import.meta.client) {
             const itemString = localStorage.getItem(key);

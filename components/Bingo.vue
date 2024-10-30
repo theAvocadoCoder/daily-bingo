@@ -117,8 +117,7 @@
   import type Card from "~/interfaces/Card";
   import type Cell from "~/interfaces/Cell";
   import type User from "~/interfaces/User";
-  const { getData, setData } = useNuxtApp().$locally;
-  const {$toast} = useNuxtApp();
+  const {$toast, $storage} = useNuxtApp();
   const { data, getSession } = useAuth();
   
   const props = defineProps<{
@@ -127,9 +126,9 @@
   }>();
 
   const sessionUser = computed(() => data.value?.user as User);
-  const cardIsSaved = computed(() => props.saved ? props.saved : getData(props.type as string).saved);
-  const _id = computed(() => getData(props.type as string)._id);
-  const bingoCard = computed(() => getData(props.type as string));
+  const cardIsSaved = computed(() => props.saved ? props.saved : $storage.getData(props.type as string).saved);
+  const _id = computed(() => $storage.getData(props.type as string)._id);
+  const bingoCard = computed(() => $storage.getData(props.type as string));
 
   const cardName = props.type == "dailyBingo" ?
     ref('Daily Bingo') :
@@ -225,8 +224,8 @@
     }
     cell.marked = !cell.marked;
 
-    const currentCard = getData(props.type as string);
-    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
+    const currentCard = $storage.getData(props.type as string);
+    $storage.setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
 
     if (cardIsSaved.value) saveCard();
   }
@@ -258,12 +257,12 @@
             operation: "cards-insert",
           }),
         });
-        const currentCard = getData(props.type as string);
-        setData(props.type as string, {...currentCard, saved: true, _id: newCard?._id}, true);
+        const currentCard = $storage.getData(props.type as string);
+        $storage.setData(props.type as string, {...currentCard, saved: true, _id: newCard?._id}, true);
 
         // @ts-expect-error
         await getSession(true);
-        setData("bingoUser", sessionUser.value, true);
+        $storage.setData("bingoUser", sessionUser.value, true);
         $toast.success(`${cardName.value} saved`);
       });
     } else {
@@ -279,8 +278,8 @@
           }
         })
       });
-      const currentCard = getData(props.type as string);
-      setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
+      const currentCard = $storage.getData(props.type as string);
+      $storage.setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
     }
   }
 
@@ -355,8 +354,8 @@
       bingoCard.value.cells[i].marked = false;
     }
 
-    const currentCard = getData(props.type as string);
-    setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
+    const currentCard = $storage.getData(props.type as string);
+    $storage.setData(props.type as string, {...currentCard, cells: bingoCard.value.cells}, true);
 
     if (cardIsSaved) saveCard();
   }

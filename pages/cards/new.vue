@@ -48,11 +48,10 @@
   import type User from "~/interfaces/User";
   import { Filter } from "bad-words";
 
-  const { setData } = useNuxtApp().$locally;
+  const { $storage, $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
   const sessionUser = computed(() => data.value?.user as User);
   const router = useRouter();
-  const { $toast } = useNuxtApp();
   const creating = ref(false);
   const newCard = ref<{
     name: string,
@@ -137,7 +136,7 @@
       });
       // @ts-expect-error
       await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value, true);
       creating.value = false;
       
       router.push(`/cards?s=${newCard.value.name.trim()}`);

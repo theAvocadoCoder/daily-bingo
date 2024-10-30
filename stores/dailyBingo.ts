@@ -2,17 +2,17 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 import type Card from "~/interfaces/Card";
 
 export const useDailyBingoStore = defineStore("dailyBingo", () => {
-  const { getData, setData } = useNuxtApp().$locally; 
+  const { $storage } = useNuxtApp(); 
   const card = ref<Card>();
   const getDailyBingo = computed(() => card.value);
   
   async function fetchDailyBingo () {
-    const dailyBingoInStorage = getData("dailyBingo");
+    const dailyBingoInStorage = $storage.getData("dailyBingo");
     try {
       if (!dailyBingoInStorage) {
         const data = await $fetch("/api/cards/daily");
         card.value = data as unknown as Card;
-        setData("dailyBingo", card.value, false, [1, "d"]);
+        $storage.setData("dailyBingo", card.value, false, [1, "d"]);
       } else {
         card.value = dailyBingoInStorage;
       }

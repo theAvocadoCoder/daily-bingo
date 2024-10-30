@@ -65,7 +65,7 @@
 </template>
 
 <script setup lalng="ts"> 
-  const { setData } = useNuxtApp().$locally;
+  const { $storage } = useNuxtApp();
   const { data, getSession } = useAuth();
   const sessionUser = computed(() => data.value?.user);
   const userModel = ref({
@@ -146,7 +146,7 @@
       }
 
       await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value, true);
       saving.value = false;
     }
 

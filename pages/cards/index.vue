@@ -103,8 +103,7 @@
 <script setup lang="ts">
   import type User from "~/interfaces/User";
   import type Card from "~/interfaces/Card";
-  const { setData } = useNuxtApp().$locally;
-  const { $toast } = useNuxtApp();
+  const { $storage, $toast } = useNuxtApp();
   const { data, getSession } = useAuth();
   const route = useRoute();
 
@@ -194,7 +193,7 @@
           }),
         });
       }
-      // setData("bingoUser", sessionUser.value, true);
+      // $storage.setData("bingoUser", sessionUser.value, true);
       cardModel.value.card_name = "";
       saving.value = false;
       editMode.value = false;
@@ -253,7 +252,7 @@
 
       // @ts-expect-error
       await getSession(true);
-      setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value, true);
       $toast.success("Card deleted");
       saving.value = false;
       selectedCardId.value = '';

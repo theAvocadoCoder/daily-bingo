@@ -13,10 +13,10 @@
 </template>
 
 <script setup lang="ts">
-  const { getData, setData } = useNuxtApp().$locally;
+  const { $storage } = useNuxtApp();
   const route = useRoute();
 
-  const card = ref(getData("currentCard"));
+  const card = ref($storage.getData("currentCard"));
   const cardStatus = ref<string>(card.value ? "" : "pending");
 
   const cardId = route.params.id as unknown;
@@ -26,11 +26,11 @@
   if (!card.value) {
     card.value = await $fetch(`/api/cards/${cardId}`);
     cardStatus.value = "";
-    setData("currentCard", card.value, false);
+    $storage.setData("currentCard", card.value, false);
   }
 
   onUnmounted(() => {
-    setData("currentCard", null, false);
+    $storage.setData("currentCard", null, false);
   });
   
 </script>

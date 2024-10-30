@@ -134,7 +134,7 @@
     layout: "chat"
   })
 
-  const { setData } = useNuxtApp().$locally;
+  const { $storage } = useNuxtApp();
 
   const { data } = useAuth();
   const route = useRoute();
@@ -149,7 +149,7 @@
   const groupName = computed(() => group.value?.name);
   const sessionUser = computed(() => data.value?.user as User);
 
-  setData("currentGroup", group.value, false);
+  $storage.setData("currentGroup", group.value, false);
 
   const sending = ref(false);
   const newMessage = ref("");
@@ -204,7 +204,7 @@
     sending.value = false;
 
     group.value = await $fetch<Group>(`/api/groups/${groupId}`);
-    setData("currentGroup", group.value, false);
+    $storage.setData("currentGroup", group.value, false);
   }
 
   onMounted(async () => {
@@ -225,7 +225,7 @@
   })
 
   onUnmounted(async () => {
-    setData("currentGroup", null, false);
+    $storage.setData("currentGroup", null, false);
 
     ably.value?.connection.close();
 

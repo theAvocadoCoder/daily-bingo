@@ -7,10 +7,10 @@
 </template>
 
 <script setup lang="ts">
-  const { getData, setData } = useNuxtApp().$locally; 
+  const { $storage } = useNuxtApp(); 
   const { data } = useAuth();
 
-  let card = getData("dailyBingo");
+  let card = $storage.getData("dailyBingo");
   let user = data.value?.user;
   let cardStatus: string;
 
@@ -18,7 +18,7 @@
     const results = await useFetch("/api/cards/daily");
     card = {cells: toRaw(results.data.value), saved: false};
     cardStatus = results.status as unknown as string;
-    setData("dailyBingo", card, false, [1, "d"]);
+    $storage.setData("dailyBingo", card, false, [1, "d"]);
   }
-  setData("bingoUser", user, false, [14, "d"]);
+  $storage.setData("bingoUser", user, false, [14, "d"]);
 </script>
