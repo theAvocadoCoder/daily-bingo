@@ -20,7 +20,7 @@
       v-for="(entry, index) in newCard.cells"
       class="!p-5 m-2"
       closable
-      @click:close="newCard.cells.splice(index, 1)"
+      @click:close="delete newCard.cells[index]"
     >
       {{ entry }}
     </v-chip>
@@ -114,7 +114,7 @@
         },
         body: JSON.stringify({
           name: newCard.value.name.trim(),
-          cells: newCard.value.cells,
+          cells: newCard.value.cells.filter(cell => !!cell),
           creator: {
             user_id: sessionUser.value?._id,
             username: sessionUser.value?.username,
