@@ -3,7 +3,7 @@ import buildCellArray from "~/server/utils/buildCellArray";
 import getRandomPhrases from "~/server/utils/getRandomPhrases";
 
 export default defineEventHandler(async (event) => {
-  const { name, cells, creator } = await readBody(event);
+  const { name, cells, creator, created_at, isDailyBingo } = await readBody(event);
 
   try {
     if (cells.length < 24) {
@@ -14,11 +14,11 @@ export default defineEventHandler(async (event) => {
       const randomPhrases = getRandomPhrases(theEntry.phrases, remainder);
       cells.push(...randomPhrases);
     }
-    cells.splice(Math.floor(cells.length / 2), 0, "Free");
+    if (!isDailyBingo) cells.splice(Math.floor(cells.length / 2), 0, "Free");
 
     const card = {
-      cells: buildCellArray(cells),
-      created_at: new Date().toISOString(),
+      cells: isDailyBingo ? cells : buildCellArray(cells),
+      created_at: created_at || new Date().toISOString(),
       creator,
       isDeleted: false,
       name,

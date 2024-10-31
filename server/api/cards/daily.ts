@@ -11,7 +11,15 @@ export default defineEventHandler(async (event) => {
     const randomPhrases = getRandomPhrases(theEntry.phrases, 24);
     randomPhrases.splice(Math.floor(randomPhrases.length / 2), 0, "Free");
 
-    const card = buildCellArray(randomPhrases);
+    const card = {
+      cells: buildCellArray(randomPhrases),
+      created_at: new Date().toISOString(),
+      creator: {
+        user_id: null,
+        username: "Daily Bingo",
+      },
+      name: "Daily Card"
+    }
 
     setResponseStatus(event, 200)
     return card;
