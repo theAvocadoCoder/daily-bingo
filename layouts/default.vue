@@ -128,17 +128,13 @@
   const menuRef = ref<HTMLUListElement>();
 
   const { data } = useAuth();
+  const { $storage } = useNuxtApp();
 
   const path = computed(() => useRoute().path);
   const sessionUser = computed(() => data.value?.user as {name: string} & User);
 
-  onMounted(() => {
-    window.addEventListener("keydown", handleA11yMenuBlur);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener("keydown", handleA11yMenuBlur);
-  });
+  useEventListener(window, "keydown", handleA11yMenuBlur);
+  useEventListener(window, "load", setSessionUser);
 
   function handleA11yMenuBlur(event: KeyboardEvent) {
     if (event.key === "Escape" || event.key === "Enter") {
@@ -149,6 +145,8 @@
       }
     }
   }
+
+  function setSessionUser() { $storage.setData("bingoUser", sessionUser.value) }
 
   function handleFocusOut(event: FocusEvent) {
     // Close if focus is not on a menu item or if a menu item was clicked
