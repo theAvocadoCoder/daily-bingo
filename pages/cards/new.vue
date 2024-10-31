@@ -136,7 +136,7 @@
       });
       // @ts-expect-error
       await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value);
       creating.value = false;
       
       router.push(`/cards?s=${newCard.value.name.trim()}`);

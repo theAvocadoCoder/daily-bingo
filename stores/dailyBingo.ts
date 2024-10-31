@@ -12,7 +12,7 @@ export const useDailyBingoStore = defineStore("dailyBingo", () => {
       if (!dailyBingoInStorage) {
         const data = await $fetch("/api/cards/daily");
         card.value = data as unknown as Card;
-        $storage.setData("dailyBingo", card.value, false, [1, "d"]);
+        $storage.setData("dailyBingo", card.value);
       } else {
         card.value = dailyBingoInStorage;
       }

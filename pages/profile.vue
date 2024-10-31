@@ -146,7 +146,7 @@
       }
 
       await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value);
       saving.value = false;
     }
 

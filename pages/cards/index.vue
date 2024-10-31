@@ -193,7 +193,7 @@
           }),
         });
       }
-      // $storage.setData("bingoUser", sessionUser.value, true);
+      // $storage.setData("bingoUser", sessionUser.value);
       cardModel.value.card_name = "";
       saving.value = false;
       editMode.value = false;
@@ -252,7 +252,7 @@
 
       // @ts-expect-error
       await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value);
       $toast.success("Card deleted");
       saving.value = false;
       selectedCardId.value = '';

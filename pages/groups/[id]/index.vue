@@ -149,7 +149,7 @@
   const groupName = computed(() => group.value?.name);
   const sessionUser = computed(() => data.value?.user as User);
 
-  $storage.setData("currentGroup", group.value, false);
+  $storage.setData("currentGroup", group.value);
 
   const sending = ref(false);
   const newMessage = ref("");
@@ -204,7 +204,7 @@
     sending.value = false;
 
     group.value = await $fetch<Group>(`/api/groups/${groupId}`);
-    $storage.setData("currentGroup", group.value, false);
+    $storage.setData("currentGroup", group.value);
   }
 
   onMounted(async () => {
@@ -225,7 +225,7 @@
   })
 
   onUnmounted(async () => {
-    $storage.setData("currentGroup", null, false);
+    $storage.setData("currentGroup", null);
 
     ably.value?.connection.close();
 

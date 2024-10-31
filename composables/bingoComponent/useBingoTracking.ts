@@ -70,7 +70,7 @@ export function useBingoTracking(card: Card) {
 
     // @ts-expect-error
     await getSession(true);
-    $storage.setData("bingoUser", sessionUser.value, true);
+    $storage.setData("bingoUser", sessionUser.value);
     $toast.success(`${name} saved`);
   }
 
@@ -80,7 +80,7 @@ export function useBingoTracking(card: Card) {
     for (let i = 0; i < card.cells.length; i++) {
       card.cells[i].marked = false;
     }
-    $storage.setData(cardType, {...card, cells: card.cells}, true);
+    $storage.setData(cardType, {...card, cells: card.cells});
 
     if (card.saved) saveCard();
   }

@@ -24,13 +24,15 @@
   const cardName = computed(() => card.value.name);
 
   if (!card.value) {
-    card.value = await $fetch(`/api/cards/${cardId}`);
-    cardStatus.value = "";
-    $storage.setData("currentCard", card.value, false);
+    const results = await useFetch(`/api/cards/${cardId}`);
+    if (results) {
+      card.value = toRaw(results.data.value)
+      $storage.setData("currentCard", {...card.value, saved: true});
+    }
   }
 
   onUnmounted(() => {
-    $storage.setData("currentCard", null, false);
+    $storage.setData("currentCard", null);
   });
   
 </script>

@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
         const userId = "66d8754397e9d9f8ccb56203";
         const data = await $fetch(`/api/users/${userId}`);
         user.value = data as unknown as User;
-        $storage.setData("bingoUser", user.value as User, false, [14, "d"]);
+        $storage.setData("bingoUser", user.value as User);
       } else {
         user.value = userInStorage;
       }

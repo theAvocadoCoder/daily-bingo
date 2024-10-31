@@ -158,7 +158,7 @@
       });
       // @ts-expect-error
       await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value, true);
+      $storage.setData("bingoUser", sessionUser.value);
       creating.value = false;
 
       router.push(`/groups?s=${newGroup.value.name.trim()}`);

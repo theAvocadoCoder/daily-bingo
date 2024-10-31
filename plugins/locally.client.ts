@@ -14,7 +14,7 @@ export default defineNuxtPlugin(() => {
             return undefined;
           }
         },
-        setData(key: string, value: any, update?: boolean, expiry?: [number, ("s"|"m"|"h"|"d")]) {
+        setData(key: string, value: any) {
           if (import.meta.client) {
             localStorage.setItem(key, JSON.stringify(value));
             const unitConversion = {
@@ -22,14 +22,6 @@ export default defineNuxtPlugin(() => {
               "m": 60_000,
               "h": 3_600_000,
               "d": 86_400_000,
-            }
-            if (!expiry) expiry = [14, "d"];
-            const timeInMs = expiry[0] * unitConversion[expiry[1]];
-
-            if (update !== true) {
-              setTimeout(() => {
-                localStorage.removeItem(key);
-              }, timeInMs);
             }
           }
         },

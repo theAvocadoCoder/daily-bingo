@@ -31,7 +31,7 @@ export function useBingoCard(card: ComputedGetter<Card>) {
     cell.marked = !cell.marked;
 
     const currentCard = $storage.getData(cardType);
-    $storage.setData(cardType, {...currentCard, cells: bingoCard.value.cells}, true);
+    $storage.setData(cardType, {...currentCard, cells: bingoCard.value.cells});
 
     if (bingoCard.value.saved) saveCard();
   }
