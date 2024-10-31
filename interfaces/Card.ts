@@ -12,4 +12,5 @@ export default interface Card {
   isDeleted: boolean;
   name: string;
   references: number;
+  saved?: boolean;
 }
