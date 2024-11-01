@@ -17,6 +17,11 @@ export default defineNuxtPlugin(() => {
         setData(key: string, value: any) {
           if (import.meta.client) {
             localStorage.setItem(key, JSON.stringify(value));
+            // Emit a custom event to notify other components
+            window.dispatchEvent(new CustomEvent("storage-update", { 
+              detail: { key, value } 
+            }));
+            
             const unitConversion = {
               "s": 1000,
               "m": 60_000,

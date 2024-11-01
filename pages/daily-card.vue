@@ -36,7 +36,7 @@
   })
 
   onUnmounted(() => {
-    newToastInstance.value.dismiss();
+    if (newToastInstance.value) newToastInstance.value.dismiss();
   })
 
   async function generateDailyCard() {

@@ -76,7 +76,7 @@
 
   const {
     markCell, saveCard, resetCard, bingoCard
-  } = useBingoCard(() => $storage.getData(props.type));
+  } = useBingoCard(props.type);
 
   const cardIsSaved = computed(() => bingoCard.value.saved);
   const cardName = ref(`${bingoCard.value.name}`);

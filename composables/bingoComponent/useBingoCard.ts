@@ -1,17 +1,17 @@
-import type Card from "~/interfaces/Card";
+
 import type Cell from "~/interfaces/Cell";
 import { useBingoTracking } from "./useBingoTracking";
-import type { ComputedGetter } from "vue";
 
 
-export function useBingoCard(card: ComputedGetter<Card>) {
-  const bingoCard = ref();
-
-  watchEffect(() => {
-   bingoCard.value = toValue(card);
-  })
+export function useBingoCard(type: string) {
 
   const { $storage } = useNuxtApp();
+  
+  const bingoCard = ref();
+  watchEffect(() => {
+    bingoCard.value = toValue(() => $storage.getData(type));
+  });
+
   const { saveCard, resetCard, updateWins } = useBingoTracking(bingoCard.value);
   const cardType = bingoCard.value.creator.user_id === null ? "dailyBingo" : "currentCard";
 
@@ -21,6 +21,20 @@ export function useBingoCard(card: ComputedGetter<Card>) {
       if (bingoCard.value.cells[i].marked) registerCell(bingoCard.value.cells[i].row, bingoCard.value.cells[i].column);
     }
   });
+
+  useEventListener(window, "storage-update", handleCardUpdate);
+
+  type StorageUpdate = {
+    key: string,
+    value: any,
+  }
+
+  function handleCardUpdate({detail}: {detail: StorageUpdate}) {
+    console.log("storage event", detail)
+    if (detail.key === type) {
+      bingoCard.value = detail.value || null;
+    }
+  }
 
   function markCell(_cell: Cell) {
     const {column, row} = _cell;
