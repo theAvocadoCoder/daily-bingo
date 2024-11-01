@@ -11,10 +11,12 @@
 <script setup lang="ts">
   const { $storage, $toast } = useNuxtApp();
   
-  let card = ref($storage.getData("dailyBingo"));
-  let error = ref(null);
+  const card = ref();
+  const error = ref(null);
+  const newToastInstance = ref();
 
   onMounted(() => {
+    card.value = $storage.getData("dailyBingo");
     // If card exists, check if it is up to or older than a day
     if (card.value) {
       const MS_IN_A_DAY = 8.64e7;
@@ -23,13 +25,18 @@
         - new Date(card.value.created_at).setHours(0,0,0,0) // 12 AM when the card was created
         >= MS_IN_A_DAY
       ) {
-        // TODO: Implement modal for loading new daily card
-        $toast.info("New Bingo card available");
-        setTimeout(generateDailyCard, 10000);
+        newToastInstance.value = $toast.info("New Daily Bingo card! Click to update", {
+          duration: 0,
+          onClick: generateDailyCard,
+        });
       }
     }
 
     if (!card.value) generateDailyCard();
+  })
+
+  onUnmounted(() => {
+    newToastInstance.value.dismiss();
   })
 
   async function generateDailyCard() {
