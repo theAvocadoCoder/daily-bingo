@@ -30,7 +30,6 @@ export function useBingoCard(type: string) {
   }
 
   function handleCardUpdate({detail}: {detail: StorageUpdate}) {
-    console.log("storage event", detail)
     if (detail.key === type) {
       bingoCard.value = detail.value || null;
     }
