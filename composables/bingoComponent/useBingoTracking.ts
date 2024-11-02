@@ -34,6 +34,11 @@ export function useBingoTracking(card: Card) {
       body: JSON.stringify({
         card: {
           cells: card.cells,
+          created_at: new Date().toISOString(),
+          creator: {
+            user_id: null,
+            username: "Daily Bingo"
+          }
         }
       })
     });
