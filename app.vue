@@ -9,10 +9,11 @@
 </template>
 
 <script setup lang="ts">
+  const { $storage } = useNuxtApp();
+  const { data } = useAuth();
+
   onMounted(() => {
-    useNuxtApp().$storage
-    .setData("bingoUser", 
-      useAuth().data.value?.user
-    )
+    if ($storage.getData("bingoUser") !== data.value?.user)
+      $storage.setData("bingoUser", data.value?.user)
   })
 </script>
