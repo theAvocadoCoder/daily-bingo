@@ -33,7 +33,10 @@ export default class MongoIO implements MongoInterface {
     const connectionString = process.env.ATLAS_URI as string;
     const dbName = runtimeDbName;
 
-    this.client = new MongoClient(connectionString);
+    this.client = new MongoClient(connectionString, {
+      maxPoolSize: 10,
+      retryWrites: true,
+    });
     await this.client.connect();
     this.db = this.client.db(dbName);
     this.userCollection = this.db.collection("users");

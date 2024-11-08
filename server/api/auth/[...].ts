@@ -1,5 +1,7 @@
 import Auth0Provider from "next-auth/providers/auth0";
 import {NuxtAuthHandler} from "#auth";
+import { JWT } from "next-auth/jwt";
+import User from "~/interfaces/User";
 
 export default NuxtAuthHandler({
   secret: useRuntimeConfig().authSecret,
@@ -15,10 +17,16 @@ export default NuxtAuthHandler({
 
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60 * 24 * 7, // Session is valid for a week
+    updateAge: 60 * 60, // Session token refreshes every hour
   },
 
   callbacks: {
     async session({ session, token }) {
+      if (session.user && (session.user as { token: JWT } & Partial<User>)._id) {
+        return session;
+      }
+
       const user = await $fetch("/api/auth/confirm-or-register-user", {
         method: "POST",
         headers: {
