@@ -13,7 +13,7 @@
   const { data } = useAuth();
 
   onMounted(() => {
-    if ($storage.getData("bingoUser") !== data.value?.user)
+    if (data.value?.user && $storage.getData("bingoUser") !== data.value?.user)
       $storage.setData("bingoUser", data.value?.user)
   })
 </script>
