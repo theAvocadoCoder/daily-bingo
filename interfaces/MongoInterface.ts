@@ -9,7 +9,7 @@ export default interface MongoInterface {
   disconnect(): Promise<void>;
 
   findUser(id: string): Promise<User>;
-  findUserByEmail(email: string): Promise<User>;
+  findUserByEmail(email: string): Promise<User | null>;
   insertUser(theUser: {email: string, username: string}): Promise<User | null>;
   updateUser(id: string, data: Partial<User>): Promise<User>;
 

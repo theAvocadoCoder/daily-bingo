@@ -105,7 +105,7 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<User>} the found user
    */
-  public async findUserByEmail(email: string): Promise<User> {
+  public async findUserByEmail(email: string): Promise<User | null> {
     if (!this.userCollection) {
       throw new Error("findUser - Database not connected");
     }
@@ -117,7 +117,8 @@ export default class MongoIO implements MongoInterface {
     const results = await this.userCollection.aggregate<User>(pipeline).next();
 
     if (results === null) {
-      throw new Error("User not found: " + email);
+      console.log("User not found: ", email);
+      return null;
     } else {
       return results;
     }
