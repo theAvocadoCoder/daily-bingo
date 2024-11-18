@@ -65,6 +65,13 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+  auth: {
+    guestRedirectUrl: "/sign-in"
+  }
+});
+
   import type { Message as AblyMessage } from "ably";
   import type Group from "~/interfaces/Group";
   import type { Message } from "~/interfaces/Group";

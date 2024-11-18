@@ -65,6 +65,13 @@
 </template>
 
 <script setup lalng="ts"> 
+definePageMeta({
+  middleware: "auth",
+  auth: {
+    guestRedirectUrl: "/sign-in"
+  }
+});
+
   const { $storage } = useNuxtApp();
   const { data, getSession } = useAuth();
   const sessionUser = computed(() => data.value?.user);

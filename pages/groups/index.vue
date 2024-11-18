@@ -99,6 +99,13 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+  auth: {
+    guestRedirectUrl: "/sign-in"
+  }
+});
+
   import type User from "~/interfaces/User";
   import type Group from "~/interfaces/Group";
 

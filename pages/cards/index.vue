@@ -101,6 +101,13 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+  auth: {
+    guestRedirectUrl: "/sign-in"
+  }
+});
+
   import type User from "~/interfaces/User";
   import type Card from "~/interfaces/Card";
   const { $storage, $toast } = useNuxtApp();
@@ -177,7 +184,6 @@
           }),
         });
 
-        // @ts-expect-error
         await getSession(true);
 
         userCards.value = await $fetch<Card[]>("/api/cards", {

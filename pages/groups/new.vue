@@ -62,6 +62,13 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+  auth: {
+    guestRedirectUrl: "/sign-in"
+  }
+});
+
   import type Group from '~/interfaces/Group';
   import type User from '~/interfaces/User';
   import { Filter } from "bad-words";
