@@ -17,10 +17,4 @@
 </template>
 
 <script setup lang="ts">
-  definePageMeta({
-    auth: {
-      unauthenticatedOnly: true,
-      navigateAuthenticatedTo: '/daily-card'
-    }
-  })
 </script>

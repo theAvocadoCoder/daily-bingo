@@ -38,22 +38,27 @@
             { buttonText: 'Reset Bingo Card', onClick: resetCard },
           ]"
         />
-        <ConfirmDialog
-          v-if="!cardIsSaved"
-          dialog-button-text="Save" dialog-title="Save Bingo Card?"
-          :action-buttons="[
-            { buttonText: 'Cancel' },
-            { buttonText: 'Save Bingo Card', onClick: () => saveCard(cardName) },
-          ]"
-        >
-          <v-text-field
-            v-if="!cardIsSaved && ownCard"
-            v-model="cardName"
-            class="min-w-32 m-0" :placeholder="cardName" label="Card Name" variant="underlined"
-          ></v-text-field>
+        <SignedIn>
+          <ConfirmDialog
+            v-if="!cardIsSaved"
+            dialog-button-text="Save" dialog-title="Save Bingo Card?"
+            :action-buttons="[
+              { buttonText: 'Cancel' },
+              { buttonText: 'Save Bingo Card', onClick: () => saveCard(cardName) },
+            ]"
+          >
+            <v-text-field
+              v-if="!cardIsSaved && ownCard"
+              v-model="cardName"
+              class="min-w-32 m-0" :placeholder="cardName" label="Card Name" variant="underlined"
+            ></v-text-field>
 
-          <p v-else><span class="font-bold">{{ cardName }}</span> by <span class="italic">{{ `${bingoCard.creator.user_id ? "@" : ""}${bingoCard.creator.username}` }}</span></p>
-        </ConfirmDialog>
+            <p v-else><span class="font-bold">{{ cardName }}</span> by <span class="italic">{{ `${bingoCard.creator.user_id ? "@" : ""}${bingoCard.creator.username}` }}</span></p>
+          </ConfirmDialog>
+        </SignedIn>
+        <SignedOut>
+          <SignInButton>Save</SignInButton>
+        </SignedOut>
       </div>
     </div>
     <!-- System div -->

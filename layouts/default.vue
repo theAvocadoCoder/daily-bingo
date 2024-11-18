@@ -24,11 +24,11 @@
         </li>
 
         <li>
-          <v-btn tabindex="0" tag="nuxt-link" to="/auth/signout" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
+          <v-btn tabindex="0" tag="nuxt-link" to="/sign-out" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
         </li>
       </ul>
         
-      <nuxt-link v-if="!data" to="/auth/signin">
+      <nuxt-link v-if="!data" to="/sign-in">
         <v-btn append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
       </nuxt-link>
     </v-app-bar>
@@ -68,7 +68,7 @@
           <v-btn
             block
             tag="nuxt-link"
-            to="/auth/signout"
+            to="/sign-out"
             append-icon="mdi-logout"
             text="Sign out"
           ></v-btn>

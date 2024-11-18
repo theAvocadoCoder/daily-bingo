@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
   const { $storage, $toast } = useNuxtApp();
+  const { userId } = useAuth();
   
   const card = ref();
   const error = ref(null);
@@ -33,6 +34,11 @@
     }
 
     if (!card.value) generateDailyCard();
+  })
+
+  onMounted(() => {
+    const sessionUser = $storage.getData("bingoUser");
+    if (!sessionUser) $storage.setData("bingoUser", { _id: userId.value });
   })
 
   onUnmounted(() => {
