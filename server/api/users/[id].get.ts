@@ -1,6 +1,7 @@
 import { getMessage, mongo } from "~/server/index";
 
 export default defineEventHandler(async (event) => {
+  await mongo.connect();
   const userId = getRouterParam(event, "id") as string;
 
   try {

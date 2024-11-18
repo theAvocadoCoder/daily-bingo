@@ -11,6 +11,7 @@ interface BodyObject {
 }
 
 export default defineEventHandler(async (event) => {
+  await mongo.connect();
   const groupId = getRouterParam(event, "id") as string;
   const {group, messages, operation, references}: BodyObject = await readBody(event);
 

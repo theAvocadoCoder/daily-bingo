@@ -3,6 +3,7 @@ import buildCellArray from "~/server/utils/buildCellArray";
 import getRandomPhrases from "~/server/utils/getRandomPhrases";
 
 export default defineEventHandler(async (event) => {
+  await mongo.connect();
   const { name, cells, creator, created_at, isDailyBingo } = await readBody(event);
 
   try {

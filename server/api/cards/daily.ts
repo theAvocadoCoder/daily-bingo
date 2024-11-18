@@ -3,6 +3,7 @@ import buildCellArray from "~/server/utils/buildCellArray";
 import getRandomPhrases from "~/server/utils/getRandomPhrases";
 
 export default defineEventHandler(async (event) => {
+  await mongo.connect();
 
   try {
     const theEntry = await mongo.findEntry("general");

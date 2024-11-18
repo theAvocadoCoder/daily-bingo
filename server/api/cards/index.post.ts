@@ -1,6 +1,7 @@
 import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
+  await mongo.connect();
   const { card, cards } = await readBody(event);
 
   let newCard;

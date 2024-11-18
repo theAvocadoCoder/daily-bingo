@@ -14,6 +14,7 @@ const { dbName: runtimeDbName } = useRuntimeConfig();
  * Class Properties
  */
 export default class MongoIO implements MongoInterface {
+  private isConnected?: boolean;
   private client?: MongoClient;
   private db?: Db;
   private userCollection?: Collection<Partial<User>>;
@@ -30,19 +31,32 @@ export default class MongoIO implements MongoInterface {
    * Connect to mongodb database
    */
   public async connect(): Promise<void> {
+
+    if (this.isConnected && this.client) return;
+
     const connectionString = process.env.ATLAS_URI as string;
     const dbName = runtimeDbName;
 
     this.client = new MongoClient(connectionString, {
       maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
       retryWrites: true,
     });
-    await this.client.connect();
-    this.db = this.client.db(dbName);
-    this.userCollection = this.db.collection("users");
-    this.cardCollection = this.db.collection("cards");
-    this.groupCollection = this.db.collection("groups");
-    this.entryCollection = this.db.collection("entries");
+
+    try {
+      await this.client.connect();
+      this.isConnected = true;
+
+      this.db = this.client.db(dbName);
+      this.userCollection = this.db.collection("users");
+      this.cardCollection = this.db.collection("cards");
+      this.groupCollection = this.db.collection("groups");
+      this.entryCollection = this.db.collection("entries");
+
+    } catch (error) {
+      console.error("Error connecting to MongoDB:", error);
+      this.isConnected = false;
+    }
 
     console.info("Database", dbName, "Connected");
   }
@@ -55,6 +69,7 @@ export default class MongoIO implements MongoInterface {
       await this.client.close();
       this.client = undefined;
       this.db = undefined;
+      this.isConnected = false;
     }
   }
 
