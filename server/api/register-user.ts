@@ -13,18 +13,18 @@ export default defineEventHandler(async (event) => {
     if (theUser === null) {
       const userDetails: Partial<User> = {
         cards: [],
-        clerk_id: body.id,
-        display_name: `${body.first_name} ${body.last_name}`,
+        clerk_id: data.id,
+        display_name: `${data.first_name} ${data.last_name}`,
         email: theEmail,
         groups: [],
         picture: data.profile_image_url || data.image_url,
-        username: body.username,
+        username: data.username,
       }
       theUser = await mongo.insertUser(userDetails);
       console.info("Create user %s completed", theEmail);
 
     } else {
-      console.info("Get user %s completed", body.first_name);
+      console.info("Get user %s completed", data.first_name);
     }
 
     setResponseStatus(event, 200)
