@@ -32,10 +32,14 @@ export default defineNuxtConfig({
           name: "description",
           content: "A fun little app to share with friends. What's on your bingo card today?"
         },
+        // {
+        //   'http-equiv': 'Content-Security-Policy',
+        //   content: "script-src 'self' https://clerk.accounts.dev;",
+        // },
       ],
     }
   },
-  modules: ["vuetify-nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "@sidebase/nuxt-auth", "@nuxt/test-utils/module"],
+  modules: ["vuetify-nuxt-module", "@nuxtjs/tailwindcss", "@pinia/nuxt", "vue-clerk/nuxt", "@nuxt/test-utils/module"],
   pinia: {
     storesDirs: ["./stores/**"]
   },
@@ -66,12 +70,7 @@ export default defineNuxtConfig({
   nitro: {
     preset: "netlify"
   },
-  auth: {
-    baseURL: `${process.env.AUTH_ORIGIN}/api/auth`,
-    provider: {
-      type: "authjs",
-      defaultProvider: "auth0",
-    },
-    globalAppMiddleware: true,
+  clerk: {
+    appearance: {},
   }
 });
