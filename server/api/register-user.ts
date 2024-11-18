@@ -3,34 +3,44 @@ import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  // const { email, name } = body;
+  const { data, type } = body;
+
+  const theEmail = data.email_addresses[0].email_address;
 
   try {
-    // const theUser = await mongo.findUserByEmail(email);
-    // if (theUser === null) {
-
-      console.log("event body", body)
-
-      const randomFourDigits = Math.floor(Math.random() * 10000);
-
+    let theUser = await mongo.findUserByEmail(theEmail);
+    if (theUser === null) {
       const userDetails: Partial<User> = {
         cards: [],
-        display_name: `User${randomFourDigits}`,
-        email: body.email,
+        clerk_id: body.id,
+        display_name: `${body.first_name} ${body.last_name}`,
+        email: theEmail,
         groups: [],
-        username: name,
+        username: body.username,
       }
-      const newUser = await mongo.insertUser(userDetails);
-      console.info("Create user %s completed", body.email);
-      setResponseStatus(event, 200);
-      return newUser;
-    // }
-    // console.info("Get user %s completed", body.email);
-    // setResponseStatus(event, 200)
-    // return theUser;
+      theUser = await mongo.insertUser(userDetails);
+      console.info("Create user %s completed", theEmail);
+    } else {
+      console.info("Get user %s completed", body.first_name);
+    }
+
+    theUser = await $fetch("/api/users/picture", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: theUser._id,
+        newPicture: data.profile_image_url || data.image_url,
+      })
+    })
+
+    setResponseStatus(event, 200)
+    return theUser;
+    
   } catch (error) {
     let message = getMessage(error);
-    console.info("Could not find user %s because %s", body.email, message);
+    console.info("Could not find user %s because %s", theEmail, message);
     setResponseStatus(event, 500, message);
   }
 });

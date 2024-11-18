@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 export default interface User {
   _id?: ObjectId;
   cards: ObjectId[];
+  clerk_id: string;
   display_name: string;
   email: string;
   email_verified?: boolean;
