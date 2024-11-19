@@ -5,12 +5,14 @@
       prominent
     >
       <v-app-bar-nav-icon variant="text">
-        <nuxt-link :to="data ? '/daily-card' : '/'" class="text-2xl">DB</nuxt-link>
+        <nuxt-link :to="sessionUser ? '/daily-card' : '/'" class="text-2xl">DB</nuxt-link>
       </v-app-bar-nav-icon>
 
       <v-spacer></v-spacer>
 
-      <v-btn v-if="data" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
+      <user-button />
+
+      <!-- <v-btn v-if="sessionUser" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
         <v-avatar icon="mdi-account" :image="sessionUser?.picture"></v-avatar>
       </v-btn>
       <ul
@@ -26,15 +28,15 @@
         <li>
           <v-btn tabindex="0" tag="nuxt-link" to="/sign-out" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
         </li>
-      </ul>
+      </ul> -->
         
-      <nuxt-link v-if="!data" to="/sign-in">
+      <nuxt-link v-if="!sessionUser" to="/sign-in">
         <v-btn append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
       </nuxt-link>
     </v-app-bar>
 
     <v-navigation-drawer
-      v-if="data && $vuetify.display.lgAndUp"
+      v-if="sessionUser && $vuetify.display.lgAndUp"
       permanent
       class="!bg-stone-800 !text-stone-50"
     >
@@ -44,7 +46,7 @@
           to="/profile"
           :prepend-avatar="sessionUser?.picture"
           :subtitle="`@${sessionUser?.username}`"
-          :title="sessionUser?.display_name || sessionUser?.name.toLocaleUpperCase()"
+          :title="sessionUser?.display_name"
         ></v-list-item>
       </v-list>
 
@@ -83,7 +85,7 @@
     </v-main>
 
     <v-bottom-navigation
-      v-if="data && !$vuetify.display.lgAndUp"
+      v-if="sessionUser && !$vuetify.display.lgAndUp"
       mode="shift"
       class="!bg-stone-950 fixed bottom-0 !w-full"
     >
@@ -127,10 +129,10 @@
   const menuIsOpen = ref(false);
   const menuRef = ref<HTMLUListElement>();
 
-  const { data } = useAuth();
-
   const path = computed(() => useRoute().path);
-  const sessionUser = computed(() => data.value?.user as {name: string} & User);
+  // const { user: sessionUser } = useUser();
+  const sessionUser = useFetch("/api/users/current-user").data;
+  console.log(toValue(sessionUser));
 
   useEventListener(window, "keydown", handleA11yMenuBlur);
 
