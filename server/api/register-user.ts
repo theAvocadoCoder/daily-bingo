@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { data, type } = body;
 
-  const theEmail = data.email_addresses[0].email_address;
+  const theEmail = type === "user.created" ? data.email_addresses[0].email_address : "";
 
   try {
     let theUser = 
