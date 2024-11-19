@@ -1,7 +1,6 @@
 import { cloudinary, getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
-  await mongo.connect();
   const {userId, newPicture} = await readBody(event);
 
   let imageURL = null;

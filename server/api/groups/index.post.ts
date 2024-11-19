@@ -1,7 +1,6 @@
 import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
-  await mongo.connect();
   const { group, groups } = await readBody(event);
 
   let newGroup;

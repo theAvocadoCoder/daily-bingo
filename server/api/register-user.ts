@@ -2,7 +2,6 @@ import User from "~/interfaces/User";
 import { getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
-  await mongo.connect();
   const body = await readBody(event);
   const { data, type } = body;
 

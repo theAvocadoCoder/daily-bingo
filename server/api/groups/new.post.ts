@@ -1,7 +1,6 @@
 import { cloudinary, getMessage, mongo } from "~/server";
 
 export default defineEventHandler(async (event) => {
-  await mongo.connect();
   const { creator, name, picture } = await readBody(event);
 
   try {
