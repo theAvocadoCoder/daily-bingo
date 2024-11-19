@@ -125,6 +125,32 @@ export default class MongoIO implements MongoInterface {
   }
 
   /****************************************************
+   * Get user by their email address
+   * 
+   * @param {string} email the user's email
+   * 
+   * @returns {Promise<User>} the found user
+   */
+  public async findUserByClerkId(id: string): Promise<User | null> {
+    if (!this.userCollection) {
+      throw new Error("findUser - Database not connected");
+    }
+    
+    const pipeline = [
+      {$match: {clerk_id: id}}
+    ]
+
+    const results = await this.userCollection.aggregate<User>(pipeline).next();
+
+    if (results === null) {
+      console.log("User not found: ", id);
+      return null;
+    } else {
+      return results;
+    }
+  }
+
+  /****************************************************
    * Insert a new user
    * 
    * @param {Partial<User>} theUser the new user to insert

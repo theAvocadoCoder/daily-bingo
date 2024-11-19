@@ -8,8 +8,15 @@ export default defineEventHandler(async (event) => {
   const theEmail = data.email_addresses[0].email_address;
 
   try {
-    let theUser = await mongo.findUserByEmail(theEmail);
+    let theUser = 
+      type === "user.created" ? 
+        await mongo.findUserByEmail(theEmail) : 
+      type === "session.created" ?
+        await mongo.findUserByClerkId(data.user_id) :
+        undefined;
+
     if (theUser === null) {
+      // The newly registered or signed in user is not yet in the db
       const userDetails: Partial<User> = {
         cards: [],
         clerk_id: data.id,
@@ -21,9 +28,10 @@ export default defineEventHandler(async (event) => {
       }
       theUser = await mongo.insertUser(userDetails);
       console.info("Create user %s completed", theEmail);
-
-    } else {
+    } else if (theUser) {
       console.info("Get user %s completed", data.first_name);
+    } else if (theUser === undefined) {
+      throw new Error("Invalid Clerk event type")
     }
 
     setResponseStatus(event, 200)
