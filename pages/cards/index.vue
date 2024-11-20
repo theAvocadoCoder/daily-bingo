@@ -92,7 +92,7 @@
           </template>
           <template v-else>
             <span>You haven't saved any cards yet.</span> 
-            <span>Try saving <nuxt-link to="/daily-card">your daily bingo card</nuxt-link></span>
+            <span>Try saving <nuxt-link to="/">your daily bingo card</nuxt-link></span>
           </template>
         </li> 
       </template>
