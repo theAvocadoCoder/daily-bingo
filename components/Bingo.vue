@@ -57,7 +57,9 @@
           </ConfirmDialog>
         </SignedIn>
         <SignedOut>
-          <SignInButton>Save</SignInButton>
+          <div class="text-center p-4">
+            <v-btn tag="nuxt-link" to="/sign-in" class="!bg-lime-700 !text-stone-50">Save</v-btn>
+          </div>
         </SignedOut>
       </div>
     </div>

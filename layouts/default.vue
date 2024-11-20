@@ -5,38 +5,36 @@
       prominent
     >
       <v-app-bar-nav-icon variant="text">
-        <nuxt-link :to="sessionUser ? '/daily-card' : '/'" class="text-2xl">DB</nuxt-link>
+        <nuxt-link to="/" class="text-2xl">DB</nuxt-link>
       </v-app-bar-nav-icon>
 
       <v-spacer></v-spacer>
 
-      <user-button />
-
-      <!-- <v-btn v-if="sessionUser" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
+      <v-btn v-if="isSignedIn" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
         <v-avatar icon="mdi-account" :image="sessionUser?.picture"></v-avatar>
       </v-btn>
       <ul
         tabindex="0"
         ref="menuRef"
         @focusout="handleFocusOut"
-        :class="`absolute z-10 ${menuIsOpen ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `"  
+        :class="`absolute z-10 ${menuIsOpen && isSignedIn ? 'flex' : 'hidden'} flex-col gap-4 items-center justify-center top-[calc(100%+.5rem)] right-0 w-fit h-fit p-4 rounded-sm lg:rounded-lg shadow-sm !bg-zinc-900 !text-slate-50 `"  
       >
         <li>
           <v-btn tabindex="0" tag="nuxt-link" to="/profile" prepend-icon="mdi-account" variant="text" text="Profile"></v-btn>
         </li>
 
         <li>
-          <v-btn tabindex="0" tag="nuxt-link" to="/sign-out" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
+          <sign-out-button>
+            <v-btn tabindex="0" prepend-icon="mdi-logout" variant="text" text="Sign out"></v-btn>
+          </sign-out-button>
         </li>
-      </ul> -->
-        
-      <nuxt-link v-if="!sessionUser" to="/sign-in">
-        <v-btn append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
-      </nuxt-link>
+      </ul>
+
+      <v-btn v-if="!isSignedIn" tag="nuxt-link" to="/sign-in" append-icon="mdi-login" variant="text" text="Sign in"></v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
-      v-if="sessionUser && $vuetify.display.lgAndUp"
+      v-if="isSignedIn && $vuetify.display.lgAndUp"
       permanent
       class="!bg-stone-800 !text-stone-50"
     >
@@ -67,13 +65,9 @@
 
       <template v-slot:append>
         <div class="p-5">
-          <v-btn
-            block
-            tag="nuxt-link"
-            to="/sign-out"
-            append-icon="mdi-logout"
-            text="Sign out"
-          ></v-btn>
+          <sign-out-button class="w-full">
+            <v-btn class="w-full" append-icon="mdi-logout" text="Sign out"></v-btn>
+          </sign-out-button>
         </div>
       </template>
     </v-navigation-drawer>
@@ -113,7 +107,7 @@
       "bg": "!bg-lime-50"
     },
     {
-      "to": "/daily-card",
+      "to": "/",
       "icon": "mdi-home",
       "value": "home",
       "bg": "!bg-lime-50"
@@ -130,9 +124,9 @@
   const menuRef = ref<HTMLUListElement>();
 
   const path = computed(() => useRoute().path);
-  // const { user: sessionUser } = useUser();
+
+  const { isSignedIn } = useSession();
   const sessionUser = useFetch("/api/users/current-user").data;
-  console.log(toValue(sessionUser));
 
   useEventListener(window, "keydown", handleA11yMenuBlur);
 
