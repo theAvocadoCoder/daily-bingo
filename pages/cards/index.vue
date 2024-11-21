@@ -2,7 +2,7 @@
   <div class="h-fit relative" v-if="!isLoaded">
     <Loading />
   </div>
-  <div class="h-fit relative" v-else-if="!isSignedIn">
+  <div class="h-fit relative flex justify-center" v-else-if="!isSignedIn">
     <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
   </div>
   <div class="h-fit relative" v-else>
