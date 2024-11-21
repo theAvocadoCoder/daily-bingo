@@ -17,7 +17,7 @@
               <!-- Image Preview -->
               <v-img
                 v-if="imageUploaded"
-                :src="userModel.picture"
+                :src="userModel.picture as string"
                 alt="Image preview"
                 class="w-28 h-28 object-cover"
               />
@@ -76,7 +76,12 @@
   const { getUser } = useRefreshUser();
 
   const sessionUser = computed(() => $storage.getData("bingoUser"));
-  const userModel = ref({
+  type userModel = {
+    display_name: string,
+    username: string,
+    picture: string | ArrayBuffer
+  }
+  const userModel = ref<userModel>({
     display_name: `${sessionUser.value.display_name}`,
     username: `${sessionUser.value.username}`,
     picture: `${sessionUser.value.picture}`,
@@ -86,13 +91,13 @@
   const editMode = ref(false);
   const saving = ref(false);
 
-  function handleImageChange(event) {
+  function handleImageChange(event: any) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        userModel.value.picture = e.target.result;
+        userModel.value.picture = e.target?.result!;
       };
 
       reader.readAsDataURL(file);
@@ -120,9 +125,9 @@
     if (editMode.value) {
       saving.value = true;
 
-      const edittedUser = {};
+      const edittedUser: Record<any, any> = {};
 
-      for (let property of Object.keys(userModel.value)) {
+      for (let property of Object.keys(userModel.value) as (keyof userModel)[]) {
         if (userModel.value[property] != sessionUser.value[property]) {
           // Only make request if the picture value has changed
           if (property == "picture") {
