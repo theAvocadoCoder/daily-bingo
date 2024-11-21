@@ -6,4 +6,6 @@
 
 <script setup>
 definePageMeta({ middleware: 'guest' });
+const { getUser } = useRefreshUser();
+onBeforeUnmount(() => getUser())
 </script>
