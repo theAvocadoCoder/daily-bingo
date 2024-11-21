@@ -1,5 +1,11 @@
 <template>
-  <div class="h-fit flex flex-col gap-5 relative">
+  <div class="h-fit relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit relative flex justify-center" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
+  </div>
+  <div class="h-fit flex flex-col gap-5 relative" v-else>
     <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
     <v-btn v-if="$vuetify.display.lgAndUp" :loading="saving" :class="`!fixed bottom-20 right-5 z-20 ${editMode ? '!bg-zinc-100 !text-zinc-600' : '!bg-zinc-700 !text-lime-50'}`" :append-icon="editMode ? 'mdi-content-save' : 'mdi-pencil'" :text="editMode ? 'SAVE' : 'EDIT'" @click="handleSaveEdit"></v-btn>
     <v-btn v-else="$vuetify.display.lgAndUp" :loading="saving" :class="`!fixed bottom-20 right-5 z-20 ${editMode ? '!bg-zinc-100 !text-zinc-600' : '!bg-zinc-700 !text-lime-50'}`" :icon="editMode ? 'mdi-content-save' : 'mdi-pencil'" @click="handleSaveEdit"></v-btn>
@@ -64,17 +70,12 @@
   </div>
 </template>
 
-<script setup lalng="ts"> 
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
+<script setup lang="ts">
   const { $storage } = useNuxtApp();
-  const { data, getSession } = useAuth();
-  const sessionUser = computed(() => data.value?.user);
+  const { isLoaded, isSignedIn } = useAuth();
+  const { getUser } = useRefreshUser();
+
+  const sessionUser = computed(() => $storage.getData("bingoUser"));
   const userModel = ref({
     display_name: `${sessionUser.value.display_name}`,
     username: `${sessionUser.value.username}`,
@@ -152,8 +153,7 @@ definePageMeta({
 
       }
 
-      await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value);
+      await getUser();
       saving.value = false;
     }
 
