@@ -3,7 +3,7 @@ import type Card from "~/interfaces/Card";
 
 export function useBingoTracking(card: Card) {
 
-  const { getSession } = useAuth();
+  const { getUser } = useRefreshUser();
   const { $storage, $toast } = useNuxtApp();
   const sessionUser = computed(() => $storage.getData("bingoUser"));
   const cardType = card.creator.user_id === null ? "dailyBingo" : "currentCard";
@@ -71,10 +71,9 @@ export function useBingoTracking(card: Card) {
     });
 
     // Update local storage
-   saveProgress(newCard, { saved: true })
+    saveProgress(newCard, { saved: true })
 
-    // @ts-expect-error
-    await getSession(true);
+    await getUser();
     $storage.setData("bingoUser", sessionUser.value);
     $toast.success(`${name} saved`);
   }

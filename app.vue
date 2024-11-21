@@ -9,10 +9,9 @@
 </template>
 
 <script setup lang="ts">
-  // const { $storage } = useNuxtApp();
+  const { getUser } = useRefreshUser();
 
-  // onMounted(() => {
-  //   if ($storage.getData("bingoUser") !== data.value?.user)
-  //     $storage.setData("bingoUser", data.value?.user)
-  // })
+  onMounted(() => {
+    getUser();
+  })
 </script>
