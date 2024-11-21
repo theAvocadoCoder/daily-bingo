@@ -1,5 +1,11 @@
 <template>
-  <div class="h-fit [&>*]:mx-auto relative">
+  <div class="h-fit [&>*]:mx-auto relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit [&>*]:mx-auto relative flex justify-center" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
+  </div>
+  <div class="h-fit [&>*]:mx-auto relative" v-else>
     <v-btn tag="nuxt-link" to="/groups/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
     <h1 class="sr-only">
       Your groups
@@ -99,22 +105,16 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
   import type User from "~/interfaces/User";
   import type Group from "~/interfaces/Group";
 
-  const { data } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { $storage } = useNuxtApp();
   const route = useRoute();
 
   const groupDialog = ref(false);
 
-  const sessionUser = computed(() => data.value?.user as User);
+  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
 
   const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
 

@@ -1,5 +1,11 @@
 <template>
-  <v-layout>
+  <div class="h-fit relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit relative flex justify-center" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
+  </div>
+  <v-layout v-else>
     <div class="relative h-full w-screen !overflow-hidden flex flex-col bg-zinc-300">
 
       <v-app-bar class="!fixed !top-0 !bg-stone-950 !text-stone-50 !px-3 lg:!px-5 !w-full [&>*:first-child]:!overflow-visible" prominent>
@@ -84,7 +90,7 @@ definePageMeta({
 
   const { $storage } = useNuxtApp();
 
-  const { data } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
   const gStore = useGroupStore();
   const { scrollY } = useUpdateScroll();
@@ -95,7 +101,7 @@ definePageMeta({
   const messagesContainer = ref<HTMLDivElement>();
 
   const groupName = computed(() => gStore.group?.name);
-  const sessionUser = computed(() => data.value?.user as User);
+  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
 
   const sending = ref(false);
   const newMessage = ref("");

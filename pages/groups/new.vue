@@ -1,5 +1,11 @@
 <template>
-  <div class="h-full bg-lime-50 relative">
+  <div class="h-fit bg-lime-50 relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit bg-lime-50 relative flex justify-center" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
+  </div>
+  <div class="h-full bg-lime-50 relative" v-else>
     <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
 
     <h1 class="sr-only">Create a New Group</h1>
@@ -62,20 +68,13 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
   import type Group from '~/interfaces/Group';
   import type User from '~/interfaces/User';
   import { Filter } from "bad-words";
 
   const { $storage, $toast } = useNuxtApp();
-  const { data, getSession } = useAuth();
-  const sessionUser = computed(() => data.value?.user as User);
+  const { isLoaded, isSignedIn } = useAuth();
+  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
   const router = useRouter();
   const creating = ref(false);
   const newGroup = ref<{
@@ -163,9 +162,8 @@ definePageMeta({
           });
         }
       });
-      // @ts-expect-error
-      await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value);
+
+      await getUser();
       creating.value = false;
 
       router.push(`/groups?s=${newGroup.value.name.trim()}`);
