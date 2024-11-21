@@ -5,11 +5,11 @@ import { useBingoTracking } from "./useBingoTracking";
 
 export function useBingoCard(type: string) {
 
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   
   const bingoCard = ref();
   watchEffect(() => {
-    bingoCard.value = toValue(() => $storage.getData(type));
+    bingoCard.value = toValue(() => $lstorage.getData(type));
   });
 
   const { saveCard, resetCard, updateWins } = useBingoTracking(bingoCard.value);
@@ -22,7 +22,7 @@ export function useBingoCard(type: string) {
     }
   });
 
-  useEventListener(window, "storage-update", handleCardUpdate);
+  useEventListener(window, "lstorage-update", handleCardUpdate);
 
   type StorageUpdate = {
     key: string,
@@ -43,8 +43,8 @@ export function useBingoCard(type: string) {
     else { registerCell(cell.row, cell.column) }
     cell.marked = !cell.marked;
 
-    const currentCard = $storage.getData(cardType);
-    $storage.setData(cardType, {...currentCard, cells: bingoCard.value.cells});
+    const currentCard = $lstorage.getData(cardType);
+    $lstorage.setData(cardType, {...currentCard, cells: bingoCard.value.cells});
 
     if (bingoCard.value.saved) saveCard();
   }

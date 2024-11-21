@@ -88,7 +88,7 @@ definePageMeta({
     layout: false
   })
 
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
 
   const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
@@ -101,7 +101,7 @@ definePageMeta({
   const messagesContainer = ref<HTMLDivElement>();
 
   const groupName = computed(() => gStore.group?.name);
-  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
+  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
 
   const sending = ref(false);
   const newMessage = ref("");
@@ -165,7 +165,7 @@ definePageMeta({
     sending.value = false;
 
     gStore.fetchGroup(`${groupId}`);
-    $storage.setData("currentGroup", gStore.group);
+    $lstorage.setData("currentGroup", gStore.group);
   }
 
   onMounted(async () => {
@@ -186,7 +186,7 @@ definePageMeta({
   })
 
   onUnmounted(async () => {
-    $storage.setData("currentGroup", null);
+    $lstorage.setData("currentGroup", null);
 
     ably.value?.connection.close();
 

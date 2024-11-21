@@ -20,13 +20,13 @@
 <script setup lang="ts">
   import type Group from '~/interfaces/Group';
 
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const gStore = useGroupStore();
   const { scrollY } = useUpdateScroll();
   const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
 
-  const groupDetails = ref($storage.getData("currentGroup") as Group);
+  const groupDetails = ref($lstorage.getData("currentGroup") as Group);
 
 
   onMounted(async () => {

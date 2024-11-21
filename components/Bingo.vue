@@ -74,7 +74,7 @@
 </template> 
 
 <script setup lang="ts">
-  const {$storage} = useNuxtApp();
+  const {$lstorage} = useNuxtApp();
   
   const props = defineProps<{
     type: string,
@@ -87,7 +87,7 @@
 
   const cardIsSaved = computed(() => bingoCard.value.saved);
   const cardName = ref(`${bingoCard.value.name}`);
-  const sessionUser = computed(() => $storage.getData("bingoUser"));
+  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
   const ownCard = (
     bingoCard.value.creator.user_id === sessionUser.value._id
     || bingoCard.value.creator.user_id === null

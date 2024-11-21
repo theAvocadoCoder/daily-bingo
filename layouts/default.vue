@@ -123,11 +123,11 @@
   const menuIsOpen = ref(false);
   const menuRef = ref<HTMLUListElement>();
 
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const path = computed(() => useRoute().path);
 
   const { isSignedIn } = useSession();
-  const sessionUser = computed(() => $storage.getData("bingoUser"));
+  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
 
   useEventListener(window, "keydown", handleA11yMenuBlur);
 

@@ -4,8 +4,8 @@ import type Card from "~/interfaces/Card";
 export function useBingoTracking(card: Card) {
 
   const { getUser } = useRefreshUser();
-  const { $storage, $toast } = useNuxtApp();
-  const sessionUser = computed(() => $storage.getData("bingoUser"));
+  const { $lstorage, $toast } = useNuxtApp();
+  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
   const cardType = card.creator.user_id === null ? "dailyBingo" : "currentCard";
 
   const STATIC = {
@@ -21,7 +21,7 @@ export function useBingoTracking(card: Card) {
 
   // Save current progress locally
   function saveProgress(card: Card, properties: any) {
-    $storage.setData(cardType, { ...card, ...properties }); 
+    $lstorage.setData(cardType, { ...card, ...properties }); 
   }
 
   // Sync current progress with DB
@@ -74,7 +74,7 @@ export function useBingoTracking(card: Card) {
     saveProgress(newCard, { saved: true })
 
     await getUser();
-    $storage.setData("bingoUser", sessionUser.value);
+    $lstorage.setData("bingoUser", sessionUser.value);
     $toast.success(`${name} saved`);
   }
 
@@ -84,7 +84,7 @@ export function useBingoTracking(card: Card) {
     for (let i = 0; i < card.cells.length; i++) {
       card.cells[i].marked = false;
     }
-    $storage.setData(cardType, {...card, cells: card.cells});
+    $lstorage.setData(cardType, {...card, cells: card.cells});
 
     if (card.saved) saveCard();
   }

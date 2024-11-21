@@ -109,12 +109,12 @@
 <script setup lang="ts">
   import type User from "~/interfaces/User";
   import type Card from "~/interfaces/Card";
-  const { $storage, $toast } = useNuxtApp();
+  const { $lstorage, $toast } = useNuxtApp();
   const route = useRoute();
   const { isLoaded, isSignedIn } = useAuth();
   const { getUser } = useRefreshUser();
 
-  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
+  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
   const cardModel = ref({
     card_name: ""
   });

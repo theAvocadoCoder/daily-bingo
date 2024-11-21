@@ -1,10 +1,10 @@
 
 export function useRefreshUser() {
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
 
   async function getUser() {
     const sessionUser = await $fetch("/api/users/current-user");
-    $storage.setData("bingoUser", sessionUser);
+    $lstorage.setData("bingoUser", sessionUser);
   }
 
   return {

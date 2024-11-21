@@ -71,11 +71,11 @@
 </template>
 
 <script setup lang="ts">
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
   const { getUser } = useRefreshUser();
 
-  const sessionUser = computed(() => $storage.getData("bingoUser"));
+  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
   type userModel = {
     display_name: string,
     username: string,

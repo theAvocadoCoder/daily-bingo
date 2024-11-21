@@ -109,12 +109,12 @@
   import type Group from "~/interfaces/Group";
 
   const { isLoaded, isSignedIn } = useAuth();
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const route = useRoute();
 
   const groupDialog = ref(false);
 
-  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
+  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
 
   const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
 

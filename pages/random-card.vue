@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
   definePageMeta({ middleware: "guest" })
-  const { $storage, $toast } = useNuxtApp();
+  const { $lstorage, $toast } = useNuxtApp();
   const { userId } = useAuth();
   
   const card = ref();
@@ -18,7 +18,7 @@
   const newToastInstance = ref();
 
   onMounted(() => {
-    card.value = $storage.getData("dailyBingo");
+    card.value = $lstorage.getData("dailyBingo");
     // If card exists, check if it is up to or older than a day
     if (card.value) {
       const MS_IN_A_DAY = 8.64e7;
@@ -38,8 +38,8 @@
   })
 
   onMounted(() => {
-    const sessionUser = $storage.getData("bingoUser");
-    if (!sessionUser) $storage.setData("bingoUser", { _id: userId.value });
+    const sessionUser = $lstorage.getData("bingoUser");
+    if (!sessionUser) $lstorage.setData("bingoUser", { _id: userId.value });
   })
 
   onUnmounted(() => {
@@ -50,7 +50,7 @@
     const results = await $fetch("/api/cards/daily");
     if (results) {
       card.value = {...results, saved: false};
-      $storage.setData("dailyBingo", card.value);
+      $lstorage.setData("dailyBingo", card.value);
     }
   }
 </script>

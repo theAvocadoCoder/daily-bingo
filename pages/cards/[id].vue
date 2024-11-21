@@ -21,11 +21,11 @@
 </template>
 
 <script setup lang="ts">
-  const { $storage } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const route = useRoute();
   const { isLoaded, isSignedIn } = useAuth();
 
-  let card = ref($storage.getData("currentCard"));
+  let card = ref($lstorage.getData("currentCard"));
   let error = ref(null);
 
   const cardId = route.params.id as unknown;
@@ -37,14 +37,14 @@
       const results = await $fetch(`/api/cards/${cardId}`);
       if (results) {
         card.value = results;
-        $storage.setData("currentCard", {...card.value, saved: true});
+        $lstorage.setData("currentCard", {...card.value, saved: true});
         cardName = computed(() => card.value.name)
       }
     }
   })
 
   onUnmounted(() => {
-    $storage.setData("currentCard", null);
+    $lstorage.setData("currentCard", null);
   });
   
 </script>

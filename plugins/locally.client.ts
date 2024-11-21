@@ -1,7 +1,7 @@
 export default defineNuxtPlugin(() => {
   return {
     provide: {
-      storage: {
+      lstorage: {
         getData(key: string) {
           if (import.meta.client) {
             const itemString = localStorage.getItem(key);
@@ -18,7 +18,7 @@ export default defineNuxtPlugin(() => {
           if (import.meta.client) {
             localStorage.setItem(key, JSON.stringify(value));
             // Emit a custom event to notify other components
-            window.dispatchEvent(new CustomEvent("storage-update", { 
+            window.dispatchEvent(new CustomEvent("lstorage-update", { 
               detail: { key, value } 
             }));
             

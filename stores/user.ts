@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import type User from "~/interfaces/User";
 
 export const useUserStore = defineStore("user", () => {
-  const { $storage } = useNuxtApp(); 
+  const { $lstorage } = useNuxtApp(); 
   const user = ref<User>();
   const getUser = computed(() => user.value);
   
@@ -13,7 +13,7 @@ export const useUserStore = defineStore("user", () => {
         const userId = "66d8754397e9d9f8ccb56203";
         const data = await $fetch(`/api/users/${userId}`);
         user.value = data as unknown as User;
-        $storage.setData("bingoUser", user.value as User);
+        $lstorage.setData("bingoUser", user.value as User);
       } else {
         user.value = userInStorage;
       }

@@ -72,9 +72,9 @@
   import type User from '~/interfaces/User';
   import { Filter } from "bad-words";
 
-  const { $storage, $toast } = useNuxtApp();
+  const { $lstorage, $toast } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
-  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
+  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
   const router = useRouter();
   const creating = ref(false);
   const newGroup = ref<{

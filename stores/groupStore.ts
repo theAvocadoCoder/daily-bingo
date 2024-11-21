@@ -4,8 +4,7 @@ import { ref } from 'vue';
 import type Group from '~/interfaces/Group';
 
 export const useGroupStore = defineStore('group', () => {
-  const { $storage } = useNuxtApp();
-  const { data } = useAuth();
+  const { $lstorage } = useNuxtApp();
 
   const group = ref<Group | null>();
   const getGroup = computed(() => group.value);
@@ -22,7 +21,7 @@ export const useGroupStore = defineStore('group', () => {
       if (!results) throw new Error('Failed to fetch group data');
       
       group.value = results;
-      $storage.setData("currentGroup", group.value);
+      $lstorage.setData("currentGroup", group.value);
     }
     catch (err: any) {
       error.value = err;
@@ -34,7 +33,7 @@ export const useGroupStore = defineStore('group', () => {
 
   async function clearGroup() {
     group.value = null
-    $storage.setData("currentGroup", group.value);
+    $lstorage.setData("currentGroup", group.value);
   }
 
   return { group: getGroup, isLoading, error, fetchGroup, clearGroup };
