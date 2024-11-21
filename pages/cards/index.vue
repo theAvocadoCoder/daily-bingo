@@ -1,5 +1,11 @@
 <template>
-  <div class="h-fit relative">
+  <div class="h-fit relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit relative" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="sign/in">Sign in to view this page</v-btn>
+  </div>
+  <div class="h-fit relative" v-else>
     <v-btn tag="nuxt-link" to="/cards/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
     <h1 class="sr-only">
       Your Cards
@@ -101,20 +107,14 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
   import type User from "~/interfaces/User";
   import type Card from "~/interfaces/Card";
   const { $storage, $toast } = useNuxtApp();
-  const { data, getSession } = useAuth();
   const route = useRoute();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { getUser } = useRefreshUser();
 
-  const sessionUser = computed(() => data.value?.user as User);
+  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
   const cardModel = ref({
     card_name: ""
   });
@@ -184,7 +184,7 @@ definePageMeta({
           }),
         });
 
-        await getSession(true);
+        await getUser();
 
         userCards.value = await $fetch<Card[]>("/api/cards", {
           method: "POST",
@@ -199,7 +199,7 @@ definePageMeta({
           }),
         });
       }
-      // $storage.setData("bingoUser", sessionUser.value);
+      await getUser();
       cardModel.value.card_name = "";
       saving.value = false;
       editMode.value = false;
@@ -256,9 +256,7 @@ definePageMeta({
         }),
       });
 
-      // @ts-expect-error
-      await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value);
+      await getUser();
       $toast.success("Card deleted");
       saving.value = false;
       selectedCardId.value = '';

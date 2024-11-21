@@ -1,5 +1,11 @@
 <template>
-  <div class="flex flex-col gap-3 justify-center items-center relative">
+  <div class="flex flex-col gap-3 justify-center items-center relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="flex flex-col gap-3 justify-center items-center relative" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="/sign-in">Sign in to view this page</v-btn>
+  </div>
+  <div class="flex flex-col gap-3 justify-center items-center relative" v-else>
     <v-btn tag="nuxt-link" to="/cards/new" :class="`!fixed bottom-20 right-5 z-20 p-5 !bg-lime-700 hover:!bg-lime-900 !text-lime-50`" icon="mdi-plus"></v-btn>
     <div class="flex flex-col sm:flex-row sm:items-center w-full md:gap-10">
       <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
@@ -15,15 +21,9 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
   const { $storage } = useNuxtApp();
   const route = useRoute();
+  const { isLoaded, isSignedIn } = useAuth();
 
   let card = ref($storage.getData("currentCard"));
   let error = ref(null);

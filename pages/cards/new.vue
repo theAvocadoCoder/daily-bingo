@@ -1,5 +1,11 @@
 <template>
-  <div class="h-fit relative">
+  <div class="h-fit relative" v-if="!isLoaded">
+    <Loading />
+  </div>
+  <div class="h-fit relative" v-else-if="!isSignedIn">
+    <v-btn tag="nuxt-link" to="/sign-in">Sign in to view this page</v-btn>
+  </div>
+  <div class="h-fit relative" v-else>
     <v-btn class="" icon="mdi-arrow-left" variant="text" @click="$router.back()"></v-btn>
     <h1 class="sr-only">Create a New Card</h1>
     <v-text-field
@@ -44,20 +50,14 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
-
   import type Card from "~/interfaces/Card";
   import type User from "~/interfaces/User";
   import { Filter } from "bad-words";
 
   const { $storage, $toast } = useNuxtApp();
-  const { data, getSession } = useAuth();
-  const sessionUser = computed(() => data.value?.user as User);
+  const { isLoaded, isSignedIn } = useAuth();
+  const { getUser } = useRefreshUser();
+  const sessionUser = computed(() => $storage.getData("bingoUser") as User);
   const router = useRouter();
   const creating = ref(false);
   const newCard = ref<{
@@ -141,9 +141,8 @@ definePageMeta({
           });
         }
       });
-      // @ts-expect-error
-      await getSession(true);
-      $storage.setData("bingoUser", sessionUser.value);
+
+      await getUser();
       creating.value = false;
       
       router.push(`/cards?s=${newCard.value.name.trim()}`);
