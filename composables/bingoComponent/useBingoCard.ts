@@ -5,15 +5,18 @@ import { useBingoTracking } from "./useBingoTracking";
 
 export function useBingoCard(type: string) {
 
-  const { $lstorage } = useNuxtApp();
+  const { $lstorage, $sStorage } = useNuxtApp();
   
   const bingoCard = ref();
+  const storage = (type === "currentCard" ? $sStorage : $lstorage);
+  
   watchEffect(() => {
-    bingoCard.value = toValue(() => $lstorage.getData(type));
+    bingoCard.value = toValue(() => (
+      storage.getData(type)
+    ));
   });
 
   const { saveCard, resetCard, updateWins } = useBingoTracking(bingoCard.value);
-  const cardType = bingoCard.value.creator.user_id === null ? "dailyBingo" : "currentCard";
 
   // Display markings on marked cells
   onMounted(() => {
@@ -23,6 +26,7 @@ export function useBingoCard(type: string) {
   });
 
   useEventListener(window, "lstorage-update", handleCardUpdate);
+  useEventListener(window, "sStorage-update", handleCardUpdate);
 
   type StorageUpdate = {
     key: string,
@@ -43,8 +47,8 @@ export function useBingoCard(type: string) {
     else { registerCell(cell.row, cell.column) }
     cell.marked = !cell.marked;
 
-    const currentCard = $lstorage.getData(cardType);
-    $lstorage.setData(cardType, {...currentCard, cells: bingoCard.value.cells});
+    const currentCard = getCard();
+    setCard({...currentCard, cells: bingoCard.value.cells});
 
     if (bingoCard.value.saved) saveCard();
   }
@@ -57,6 +61,14 @@ export function useBingoCard(type: string) {
 
     updateWins();
 
+  }
+
+  function setCard(value: any) {
+    storage.setData(type, value);
+  }
+
+  function getCard() {
+    return storage.getData(type);
   }
 
   function registerCell(row: number, column: number)

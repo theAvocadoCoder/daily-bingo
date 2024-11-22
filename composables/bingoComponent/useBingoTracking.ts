@@ -4,7 +4,7 @@ import type Card from "~/interfaces/Card";
 export function useBingoTracking(card: Card) {
 
   const { getUser } = useRefreshUser();
-  const { $lstorage, $toast } = useNuxtApp();
+  const { $lstorage, $sStorage, $toast } = useNuxtApp();
   const sessionUser = computed(() => $lstorage.getData("bingoUser"));
   const cardType = card.creator.user_id === null ? "dailyBingo" : "currentCard";
 
@@ -84,7 +84,7 @@ export function useBingoTracking(card: Card) {
     for (let i = 0; i < card.cells.length; i++) {
       card.cells[i].marked = false;
     }
-    $lstorage.setData(cardType, {...card, cells: card.cells});
+    (cardType === "currentCard" ? $sStorage : $lstorage).setData(cardType, {...card, cells: card.cells});
 
     if (card.saved) saveCard();
   }
