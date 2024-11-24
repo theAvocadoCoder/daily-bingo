@@ -20,10 +20,8 @@ export default defineEventHandler(async (event) => {
 
   if (imageURL) {
 
-    let updatedUser;
-
     try {
-      updatedUser = await mongo.updateUser(userId, { picture: imageURL.secure_url })
+      await mongo.updateUser(userId, { picture: imageURL.secure_url })
     } catch(error) {
       console.error("Error updating user's picture", error);
       const message = getMessage(error);
@@ -31,7 +29,7 @@ export default defineEventHandler(async (event) => {
     }
 
     setResponseStatus(event, 200);
-    return updatedUser;
+    return imageURL.secure_url;
 
   } else {
     setResponseStatus(event, 500, "Could not update picture");
