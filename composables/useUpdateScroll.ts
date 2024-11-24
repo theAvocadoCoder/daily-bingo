@@ -1,6 +1,7 @@
 
 export function useUpdateScroll() {
-  const scrollY = ref();
+  const scrollY = ref(0);
+  const preservedY = ref(0);
 
   useEventListener(window, "scroll", updateScrollPosition);
 
@@ -8,5 +9,9 @@ export function useUpdateScroll() {
     scrollY.value = window.scrollY;
   }
 
-  return { scrollY };
+  function preserveScrollPosition(posY: number) {
+    preservedY.value = posY
+  }
+
+  return { scrollY, preservedY, preserveScrollPosition };
 }

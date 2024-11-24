@@ -11,7 +11,7 @@
       <v-app-bar class="!fixed !top-0 !bg-stone-950 !text-stone-50 !px-3 lg:!px-5 !w-full [&>*:first-child]:!overflow-visible" prominent>
         
         <v-btn tag="nuxt-link" to="/groups" prepend-icon="mdi-arrow-left" class="!w-fit !h-fit !p-3">
-          <v-avatar :image="gStore.group?.picture || sessionUser?.picture"></v-avatar>
+          <v-avatar :image="toValue(group)?.picture || sessionUser?.picture"></v-avatar>
         </v-btn>
 
         <v-app-bar-title @click="toggleDetails(true)" class="cursor-pointer">{{ groupName }}</v-app-bar-title>
@@ -36,12 +36,13 @@
         <v-app class="!h-full !w-full !overflow-hidden py-5 xl:py-10 !bg-transparent overflow-y-auto">
           <!-- Messages -->
           <div ref="messagesContainer" class="mt-28 mb-20 w-full h-full !overflow-hidden max-w-5xl mx-auto">
-            <span v-if="gStore.error">
-              Error message
+            <span v-if="error">
+              Error message: {{ error }}
             </span>
 
             <!-- Message -->
-            <template v-else-if="gStore.group" v-for="message in messages" :key="getId(message)">
+            <template v-else-if="group" v-for="message in groupsMessages[groupId].messages" :key="message.id">
+              <div v-if="message.id && message.id === groupsMessages[groupId].lastReadId" :class="getMessageStyle(null)">New Messages</div>
               <div :class="`${getMessageStyle(message?.sender?.user_id)} mb-5 p-5 relative w-fit rounded-md`">
                 <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
                 <p>{{ message.text }}</p>
@@ -83,50 +84,62 @@ definePageMeta({
   import type { Message } from "~/interfaces/Group";
   import type User from "~/interfaces/User";
   import { useGroupStore } from "~/stores/groupStore";
+  import { useGlobalStore } from "~/stores/globalStore";
+  import { useAblyStore } from "~/stores/ablyStore";
+  import { storeToRefs } from "pinia";
 
   definePageMeta({
     layout: false
   })
 
-  const { $lstorage } = useNuxtApp();
-
+  const { $lstorage, $sStorage, $toast } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
+
   const gStore = useGroupStore();
-  const { scrollY } = useUpdateScroll();
+  const store = useGlobalStore();
+  const ablyStore = useAblyStore();
+
+  const { error, group } = storeToRefs(gStore);
+  const { clearGroup, fetchGroup } = gStore;
+  const { scrollY } = storeToRefs(store);
+  const { preserveScrollPosition } = store;
+  const { newMessage: pubSubMessage } = storeToRefs(ablyStore);
+  const { publishMessage } = ablyStore;
 
   const groupId = route.params.id as unknown;
 
   const showDetailsPanel = ref(route.name?.toString().includes("details"));
   const messagesContainer = ref<HTMLDivElement>();
 
-  const groupName = computed(() => gStore.group?.name);
+  const groupName = computed(() => toValue(group)?.name);
   const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+  const groupsMessages = ref($lstorage.getData("groupsMessages"));
+
+  watch(pubSubMessage, () => {
+    $toast.info(`${pubSubMessage.value.sender.username}: ${pubSubMessage.value.text}`);
+    groupsMessages.value = $lstorage.getData("groupsMessages")
+  })
 
   const sending = ref(false);
   const newMessage = ref("");
-  const messages = ref<Group['history'] | null>(null);
   const ably = ref();
 
   function scrollToBottom(preserve: boolean = false) {
-    console.log("preserve", preserve,"scrollY", toValue(scrollY));
-    messagesContainer.value!.scrollTop = preserve ? toValue(scrollY) : messagesContainer.value!.scrollHeight;
+    // messagesContainer.value!.scrollTop = preserve ? toValue(scrollY) : messagesContainer.value!.scrollHeight;
   }
 
   function toggleDetails(toOpen: boolean) {
     showDetailsPanel.value = toOpen;
 
     if (toOpen) {
-      setTimeout(() => scrollToBottom, 50);
-      navigateTo(`/groups/${groupId}/details`);
+      // setTimeout(() => scrollToBottom, 50);
+      console.log("y b4 prsrv", toValue(scrollY))
+      preserveScrollPosition(toValue(scrollY));
+      navigateTo(`/groups/${groupId}/details`, {scroll: toValue(scrollY)});
     } else {
       navigateTo(`/groups/${groupId}`);
     }
-  }
-
-  function getId(message: Message) {
-    const randomFourDigits = Math.floor(Math.random() * 10000);
-    return `${message.sender.user_id}-${message.text.slice(5)}-${randomFourDigits}`;
   }
 
   function getMessageStyle(id: string) {
@@ -146,66 +159,26 @@ definePageMeta({
     if (newMessage.value?.trim() === '') return
     sending.value = true;
 
-    const messageData = {
-      text: newMessage.value?.trim(),
-      sender: {
-        user_id: sessionUser.value?._id,
-        username: sessionUser.value?.username,
-      },
-      attached: []
-    };
-    
-    const channel = ably.value?.channels.get(`group-${gStore.group?._id}`);
-
-    // Publish message
-    await channel.publish("message", messageData);
-    // scrollToBottom();
+    publishMessage(newMessage.value?.trim(), []);
 
     newMessage.value = "";
     sending.value = false;
-
-    gStore.fetchGroup(`${groupId}`);
-    $lstorage.setData("currentGroup", gStore.group);
   }
 
-  onMounted(async () => {
-    if (ably.value) return;
-
-    const { $ably } = useNuxtApp();
-    ably.value = await $ably(`${sessionUser.value?._id}` || sessionUser.value?.username);
-
-    const channel = ably.value?.channels.get(`group-${gStore.group?._id}`);
-
-    // Subscribe to the message event
-    channel.subscribe('message', (message: AblyMessage) => {
-      if (message.data === messages.value![messages.value!.length - 1]) return 
-      messages.value?.push({
-        ...message.data
-      });
-    });
-  })
-
-  onUnmounted(async () => {
-    $lstorage.setData("currentGroup", null);
-
-    ably.value?.connection.close();
-
-    await ably.value?.connection.once("closed", function () {
-      console.log("Closed the connection to Ably.")
-    });
-  })
-
   onMounted(async() => {
-    await gStore.fetchGroup(`${groupId}`);
-    messages.value = gStore.group?.history || null;
-
-    // Scroll to bottom of chat
-    // setTimeout(scrollToBottom, 0);
-    console.log("path", route.path);
+    await fetchGroup(`${groupId}`).then(() => {  
+      const newValue = {...groupsMessages.value[groupId]};
+  
+      newValue.messages = [...(toValue(group)?.history)];
+  
+      $lstorage.setData(
+        "groupsMessages", 
+        {...groupsMessages.value, [groupId]: newValue});
+    })
   })
 
   onUnmounted(() => {
-    gStore.clearGroup();
+    clearGroup();
   })
 </script>
 

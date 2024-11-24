@@ -19,10 +19,14 @@
 
 <script setup lang="ts">
   import type Group from '~/interfaces/Group';
+  import { storeToRefs } from "pinia";
 
   const { $lstorage } = useNuxtApp();
   const gStore = useGroupStore();
-  const { scrollY } = useUpdateScroll();
+  const store = useGlobalStore();
+  const { group } = storeToRefs(gStore);
+  const { fetchGroup } = gStore;
+  const { preservedY } = storeToRefs(store);
   const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
 
@@ -30,10 +34,11 @@
 
 
   onMounted(async () => {
-    document.documentElement.scrollTop = toValue(scrollY);
+    document.documentElement.scrollTop = preservedY;
+    console.log("y on mount", toValue(preservedY));
     if (!groupDetails.value) {
-      await gStore.fetchGroup(`${route.params.id}`);
-      groupDetails.value = gStore.group!;
+      await fetchGroup(`${route.params.id}`);
+      groupDetails.value = group!;
     }
 
   })
