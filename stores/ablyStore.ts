@@ -16,7 +16,7 @@ interface groupMessage {
 type userGroups = Record< string, {lastReadId: string, messages: groupMessage[]} >
 
 export const useAblyStore = defineStore("ably", () => {
-  const { $ably, $lstorage, $sStorage } = useNuxtApp();
+  const { $ably, $lstorage, $sStorage, $toast } = useNuxtApp();
 
   const sessionUser = computed(() => $lstorage.getData("bingoUser"));
   const groupsMessages = computed(() => $lstorage.getData("groupsMessages") as userGroups);
@@ -54,6 +54,9 @@ export const useAblyStore = defineStore("ably", () => {
         });
         $lstorage.setData("groupsMessages", {...groupsMessages.value, [groupIds[i]]: thisGroup});
         newMessage.value = message.data;
+        if (message.data.sender.username !== sessionUser.value.username) {
+          $toast.info(`${message.data.sender.username}: ${message.data.text}`);
+        }
       });
     }
   }

@@ -117,7 +117,6 @@ definePageMeta({
   const groupsMessages = ref($lstorage.getData("groupsMessages"));
 
   watch(pubSubMessage, () => {
-    $toast.info(`${pubSubMessage.value.sender.username}: ${pubSubMessage.value.text}`);
     groupsMessages.value = $lstorage.getData("groupsMessages")
   })
 
