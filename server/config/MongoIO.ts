@@ -33,6 +33,7 @@ export default class MongoIO implements MongoInterface {
   public async connect(): Promise<void> {
 
     if (this.isConnected && this.client) return;
+    console.log("client or isConnected is falsy")
 
     const connectionString = process.env.ATLAS_URI as string;
     const dbName = runtimeDbName;
