@@ -27,7 +27,7 @@ export const useAblyStore = defineStore("ably", () => {
   function setStorageData() {
     if (!groupsMessages.value) {
       const userGroups: userGroups = {}
-      sessionUser.value.groups.map((group: string) => userGroups[group] = {lastReadId: "", messages: []});
+      sessionUser.value.groups?.map((group: string) => userGroups[group] = {lastReadId: "", messages: []});
       $lstorage.setData("groupsMessages", userGroups);
     }
   }

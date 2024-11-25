@@ -41,7 +41,7 @@
             </span>
 
             <!-- Message -->
-            <template v-else-if="group" v-for="message in groupsMessages[groupId].messages" :key="message.id">
+            <template v-else-if="group" v-for="message in groupsMessages[groupId]?.messages" :key="message.id">
               <div v-if="message.id && message.id === groupsMessages[groupId].lastReadId" :class="getMessageStyle(null)">New Messages</div>
               <div :class="`${getMessageStyle(message?.sender?.user_id)} mb-5 p-5 relative w-fit rounded-md`">
                 <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>

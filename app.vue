@@ -17,8 +17,8 @@
   const { setStorageData, subscribeToUserGroups, disconnectAbly } = ablyStore;
 
   onMounted(() => {
-    getUser();
     if (isSignedIn) {
+      getUser();
       setStorageData();
       subscribeToUserGroups();
     }
