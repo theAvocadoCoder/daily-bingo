@@ -1,4 +1,4 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Referrer Policy = "strict-originpwhen-cross-origin"
+    Referrer-Policy = "strict-originpwhen-cross-origin"
