@@ -1,7 +1,7 @@
 /***********************************************
  * Class MongoIO implements all mongodb I-O
  */
-import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId, UpdateFilter } from "mongodb";
+import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId, UpdateFilter, ServerApiVersion } from "mongodb";
 import MongoInterface from "~/interfaces/MongoInterface";
 import User from "~/interfaces/User";
 import Card from "~/interfaces/Card";
@@ -27,24 +27,33 @@ export default class MongoIO implements MongoInterface {
    */
   constructor() {}
 
+  private preConnect(): void {
+
+    const connectionString = process.env.ATLAS_URI as string;
+
+    this.client = new MongoClient(connectionString, {
+      serverApi: {
+          version: ServerApiVersion.v1,
+          strict: true,
+          deprecationErrors: true,
+      },
+      maxIdleTimeMS: 60000,
+    });
+
+  }
+
   /***************************************************
    * Connect to mongodb database
    */
   public async connect(): Promise<void> {
 
-    if (this.isConnected && this.client) return;
-    console.log("client or isConnected is falsy")
+    if (this.client) return;
 
-    const connectionString = process.env.ATLAS_URI as string;
+    this.preConnect();
     const dbName = runtimeDbName;
 
-    this.client = new MongoClient(connectionString);
-
     try {
-      await this.client.connect();
-      this.isConnected = true;
-
-      this.db = this.client.db(dbName);
+      this.db = this.client!.db(dbName);
       this.userCollection = this.db.collection("users");
       this.cardCollection = this.db.collection("cards");
       this.groupCollection = this.db.collection("groups");

@@ -2,7 +2,6 @@ import MongoIO from "./config/MongoIO";
 import { v2 as cloudinary } from 'cloudinary';
 
 const mongo = new MongoIO();
-mongo.connect();
 
 const { cloudinaryCloudName, cloudinaryApiKey, cloudinaryApiSecret } = useRuntimeConfig();
 
