@@ -1,4 +1,10 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    Referrer-Policy = "strict-originpwhen-cross-origin"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+query = { "__clerk_handshake" = ":handshake" }
