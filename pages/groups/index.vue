@@ -44,22 +44,21 @@
                 icon="mdi-group"
                 :image="group.picture === '' ? '/img/default-group-img.webp' : group.picture"
                 size="64"
-                @click.prevent="groupDialog = true"
+                @click.prevent="openGroupDialog(`${group._id}`, true)"
               ></v-avatar>
-              <v-dialog v-model="groupDialog" width="auto">
+              <v-dialog v-model="groupDialog" width="auto" @click.close="closeGroupDialog">
                 <v-card max-width="400">
-                  <v-card-title>{{ group.name }}</v-card-title>
+                  <v-card-title>{{ highlightedGroup?.name }}</v-card-title>
                   <v-avatar
                     icon="mdi-group"
-                    :image="group.picture === '' ? '/img/default-group-img.webp' : group.picture"
+                    :image="highlightedGroup?.picture === '' ? '/img/default-group-img.webp' : highlightedGroup?.picture"
                     size="104"
-                    @click.prevent="groupDialog = true"
                   ></v-avatar>
                   <div class="">
                     <v-btn
                       icon="mdi-information-outline"
                       tag="nuxt-link"
-                      :to="`/groups/${group._id}/details`"
+                      :to="`/groups/${highlightedGroup?._id}/details`"
                     ></v-btn>
                   </div>
                 </v-card>
@@ -76,9 +75,8 @@
             <div>
               <v-badge
                 v-if="group.history?.length"
-                class="bg-lime-600 rounded-full [&_span]:!text-sm lg:[&_span]:!text-lg [&_span]:!text-white [&_span]:!font-bold inline-flex justify-center items-center w-fit px-0.5 py-1"
+                class="bg-lime-600 rounded-full [&_span]:!text-sm lg:[&_span]:!text-lg [&_span]:!text-white [&_span]:!font-bold inline-flex justify-center items-center w-8 px-0.5 py-1"
                 color="transparent"
-                :content="group.history?.length"
                 inline
               ></v-badge>
             </div>
@@ -113,6 +111,7 @@
   const route = useRoute();
 
   const groupDialog = ref(false);
+  const highlightedGroup = ref<Group | null>(null);
 
   const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
 
@@ -140,6 +139,15 @@
       ));
     }
   });
+
+  function openGroupDialog(id: string, forceOpen: boolean) {
+    groupDialog.value = forceOpen;
+    highlightedGroup.value = displayedGroups.value.find(group => `${group._id}` === id) || null;
+  }
+
+  function closeGroupDialog() {
+    groupDialog.value = false;
+  }
 
   function getLastMessage(history: Group['history']) {
     if (!history || !Array.isArray(history)) return;
