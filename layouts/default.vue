@@ -79,7 +79,7 @@
     </v-main>
 
     <v-bottom-navigation
-      v-if="sessionUser && !$vuetify.display.lgAndUp"
+      v-if="isSignedIn && !$vuetify.display.lgAndUp"
       mode="shift"
       class="!bg-stone-950 fixed bottom-0 !w-full"
     >
@@ -98,7 +98,6 @@
 </template>
 
 <script setup lang="ts">
-  import type User from "~/interfaces/User";
   const navItems = [
     {
       "to": "/groups",
@@ -127,7 +126,12 @@
   const path = computed(() => useRoute().path);
 
   const { isSignedIn } = useSession();
-  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
+  const { getUser } = useRefreshUser();
+  const sessionUser = ref($lstorage.getData("bingoUser"));
+
+  watch(isSignedIn, (signedIn) => {
+    if (signedIn) sessionUser.value = getUser();
+  })
 
   useEventListener(window, "keydown", handleA11yMenuBlur);
 
