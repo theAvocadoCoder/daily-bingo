@@ -12,6 +12,7 @@
   definePageMeta({ middleware: "guest" })
   const { $lstorage, $toast } = useNuxtApp();
   const { userId } = useAuth();
+  const { isSignedIn } = useSession();
   
   const card = ref();
   const error = ref(null);
@@ -26,6 +27,7 @@
         new Date().setHours(0,0,0,0) // 12 AM today
         - new Date(card.value.created_at).setHours(0,0,0,0) // 12 AM when the card was created
         >= MS_IN_A_DAY
+        && isSignedIn.value
       ) {
         newToastInstance.value = $toast.info("New Daily Bingo card! Click to update", {
           duration: 0,
