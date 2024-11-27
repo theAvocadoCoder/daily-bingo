@@ -41,7 +41,7 @@
             </span>
 
             <!-- Message -->
-            <template v-else-if="group" v-for="message in groupsMessages[groupId]?.messages" :key="message.id">
+            <template v-else-if="group && groupsMessages" v-for="message in groupsMessages[groupId]?.messages" :key="message.id">
               <div v-if="message.id && message.id === groupsMessages[groupId].lastReadId" :class="getMessageStyle(null)">New Messages</div>
               <div :class="`${getMessageStyle(message?.sender?.user_id)} mb-5 p-5 relative w-fit rounded-md`">
                 <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
@@ -79,9 +79,6 @@ definePageMeta({
   }
 });
 
-  import type { Message as AblyMessage } from "ably";
-  import type Group from "~/interfaces/Group";
-  import type { Message } from "~/interfaces/Group";
   import type User from "~/interfaces/User";
   import { useGroupStore } from "~/stores/groupStore";
   import { useGlobalStore } from "~/stores/globalStore";
@@ -105,9 +102,9 @@ definePageMeta({
   const { scrollY } = storeToRefs(store);
   const { preserveScrollPosition } = store;
   const { newMessage: pubSubMessage } = storeToRefs(ablyStore);
-  const { publishMessage } = ablyStore;
+  const { publishMessage, setStorageData } = ablyStore;
 
-  const groupId = route.params.id as unknown;
+  const groupId = route.params.id as unknown as string;
 
   const showDetailsPanel = ref(route.name?.toString().includes("details"));
   const messagesContainer = ref<HTMLDivElement>();
@@ -135,13 +132,13 @@ definePageMeta({
       // setTimeout(() => scrollToBottom, 50);
       console.log("y b4 prsrv", toValue(scrollY))
       preserveScrollPosition(toValue(scrollY));
-      navigateTo(`/groups/${groupId}/details`, {scroll: toValue(scrollY)});
+      navigateTo(`/groups/${groupId}/details`);
     } else {
       navigateTo(`/groups/${groupId}`);
     }
   }
 
-  function getMessageStyle(id: string) {
+  function getMessageStyle(id: string | null) {
     if (id === `${sessionUser.value._id}`) {
       // Session user message
       return `ownMessage bg-lime-700 text-zinc-200 border-lime-700 ml-auto mr-10 rounded-tr-none`;
@@ -165,10 +162,12 @@ definePageMeta({
   }
 
   onMounted(async() => {
+    setStorageData();
     await fetchGroup(`${groupId}`).then(() => {  
-      const newValue = {...groupsMessages.value[groupId]};
+      let newValue;
+      if (groupsMessages.value) newValue = {...groupsMessages.value[groupId]};
   
-      newValue.messages = [...(toValue(group)?.history)];
+      newValue.messages = [...(toValue(group)?.history!)];
   
       $lstorage.setData(
         "groupsMessages", 
