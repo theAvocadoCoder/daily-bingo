@@ -25,7 +25,7 @@ export const useAblyStore = defineStore("ably", () => {
   const newMessage = ref();
 
   function setStorageData() {
-    if (!groupsMessages.value) {
+    if (!toValue(groupsMessages)) {
       const userGroups: userGroups = {}
       sessionUser.value.groups?.map((group: string) => userGroups[group] = {lastReadId: "", messages: []});
       $lstorage.setData("groupsMessages", userGroups);
@@ -40,7 +40,7 @@ export const useAblyStore = defineStore("ably", () => {
   async function subscribeToUserGroups() {
     if (!groupsMessages.value || !Object.keys(groupsMessages.value).length) return setStorageData();
 
-    await connectAbly();
+    connectAbly();
     const groupIds = sessionUser.value.groups;
     for (let i = 0; i < groupIds.length; i++) {
       const channel = ably.value?.channels.get(`group-${groupIds[i]}`);
@@ -76,7 +76,7 @@ export const useAblyStore = defineStore("ably", () => {
     const channel = ably.value?.channels.get(`group-${$sStorage.getData("currentGroup")._id}`);
 
     // Publish message
-    await channel.publish("message", messageData);
+    await channel?.publish("message", messageData);
     newMessage.value = messageData;
   }
 
