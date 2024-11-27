@@ -27,21 +27,6 @@ export default class MongoIO implements MongoInterface {
    */
   constructor() {}
 
-  private preConnect(): void {
-
-    const connectionString = process.env.ATLAS_URI as string;
-
-    this.client = new MongoClient(connectionString, {
-      serverApi: {
-          version: ServerApiVersion.v1,
-          strict: true,
-          deprecationErrors: true,
-      },
-      maxIdleTimeMS: 60000,
-    });
-
-  }
-
   /***************************************************
    * Connect to mongodb database
    */
@@ -49,22 +34,24 @@ export default class MongoIO implements MongoInterface {
 
     if (this.client) return;
 
-    this.preConnect();
     const dbName = runtimeDbName;
+    const connectionString = process.env.ATLAS_URI as string;
+
+    this.client = new MongoClient(connectionString);
 
     try {
+      await this.client!.connect();
       this.db = this.client!.db(dbName);
       this.userCollection = this.db.collection("users");
       this.cardCollection = this.db.collection("cards");
       this.groupCollection = this.db.collection("groups");
       this.entryCollection = this.db.collection("entries");
+      console.info("Database", dbName, "Connected");
 
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
       this.isConnected = false;
     }
-
-    console.info("Database", dbName, "Connected");
   }
 
   /***************************************************
