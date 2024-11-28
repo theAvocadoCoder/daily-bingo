@@ -69,12 +69,12 @@
 
 <script setup lang="ts">
   import type Group from '~/interfaces/Group';
-  import type User from '~/interfaces/User';
   import { Filter } from "bad-words";
 
   const { $lstorage, $toast } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
-  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+  const { getUser } = useRefreshUser();
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   const router = useRouter();
   const creating = ref(false);
   const newGroup = ref<{
@@ -163,7 +163,7 @@
         }
       });
 
-      await getUser();
+      sessionUser.value = await getUser();
       creating.value = false;
 
       router.push(`/groups?s=${newGroup.value.name.trim()}`);

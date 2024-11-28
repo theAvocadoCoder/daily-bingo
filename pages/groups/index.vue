@@ -113,7 +113,7 @@
   const groupDialog = ref(false);
   const highlightedGroup = ref<Group | null>(null);
 
-  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+  const sessionUser = ref($lstorage.getData("bingoUser"));
 
   const searchValue = ref<null | string>(route?.query?.s ? (route.query.s as string) : null);
 

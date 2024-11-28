@@ -5,7 +5,7 @@ export function useBingoTracking(card: Card) {
 
   const { getUser } = useRefreshUser();
   const { $lstorage, $sStorage, $toast } = useNuxtApp();
-  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   const cardType = card.creator.user_id === null ? "dailyBingo" : "currentCard";
 
   const STATIC = {
@@ -73,8 +73,7 @@ export function useBingoTracking(card: Card) {
     // Update local storage
     saveProgress(newCard, { saved: true })
 
-    await getUser();
-    $lstorage.setData("bingoUser", sessionUser.value);
+    sessionUser.value = await getUser();
     $toast.success(`${name} saved`);
   }
 

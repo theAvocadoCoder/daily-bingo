@@ -87,7 +87,7 @@
 
   const cardIsSaved = computed(() => bingoCard.value.saved);
   const cardName = ref(`${bingoCard.value.name}`);
-  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   const ownCard = (
     bingoCard.value.creator.user_id === sessionUser.value._id
     || bingoCard.value.creator.user_id === null

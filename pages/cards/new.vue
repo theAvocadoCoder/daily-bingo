@@ -51,13 +51,12 @@
 
 <script setup lang="ts">
   import type Card from "~/interfaces/Card";
-  import type User from "~/interfaces/User";
   import { Filter } from "bad-words";
 
   const { $lstorage, $toast } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
   const { getUser } = useRefreshUser();
-  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   const router = useRouter();
   const creating = ref(false);
   const newCard = ref<{
@@ -142,7 +141,7 @@
         }
       });
 
-      await getUser();
+      sessionUser.value = await getUser();
       creating.value = false;
       
       router.push(`/cards?s=${newCard.value.name.trim()}`);

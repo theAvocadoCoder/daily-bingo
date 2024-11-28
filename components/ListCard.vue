@@ -66,7 +66,7 @@ const cardModel = ref({
   card_name: "",
 });
 
-const sessionUser = computed(() => $lstorage.getData("bingoUser"))
+const sessionUser = ref($lstorage.getData("bingoUser"))
 
 const emit = defineEmits(["update-cards"]);
 const { card, displayedCards } = defineProps<{

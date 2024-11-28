@@ -18,8 +18,8 @@ type userGroups = Record< string, {lastReadId: string, messages: groupMessage[]}
 export const useAblyStore = defineStore("ably", () => {
   const { $ably, $lstorage, $sStorage, $toast } = useNuxtApp();
 
-  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
-  const groupsMessages = computed(() => $lstorage.getData("groupsMessages") as userGroups);
+  const sessionUser = ref($lstorage.getData("bingoUser"));
+  const groupsMessages = ref($lstorage.getData("groupsMessages") as userGroups);
 
   const ably = ref();
   const newMessage = ref();

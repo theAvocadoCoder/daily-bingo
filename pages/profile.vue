@@ -75,7 +75,7 @@
   const { isLoaded, isSignedIn } = useAuth();
   const { getUser } = useRefreshUser();
 
-  const sessionUser = computed(() => $lstorage.getData("bingoUser"));
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   type userModel = {
     display_name: string,
     username: string,
@@ -158,7 +158,7 @@
 
       }
 
-      await getUser();
+      sessionUser.value = await getUser();
       saving.value = false;
     }
 

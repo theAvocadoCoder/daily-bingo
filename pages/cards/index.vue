@@ -40,14 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import type User from "~/interfaces/User";
 import type Card from "~/interfaces/Card";
 const { $lstorage } = useNuxtApp();
 const { getUser } = useRefreshUser();
 const route = useRoute();
 const { isLoaded, isSignedIn } = useAuth();
 
-const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+const sessionUser = ref($lstorage.getData("bingoUser"));
 
 const searchValue = ref<null | string>(
   route?.query?.s ? (route.query.s as string) : null
@@ -89,7 +88,7 @@ function handleSearchFocusOut() {
 }
 
 async function handleUpdateCards() {
-  await getUser();
+  sessionUser.value = await getUser();
   userCards.value = await $fetch<Card[]>("/api/cards", {
     method: "POST",
     headers: {

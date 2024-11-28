@@ -7,7 +7,7 @@ export const useUserStore = defineStore("user", () => {
   const getUser = computed(() => user.value);
   
   async function fetchUser () {
-    const userInStorage = $storage.getData("bingoUser");
+    const userInStorage = $lstorage.getData("bingoUser");
     try {
       if (!userInStorage) {
         const userId = "66d8754397e9d9f8ccb56203";

@@ -110,7 +110,7 @@ definePageMeta({
   const messagesContainer = ref<HTMLDivElement>();
 
   const groupName = computed(() => toValue(group)?.name);
-  const sessionUser = computed(() => $lstorage.getData("bingoUser") as User);
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   const groupsMessages = ref($lstorage.getData("groupsMessages"));
 
   watch(pubSubMessage, () => {

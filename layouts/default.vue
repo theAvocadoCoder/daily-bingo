@@ -129,8 +129,8 @@
   const { getUser } = useRefreshUser();
   const sessionUser = ref($lstorage.getData("bingoUser"));
 
-  watch(isSignedIn, (signedIn) => {
-    if (signedIn) sessionUser.value = getUser();
+  watch(isSignedIn, async () => {
+    sessionUser.value = await getUser();
   })
 
   useEventListener(window, "keydown", handleA11yMenuBlur);
