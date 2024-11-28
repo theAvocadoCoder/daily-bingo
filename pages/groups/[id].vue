@@ -41,12 +41,15 @@
             </span>
 
             <!-- Message -->
-            <template v-else-if="group && groupsMessages" v-for="message in groupsMessages[groupId]?.messages" :key="message.id">
-              <div v-if="message.id && message.id === groupsMessages[groupId].lastReadId" :class="getMessageStyle(null)">New Messages</div>
-              <div :class="`${getMessageStyle(message?.sender?.user_id)} mb-5 p-5 relative w-fit rounded-md`">
-                <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
-                <p>{{ message.text }}</p>
-              </div>
+            <template v-else-if="group && groupsMessages">
+              <template v-for="message in groupsMessages[groupId]?.messages" :key="message.id">
+                <div v-if="message.id && message.id === groupsMessages[groupId].lastReadId" :class="getMessageStyle(null)">New Messages</div>
+                <div :class="`${getMessageStyle(message?.sender?.user_id)} mb-5 p-5 relative w-fit rounded-md`">
+                  <p v-if="message.sender?.user_id" class="font-bold text-xl">{{ message.sender.username }}</p>
+                  <p>{{ message.text }}</p>
+                </div>
+              </template>
+              <div ref="chatBottom"></div>
             </template>
 
             <Loading v-else />
@@ -99,7 +102,7 @@ definePageMeta({
 
   const { error, group } = storeToRefs(gStore);
   const { clearGroup, fetchGroup } = gStore;
-  const { scrollY } = storeToRefs(store);
+  const { preservedY } = storeToRefs(store);
   const { preserveScrollPosition } = store;
   const { newMessage: pubSubMessage } = storeToRefs(ablyStore);
   const { publishMessage, setStorageData } = ablyStore;
@@ -108,30 +111,46 @@ definePageMeta({
 
   const showDetailsPanel = ref(route.name?.toString().includes("details"));
   const messagesContainer = ref<HTMLDivElement>();
+  const chatBottom = ref<HTMLDivElement>();
 
   const groupName = computed(() => toValue(group)?.name);
   const sessionUser = ref($lstorage.getData("bingoUser"));
   const groupsMessages = ref($lstorage.getData("groupsMessages"));
 
-  watch(pubSubMessage, () => {
-    groupsMessages.value = $lstorage.getData("groupsMessages")
-  })
+  watch(
+    [
+      () => messagesContainer.value, 
+      () => pubSubMessage.value
+    ], 
+    () => {
+      groupsMessages.value = $lstorage.getData("groupsMessages");
+      scrollToCurrent();
+    }
+  )
 
   const sending = ref(false);
   const newMessage = ref("");
-  const ably = ref();
 
-  function scrollToBottom(preserve: boolean = false) {
-    // messagesContainer.value!.scrollTop = preserve ? toValue(scrollY) : messagesContainer.value!.scrollHeight;
+  function scrollToCurrent(preserve: boolean = false) {
+    
+    if (preserve) {
+      messagesContainer.value?.scrollTo({
+        top: toValue(preservedY),
+        behavior: "smooth",
+      });
+    } else {
+      chatBottom.value?.scrollIntoView({
+        behavior: "smooth"
+      });
+    }
+
   }
 
   function toggleDetails(toOpen: boolean) {
     showDetailsPanel.value = toOpen;
 
     if (toOpen) {
-      // setTimeout(() => scrollToBottom, 50);
-      console.log("y b4 prsrv", toValue(scrollY))
-      preserveScrollPosition(toValue(scrollY));
+      preserveScrollPosition();
       navigateTo(`/groups/${groupId}/details`);
     } else {
       navigateTo(`/groups/${groupId}`);
@@ -163,7 +182,8 @@ definePageMeta({
 
   onMounted(async() => {
     setStorageData();
-    await fetchGroup(`${groupId}`).then(() => {  
+    await fetchGroup(`${groupId}`)
+    .then(() => {  
       let newValue;
       if (groupsMessages.value) newValue = {...groupsMessages.value[groupId]};
   
@@ -171,8 +191,10 @@ definePageMeta({
   
       $lstorage.setData(
         "groupsMessages", 
-        {...groupsMessages.value, [groupId]: newValue});
+        {...groupsMessages.value, [groupId]: newValue}
+      );
     })
+    .then(() => scrollToCurrent());
   })
 
   onUnmounted(() => {

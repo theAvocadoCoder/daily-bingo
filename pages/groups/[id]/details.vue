@@ -34,12 +34,13 @@
 
 
   onMounted(async () => {
-    document.documentElement.scrollTop = preservedY;
-    console.log("y on mount", toValue(preservedY));
     if (!groupDetails.value) {
       await fetchGroup(`${route.params.id}`);
-      groupDetails.value = group!;
+      groupDetails.value = group.value!;
     }
-
+    window.scrollTo({
+      top: toValue(preservedY),
+      behavior: "smooth"
+    })
   })
 </script>

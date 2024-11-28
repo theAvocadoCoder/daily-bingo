@@ -11,8 +11,8 @@ export const useGlobalStore = defineStore('global', () => {
     scrollY.value = window.scrollY;
   }
 
-  function preserveScrollPosition(posY: number) {
-    preservedY.value = posY;
+  function preserveScrollPosition(posY?: number) {
+    preservedY.value = posY || window.scrollY;
   }
 
   return { scrollY, preservedY, updateScrollPosition, preserveScrollPosition }
