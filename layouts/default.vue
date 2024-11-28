@@ -11,7 +11,7 @@
       <v-spacer></v-spacer>
 
       <v-btn v-if="isSignedIn" @click="toggleMenu" append-icon="mdi-chevron-down" class="!w-fit !h-fit !p-3">
-        <v-avatar icon="mdi-account" :image="sessionUser?.picture"></v-avatar>
+        <v-avatar class="!bg-stone-400 !text-stone-950" icon="mdi-account" :image="sessionUser?.picture"></v-avatar>
       </v-btn>
       <ul
         tabindex="0"
@@ -40,12 +40,21 @@
     >
       <v-list>
         <v-list-item
+          v-if="sessionUser.username"
           tag="nuxt-link"
           to="/profile"
           :prepend-avatar="sessionUser?.picture"
-          :subtitle="`@${sessionUser?.username}`"
+          :subtitle="`${'@'+sessionUser?.username}`"
           :title="sessionUser?.display_name"
         ></v-list-item>
+        <v-list-item
+          v-else
+          prepend-icon="mdi-account"
+          subtitle=""
+          title=""
+          class="!bg-stone-400 !text-stone-950"
+        ></v-list-item>
+
       </v-list>
 
       <v-divider></v-divider>
