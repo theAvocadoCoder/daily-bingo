@@ -23,10 +23,10 @@
           card.creator?.user_id === sessionUser._id ||
           card.creator?.username === 'Daily Bingo'
         " :icon="editMode == card._id ? 'mdi-check' : 'mdi-pencil'"
-          :disabled="!!editMode && editMode != card._id" variant="text"
+          :disabled="(!!editMode && editMode != card._id) || saving" variant="text"
           @click.prevent="handleEdit(card._id)
         "></v-btn>
-        <v-btn icon="mdi-delete" :disabled="!!editMode && editMode != card._id" variant="text" @click.prevent="toggleCancelDialog(true, card._id)"></v-btn>
+        <v-btn icon="mdi-delete" :disabled="(!!editMode && editMode != card._id) || saving" variant="text" @click.prevent="toggleCancelDialog(true, card._id)"></v-btn>
       </div>
       <v-dialog v-model="cancelDialog" width="auto">
         <v-card :max-width="400">
@@ -153,8 +153,7 @@ async function handleDelete() {
     }),
   });
 
-  emit("update-cards");
-  $toast.success("Card deleted");
+  emit("update-cards", true);
   selectedCardId.value = "";
   saving.value = false;
 }

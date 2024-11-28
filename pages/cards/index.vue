@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import type Card from "~/interfaces/Card";
-const { $lstorage } = useNuxtApp();
+const { $lstorage, $toast } = useNuxtApp();
 const { getUser } = useRefreshUser();
 const route = useRoute();
 const { isLoaded, isSignedIn } = useAuth();
@@ -64,7 +64,9 @@ userCards.value = await $fetch<Card[]>("/api/cards", {
   }),
 });
 
-const displayedCards = computed(() => {
+const displayedCards = computed(renderDisplayedCards);
+
+function renderDisplayedCards() {
   const cards = Array.isArray(userCards.value) ? userCards.value : [];
   if (searchValue.value === null) {
     return cards;
@@ -75,10 +77,10 @@ const displayedCards = computed(() => {
         .includes((searchValue.value as string).toLocaleLowerCase())
     );
   }
-});
+}
 
+// If the search value is empty, set it to null
 function handleSearchFocusOut() {
-  // If the search value is empty, set it to null
   if (
     searchValue.value &&
     (searchValue.value === "" || searchValue.value.trim().length < 1)
@@ -87,19 +89,27 @@ function handleSearchFocusOut() {
   }
 }
 
-async function handleUpdateCards() {
-  sessionUser.value = await getUser();
-  userCards.value = await $fetch<Card[]>("/api/cards", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-cache",
-      Pragma: "no-cache",
-      Expires: "0",
-    },
-    body: JSON.stringify({
-      cards: sessionUser.value.cards,
-    }),
-  });
+async function handleUpdateCards(deleteCard: boolean = false) {
+  try{
+    sessionUser.value = await getUser();
+  } catch(e) {
+    console.error(e)
+  } finally {
+    userCards.value = await $fetch<Card[]>("/api/cards", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+        Expires: "0",
+      },
+      body: JSON.stringify({
+        cards: sessionUser.value.cards,
+      }),
+    }).then(cards => {
+      if (deleteCard) $toast.success("Card deleted");
+      return cards;
+    }).finally(renderDisplayedCards)
+  }
 }
 </script>
