@@ -37,16 +37,20 @@ export default class MongoIO implements MongoInterface {
     const dbName = runtimeDbName;
     const connectionString = process.env.ATLAS_URI as string;
 
-    this.client = new MongoClient(connectionString);
+    this.client = new MongoClient(connectionString, {
+      serverSelectionTimeoutMS: 7500, // Wait up to 7.5 seconds for server selection
+      connectTimeoutMS: 10000,       // Wait up to 10 seconds for the connection
+    });
 
     try {
-      await this.client!.connect();
-      this.db = this.client!.db(dbName);
-      this.userCollection = this.db.collection("users");
-      this.cardCollection = this.db.collection("cards");
-      this.groupCollection = this.db.collection("groups");
-      this.entryCollection = this.db.collection("entries");
-      console.info("Database", dbName, "Connected");
+      await this.client!.connect().then(() => {
+        this.db = this.client!.db(dbName);
+        this.userCollection = this.db.collection("users");
+        this.cardCollection = this.db.collection("cards");
+        this.groupCollection = this.db.collection("groups");
+        this.entryCollection = this.db.collection("entries");
+        console.info("Database", dbName, "Connected");
+      })
 
     } catch (error) {
       console.error("Error connecting to MongoDB:", error);
