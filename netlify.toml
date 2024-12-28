@@ -2,10 +2,3 @@
   for = "/*"
   [headers.values]
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[redirects]]
-from = "/*"
-to = "/"
-status = 200
-force=true
-query = { "__clerk_handshake" = ":handshake" }
