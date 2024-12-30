@@ -108,12 +108,12 @@
 
 <script setup lang="ts">
   const navItems = [
-    {
-      "to": "/groups",
-      "icon": "mdi-account-group",
-      "value": "groups",
-      "bg": "!bg-lime-50"
-    },
+    // {
+    //   "to": "/groups",
+    //   "icon": "mdi-account-group",
+    //   "value": "groups",
+    //   "bg": "!bg-lime-50"
+    // },
     {
       "to": "/",
       "icon": "mdi-home",
