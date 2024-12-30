@@ -5,7 +5,8 @@ export default defineEventHandler(async (event) => {
   const { channel: channelName, messages: encodedMessages } = await readBody(event);
   const groupId = channelName.split("-")[1];
 
-  const messages = encodedMessages.map((message: any) => JSON.parse(message.data));
+  const decodedMessages = await Ably.Realtime.Message.fromEncodedArray(encodedMessages);
+  const messages = decodedMessages.map((message: any) => (message.data));
 
   try {
     const updatedGroup = await $fetch(`/api/groups/${groupId}`, {
