@@ -57,11 +57,40 @@
 
           <!-- Typing Area -->
           <div class="fixed bottom-0 w-full left-0 bg-stone-800 py-2">
-            <v-form @submit.prevent="sendMessage" class="w-full mx-auto max-w-5xl flex justify-center items-center gap-5 lg:gap-10">
-              <v-btn type="button" class="!bg-lime-500 !text-stone-700" icon="mdi-paperclip" />
+            <div class="w-full max-w-3xl flex justify-center">
+              <v-chip v-for="card in newMessage.cards" closable @click:close="">{{ card }}</v-chip>
+            </div>
+            <v-form @submit.prevent="sendMessage" class="w-full mx-auto max-w-5xl flex justify-center items-center gap-5 lg:gap-10 relative">
+              <v-dialog v-model="cardsDialog" width="auto" persistent>
+                <v-card max-width="400" class="w-60 p-3">
+                  <v-card-title>Attach a card</v-card-title>
+                  <v-card-text>
+                    <v-select
+                      v-model="newMessage.cards"
+                      label="Your cards"
+                      :items="userCards"
+                      item-title="name"
+                      item-value="_id"
+                      multiple
+                    ></v-select>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      class="mb-auto hover:!bg-gray-900/20 !bg-gray-300/50"
+                      @click="clearCardSelection,toggleCardDialog"
+                    >Clear</v-btn>
+                    <v-btn
+                      class="mb-auto hover:!bg-lime-900 !bg-lime-700 text-white"
+                      @click="toggleCardDialog"
+                    >Attach</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-btn @click="toggleCardDialog" type="button" class="!bg-lime-500 !text-stone-700" icon="mdi-paperclip" />
               <v-text-field
                 class="w-full [&_input]:!bg-white pb-0 bg-white"
-                v-model="newMessage"
+                v-model="newMessage.text"
                 placeholder="Message"
                 :hide-details="true"
               />
@@ -75,24 +104,22 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: "auth",
-  auth: {
-    guestRedirectUrl: "/sign-in"
-  }
-});
 
-  import type User from "~/interfaces/User";
-  import { useGroupStore } from "~/stores/groupStore";
+  import type Card from "~/interfaces/Card";
+  import { useGroupStore } from "~/archived/stores/groupStore";
   import { useGlobalStore } from "~/stores/globalStore";
-  import { useAblyStore } from "~/stores/ablyStore";
+  import { useAblyStore } from "~/archived/stores/ablyStore";
   import { storeToRefs } from "pinia";
 
   definePageMeta({
-    layout: false
+    layout: false,
+    middleware: "auth",
+    auth: {
+      guestRedirectUrl: "/sign-in"
+    },
   })
 
-  const { $lstorage, $sStorage, $toast } = useNuxtApp();
+  const { $lstorage } = useNuxtApp();
   const { isLoaded, isSignedIn } = useAuth();
   const route = useRoute();
 
@@ -116,6 +143,27 @@ definePageMeta({
   const groupName = computed(() => toValue(group)?.name);
   const sessionUser = ref($lstorage.getData("bingoUser"));
   const groupsMessages = ref($lstorage.getData("groupsMessages"));
+  const userCards = ref<Partial<Card>[]>();
+  const cardsDialog = ref(false);
+
+  userCards.value = await $fetch<Partial<Card>[]>("/api/cards", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      cards: sessionUser.value?.cards,
+    }),
+  }).then(cards => cards.map(card => ({name: card.name!, _id: card._id!}))) || [];
+
+  const sending = ref(false);
+  const newMessage = ref<{
+    text: string,
+    cards: Partial<Card>[]
+  }>({
+    text: "",
+    cards: [],
+  });
 
   watch(
     [
@@ -127,9 +175,6 @@ definePageMeta({
       scrollToCurrent();
     }
   )
-
-  const sending = ref(false);
-  const newMessage = ref("");
 
   function scrollToCurrent(preserve: boolean = false) {
     
@@ -144,6 +189,18 @@ definePageMeta({
       });
     }
 
+  }
+
+  function toggleCardDialog() {
+    cardsDialog.value = !cardsDialog.value;
+  }
+
+  function clearCardSelection() {
+    newMessage.value.cards = [];
+  }
+
+  function removeCardSelection(id: unknown) {
+    userCards.value = userCards.value?.filter(card => card._id !== id);
   }
 
   function toggleDetails(toOpen: boolean) {
@@ -171,12 +228,12 @@ definePageMeta({
   }
 
   async function sendMessage() {
-    if (newMessage.value?.trim() === '') return
+    if (newMessage.value?.text.trim() === '') return
     sending.value = true;
 
-    publishMessage(newMessage.value?.trim(), []);
+    publishMessage(newMessage.value?.text.trim(), newMessage.value?.cards);
 
-    newMessage.value = "";
+    newMessage.value = { text: "", cards: [] };
     sending.value = false;
   }
 

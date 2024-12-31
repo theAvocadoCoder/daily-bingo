@@ -2,6 +2,7 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import type { Message as AblyMessage } from "ably";
 import { UUID } from "uuidjs";
+import type Card from "~/interfaces/Card";
 
 interface groupMessage {
   text: string,
@@ -9,7 +10,7 @@ interface groupMessage {
     user_id: string,
     username: string,
   },
-  attached: string[],
+  attached: Partial<Card>[],
   timeStamp: string,
   id: string,
 }
@@ -61,7 +62,7 @@ export const useAblyStore = defineStore("ably", () => {
     }
   }
 
-  async function publishMessage(message: string, attached: string[]) {
+  async function publishMessage(message: string, attached: Partial<Card>[]) {
     connectAbly();
     const messageData: groupMessage = {
       text: message.trim(),

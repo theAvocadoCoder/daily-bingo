@@ -8,8 +8,9 @@
   </div>
 </template>
 
-<script setup lang="ts">
-  import { useAblyStore } from "~/stores/ablyStore";
+<!-- Archived until group feature implementation is reinstated -->
+<!-- <script setup lang="ts">
+  import { useAblyStore } from "~/archived/stores/ablyStore";
 
   const { isSignedIn } = useAuth();
   const { getUser } = useRefreshUser();
@@ -31,4 +32,4 @@
   onUnmounted(() => {
     disconnectAbly();
   })
-</script>
+</script> -->
