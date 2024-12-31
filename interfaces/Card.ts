@@ -1,11 +1,10 @@
 import { ObjectId } from "mongodb";
 import type Cell from "./Cell";
-import type { ISODateString } from "next-auth";
 
 export default interface Card {
   _id: ObjectId;
   cells: Cell[];
-  created_at: ISODateString;
+  created_at: string;
   creator: {
     user_id: ObjectId;
     username: string;

@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 export default interface User {
   _id?: ObjectId;
-  cards: ObjectId[];
+  cards: UserCard[];
   clerk_id: string;
   display_name: string;
   email: string;
@@ -13,16 +13,11 @@ export default interface User {
   username_modified?: Date;
 }
 
-// export type UserCard = {
-//   _id: ObjectId | string;
-//   creator: {
-//     user_id: ObjectId | string;
-//     username: string;
-//   };
-//   card_name: string;
-//   isDeleted: boolean;
-//   thumbnail?: string;
-// }
+export type UserCard = {
+  _id: ObjectId;
+  marked: boolean[];
+  thumbnail?: string;
+}
 
 // export type UserGroup = {
 //   _id: ObjectId;
