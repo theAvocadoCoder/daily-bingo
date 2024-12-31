@@ -15,14 +15,14 @@ export function useBingoTracking(card: Card & UserCard) {
     highlightColor: "#76FF03", // MDI light-green-accent-3
   }
 
-  function saveCard(name="") {
+  function saveCard(name=card.name) {
     if (!card.saved) { saveNewCard(name) } 
     else { saveProgress(card, { marked: card.marked }); syncProgress() }
   }
 
   // Save current progress locally
   function saveProgress(card: Card, properties: any) {
-    $lstorage.setData(cardType, { ...card, ...properties }); 
+    $lstorage.setData(cardType, { ...card, ...properties });
   }
 
   // Sync current progress with DB
@@ -44,13 +44,11 @@ export function useBingoTracking(card: Card & UserCard) {
 
   // Save a new card to the user's collection
   async function saveNewCard(name: string) {
-    let newCard: Card | (Card & UserCard) = card;
-
-    if (!card.marked) card.marked = new Array(STATIC.length).fill(false);
+    let newCard: Card | (Card & UserCard) = {...card, marked: card.marked || new Array(STATIC.length).fill(false)};
 
     // If it's a daily bingo card that does not exist in the system, create it
     if (cardType === "dailyBingo" && !card._id) {
-      newCard = await $fetch<Card>("/api/cards/new", {
+      newCard = {...newCard, ...await $fetch<Card>("/api/cards/new", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -60,7 +58,7 @@ export function useBingoTracking(card: Card & UserCard) {
             username: card?.creator.username,
           },
         }),
-      })
+      })}
     }
 
     // Add the card to the user's card collection
