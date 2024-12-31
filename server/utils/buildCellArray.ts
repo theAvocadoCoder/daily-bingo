@@ -8,7 +8,6 @@ export default function (phrases: string[]) {
   for (let i = 0; i < phrases.length; i++) {
     const cellObject: Cell = {
       column: 0,
-      marked: false,
       row: 0,
       value: "",
     };

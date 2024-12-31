@@ -10,9 +10,7 @@ export default defineEventHandler(async (event) => {
       if (operation?.includes("insert")) {
         theUser = await mongo.insertUserCard(userId, data);
       } else if (operation?.includes("update")) {
-        // for (let fieldItem of Object.keys(data)) {
-        //   theUser = await mongo.updateUserCard(userId, {[fieldItem]: data[fieldItem]});
-        // }
+        theUser = await mongo.updateUserCard(userId, data.card, data.marked);
       } else if (operation?.includes("delete")) {
         theUser = await mongo.deleteUserCard(userId, data);
       }
