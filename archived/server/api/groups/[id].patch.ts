@@ -1,5 +1,5 @@
 import { getMessage, mongo } from "~/server";
-import Group, {Message}  from "~/interfaces/Group";
+import Group, {Message}  from "~/archived/interfaces/Group";
 
 type OperationType = "messages-insert" | "members-insert";
 

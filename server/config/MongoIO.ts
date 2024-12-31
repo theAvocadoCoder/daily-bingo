@@ -5,7 +5,7 @@ import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId, Upd
 import MongoInterface from "~/interfaces/MongoInterface";
 import User, { UserCard } from "~/interfaces/User";
 import Card from "~/interfaces/Card";
-import Group, { Message } from "~/interfaces/Group";
+// import Group, { Message } from "~/interfaces/Group";
 import Entry from "~/interfaces/Entry";
 
 const { dbName: runtimeDbName } = useRuntimeConfig();
@@ -19,7 +19,7 @@ export default class MongoIO implements MongoInterface {
   private db?: Db;
   private userCollection?: Collection<Partial<User>>;
   private cardCollection?: Collection<Partial<Card>>;
-  private groupCollection?: Collection<Partial<Group>>;
+  // private groupCollection?: Collection<Partial<Group>>;
   private entryCollection?: Collection<Partial<Entry>>;
 
   /*************************************************
@@ -47,7 +47,7 @@ export default class MongoIO implements MongoInterface {
         this.db = this.client!.db(dbName);
         this.userCollection = this.db.collection("users");
         this.cardCollection = this.db.collection("cards");
-        this.groupCollection = this.db.collection("groups");
+        // this.groupCollection = this.db.collection("groups");
         this.entryCollection = this.db.collection("entries");
         console.info("Database", dbName, "Connected");
       })
@@ -313,25 +313,25 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<User>} the updated user
    */
-  public async insertUserGroup(id: string, group: string): Promise<User> {
-    if (!this.userCollection) {
-      throw new Error("insertUserGroup - Database not connected");
-    }
+  // public async insertUserGroup(id: string, group: string): Promise<User> {
+  //   if (!this.userCollection) {
+  //     throw new Error("insertUserGroup - Database not connected");
+  //   }
 
-    const user_id = new ObjectId(id);
-    const group_id = new ObjectId(group);
-    const filter = { _id: user_id };
-    const update = { $addToSet: { groups: group_id } };
+  //   const user_id = new ObjectId(id);
+  //   const group_id = new ObjectId(group);
+  //   const filter = { _id: user_id };
+  //   const update = { $addToSet: { groups: group_id } };
 
-    const result = await this.userCollection.updateOne(filter, update);
+  //   const result = await this.userCollection.updateOne(filter, update);
 
-    if (!result) {
-      throw new Error("insertUserGroup - Could not insert new user group");
-    } else {
-      console.info("User %s updated with new group %s", user_id, group_id);
-      return await this.findUser(id);
-    }
-  }
+  //   if (!result) {
+  //     throw new Error("insertUserGroup - Could not insert new user group");
+  //   } else {
+  //     console.info("User %s updated with new group %s", user_id, group_id);
+  //     return await this.findUser(id);
+  //   }
+  // }
 
   /***********************************************f
    * Update a user's saved groups
@@ -341,29 +341,29 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<User>} the updated user
    */
-  public async updateUserGroup(id: string, group: string): Promise<User> {
-    if (!this.userCollection) {
-      throw new Error("updateUserGroup - Database not connected");
-    }
+  // public async updateUserGroup(id: string, group: string): Promise<User> {
+  //   if (!this.userCollection) {
+  //     throw new Error("updateUserGroup - Database not connected");
+  //   }
 
-    const [field, value] = Object.entries(group)[0] as [keyof User, any];
+  //   const [field, value] = Object.entries(group)[0] as [keyof User, any];
 
-    const user_id = new ObjectId(id);
-    const group_id = new ObjectId(group);
-    const filter = { _id: user_id, "groups._id": group_id };
-    const update = Array.isArray(value) ?
-      { $addToSet: { [`groups.$.${field}`]: value } } :
-      { $set: { [`groups.$.${field}`]: value } };
+  //   const user_id = new ObjectId(id);
+  //   const group_id = new ObjectId(group);
+  //   const filter = { _id: user_id, "groups._id": group_id };
+  //   const update = Array.isArray(value) ?
+  //     { $addToSet: { [`groups.$.${field}`]: value } } :
+  //     { $set: { [`groups.$.${field}`]: value } };
 
-    const result = await this.userCollection.updateOne(filter, update);
+  //   const result = await this.userCollection.updateOne(filter, update);
 
-    if (!result) {
-      throw new Error("Could not update group for user " + user_id);
-    } else {
-      console.info("User %s's group updated with %s", user_id, group_id);
-      return await this.findUser(id);
-    }
-  }
+  //   if (!result) {
+  //     throw new Error("Could not update group for user " + user_id);
+  //   } else {
+  //     console.info("User %s's group updated with %s", user_id, group_id);
+  //     return await this.findUser(id);
+  //   }
+  // }
 
   /***********************************************
    * Delete a group from user's collection
@@ -373,28 +373,28 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<User>} the updated user
    */
-  public async deleteUserGroup(id: string, group: string): Promise<User> {
-    if (!this.userCollection) {
-      throw new Error("deleteUserGroup - Database not connected");
-    }
+  // public async deleteUserGroup(id: string, group: string): Promise<User> {
+  //   if (!this.userCollection) {
+  //     throw new Error("deleteUserGroup - Database not connected");
+  //   }
 
-    const user_id = new ObjectId(id);
-    const group_id = new ObjectId(group);
+  //   const user_id = new ObjectId(id);
+  //   const group_id = new ObjectId(group);
 
-    const filter = { _id: user_id };
-    const update = { $pull: {
-      groups: group_id
-    } };
+  //   const filter = { _id: user_id };
+  //   const update = { $pull: {
+  //     groups: group_id
+  //   } };
 
-    const result = await this.userCollection.updateOne(filter, update);
+  //   const result = await this.userCollection.updateOne(filter, update);
 
-    if (!result) {
-      throw new Error("Could not delete the group");
-    } else {
-      console.info("User %s's group %s deleted", user_id, group_id);
-      return await this.findUser(id);
-    }
-  }
+  //   if (!result) {
+  //     throw new Error("Could not delete the group");
+  //   } else {
+  //     console.info("User %s's group %s deleted", user_id, group_id);
+  //     return await this.findUser(id);
+  //   }
+  // }
 
   /***********************************************
    * Get a card
@@ -538,25 +538,25 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<Group>} the found group
    */
-  public async findGroup(id: string): Promise<Group> {
-    if (!this.groupCollection) {
-      throw new Error("findGroup - Database not connected");
-    }
+  // public async findGroup(id: string): Promise<Group> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("findGroup - Database not connected");
+  //   }
 
-    const groupId = new ObjectId(id);
-    const pipeline = [
-      {$match: {_id: groupId}}
-    ];
+  //   const groupId = new ObjectId(id);
+  //   const pipeline = [
+  //     {$match: {_id: groupId}}
+  //   ];
 
-    const results = await this.groupCollection.aggregate<Group>(pipeline).next();
+  //   const results = await this.groupCollection.aggregate<Group>(pipeline).next();
 
-    if (results === null) {
-      throw new Error("Group not found: " + id);
-    } else {
-      console.info("Found group %s", groupId);
-      return results;
-    }
-  }
+  //   if (results === null) {
+  //     throw new Error("Group not found: " + id);
+  //   } else {
+  //     console.info("Found group %s", groupId);
+  //     return results;
+  //   }
+  // }
 
   /***************************************************************
    * Get groups
@@ -565,28 +565,28 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<Partial<Group>[]>} an array of the found groups
    */
-  public async findGroups(ids: string[]): Promise<Partial<Group>[]> {
-    if (!this.groupCollection) {
-      throw new Error("findGroups - Database not connected");
-    }
+  // public async findGroups(ids: string[]): Promise<Partial<Group>[]> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("findGroups - Database not connected");
+  //   }
 
-    const idsLength = ids.length;
-    const groupIds = [];
+  //   const idsLength = ids.length;
+  //   const groupIds = [];
 
-    for (let i = 0; i < idsLength; i++) {
-      groupIds.push(new ObjectId(ids[i]));
-    }
+  //   for (let i = 0; i < idsLength; i++) {
+  //     groupIds.push(new ObjectId(ids[i]));
+  //   }
 
-    const cursor = this.groupCollection.find({ _id: { $in: groupIds } });
-    const results = await cursor.toArray();
+  //   const cursor = this.groupCollection.find({ _id: { $in: groupIds } });
+  //   const results = await cursor.toArray();
 
-    if (!results) {
-      throw new Error("Could not retrieve user's groups");
-    } else {
-      console.info("Found user's groups");
-      return results;
-    }
-  }
+  //   if (!results) {
+  //     throw new Error("Could not retrieve user's groups");
+  //   } else {
+  //     console.info("Found user's groups");
+  //     return results;
+  //   }
+  // }
 
   /***************************************************************
    * Insert a new group
@@ -595,21 +595,21 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<Group>} the inserted group
    */
-  public async insertGroup(theGroup: Partial<Group>): Promise<Group> {
-    if (!this.groupCollection) {
-      throw new Error("insertGroup - Database not connected");
-    }
+  // public async insertGroup(theGroup: Partial<Group>): Promise<Group> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("insertGroup - Database not connected");
+  //   }
 
-    const results = await this.groupCollection.insertOne(theGroup);
-    let id = results.insertedId.toHexString();
+  //   const results = await this.groupCollection.insertOne(theGroup);
+  //   let id = results.insertedId.toHexString();
 
-    if (results === null) {
-      throw new Error("Could not update group: " + id);
-    } else {
-      console.info("Group %s inserted", id);
-      return await this.findGroup(id);
-    }
-  }
+  //   if (results === null) {
+  //     throw new Error("Could not update group: " + id);
+  //   } else {
+  //     console.info("Group %s inserted", id);
+  //     return await this.findGroup(id);
+  //   }
+  // }
 
   /***************************************************************
    * Update a group by ID
@@ -619,23 +619,23 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<Group>} Updated group
    */
-  public async updateGroup(id: string, group: Partial<Group>): Promise<Group> {
-    if (!this.groupCollection) {
-      throw new Error("updateGroup - Database not connected");
-    }
+  // public async updateGroup(id: string, group: Partial<Group>): Promise<Group> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("updateGroup - Database not connected");
+  //   }
 
-    const group_id = new ObjectId(id);
-    const filter = { _id: group_id };
-    const update = { $set: group };
+  //   const group_id = new ObjectId(id);
+  //   const filter = { _id: group_id };
+  //   const update = { $set: group };
 
-    const result = await this.groupCollection.findOneAndUpdate(filter, update);
-    if (!result) {
-      throw new Error("Update group found No Group to Update " + group_id);
-    } else {
-      console.info ("Group %s updated with %s", group_id, group);
-      return await this.findGroup(id);
-    }
-  }
+  //   const result = await this.groupCollection.findOneAndUpdate(filter, update);
+  //   if (!result) {
+  //     throw new Error("Update group found No Group to Update " + group_id);
+  //   } else {
+  //     console.info ("Group %s updated with %s", group_id, group);
+  //     return await this.findGroup(id);
+  //   }
+  // }
 
   /***************************************************************
    * Increment or decrement the group's references
@@ -645,26 +645,26 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {<Promise<Group>>}
    */
-  public async updateGroupReferences(id: string, operation: 1 | -1): Promise<Group> {
-    if (!this.groupCollection) {
-      throw new Error("updateGroupReferences - Database not connected");
-    }
+  // public async updateGroupReferences(id: string, operation: 1 | -1): Promise<Group> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("updateGroupReferences - Database not connected");
+  //   }
 
-    const group_id = new ObjectId(id);
-    const filter = { _id: group_id };
-    const update = { $inc: {
-      references: operation,
-    } };
+  //   const group_id = new ObjectId(id);
+  //   const filter = { _id: group_id };
+  //   const update = { $inc: {
+  //     references: operation,
+  //   } };
 
-    const result = await this.groupCollection.findOneAndUpdate(filter, update);
+  //   const result = await this.groupCollection.findOneAndUpdate(filter, update);
 
-    if (!result) {
-      throw new Error("Update group references found no group to update " + group_id);
-    } else {
-      console.info("Group %s's reference updated", group_id);
-      return await this.findGroup(id);
-    }
-  }
+  //   if (!result) {
+  //     throw new Error("Update group references found no group to update " + group_id);
+  //   } else {
+  //     console.info("Group %s's reference updated", group_id);
+  //     return await this.findGroup(id);
+  //   }
+  // }
 
   /*************************************************************** 
    * Add message(s) to the group history
@@ -672,24 +672,24 @@ export default class MongoIO implements MongoInterface {
    * @param {string} id the group id
    * @param {Partial<Message>[]} messages the messages to insert
   */
-  public async insertGroupMessages(id: string, messages: Partial<Message>[]): Promise<Group> {
-    if (!this.groupCollection) {
-      throw new Error("insertGroupMessages - Database not connected");
-    }
+  // public async insertGroupMessages(id: string, messages: Partial<Message>[]): Promise<Group> {
+  //   if (!this.groupCollection) {
+  //     throw new Error("insertGroupMessages - Database not connected");
+  //   }
 
-    const group_id = new ObjectId(id);
-    const filter = { _id: group_id };
-    const updateField: UpdateFilter<Partial<Group>> = { history: { $each: messages } };
-    const update = { $push: updateField };
+  //   const group_id = new ObjectId(id);
+  //   const filter = { _id: group_id };
+  //   const updateField: UpdateFilter<Partial<Group>> = { history: { $each: messages } };
+  //   const update = { $push: updateField };
 
-    const result = await this.groupCollection.updateOne(filter, update);
-    if (!result) {
-      throw new Error("Insert group mesaages found No Group to Update " + group_id);
-    } else {
-      console.info ("Group %s updated with %s", group_id, `${messages[0]}...`);
-      return await this.findGroup(id);
-    }
-  }
+  //   const result = await this.groupCollection.updateOne(filter, update);
+  //   if (!result) {
+  //     throw new Error("Insert group mesaages found No Group to Update " + group_id);
+  //   } else {
+  //     console.info ("Group %s updated with %s", group_id, `${messages[0]}...`);
+  //     return await this.findGroup(id);
+  //   }
+  // }
 
   /***************************************************************
    * Get phrases
