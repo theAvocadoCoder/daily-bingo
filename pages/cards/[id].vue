@@ -21,10 +21,14 @@
 </template>
 
 <script setup lang="ts">
-  const { $sStorage } = useNuxtApp();
+import type Card from '~/interfaces/Card';
+import type { UserCard } from '~/interfaces/User';
+
+  const { $lstorage, $sStorage } = useNuxtApp();
   const route = useRoute();
   const { isLoaded, isSignedIn } = useAuth();
 
+  const sessionUser = ref($lstorage.getData("bingoUser"));
   let card = ref($sStorage.getData("currentCard"));
   let error = ref(null);
 
@@ -33,6 +37,9 @@
   let cardName: ComputedRef;
 
   onMounted(async () => {
+    if (!isSignedIn) {
+      $sStorage.setData("signInRedirect", route.fullPath);
+    }
     if (!card.value) {
       const results = await $fetch<Card | null>(`/api/cards/${cardId}`);
       if (results) {
