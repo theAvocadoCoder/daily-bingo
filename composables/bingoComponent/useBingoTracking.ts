@@ -1,7 +1,8 @@
 import type Card from "~/interfaces/Card";
+import type { UserCard } from "~/interfaces/User";
 
 
-export function useBingoTracking(card: Card) {
+export function useBingoTracking(card: Card & UserCard) {
 
   const { getUser } = useRefreshUser();
   const { $lstorage, $sStorage, $toast } = useNuxtApp();
@@ -16,7 +17,7 @@ export function useBingoTracking(card: Card) {
 
   function saveCard(name="") {
     if (!card.saved) { saveNewCard(name) } 
-    else { saveProgress(card, { cells: card.cells }); syncProgress() }
+    else { saveProgress(card, { marked: card.marked }); syncProgress() }
   }
 
   // Save current progress locally
@@ -26,19 +27,16 @@ export function useBingoTracking(card: Card) {
 
   // Sync current progress with DB
   async function syncProgress() {
-    await $fetch(`/api/cards/${card._id}`, {
+    await $fetch(`/api/users/${sessionUser.value._id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        card: {
-          cells: card.cells,
-          created_at: new Date().toISOString(),
-          creator: {
-            user_id: null,
-            username: "Daily Bingo"
-          }
+        operation: "cards-update",
+        data: {
+          card: card._id,
+          marked: card.marked
         }
       })
     });
@@ -46,7 +44,9 @@ export function useBingoTracking(card: Card) {
 
   // Save a new card to the user's collection
   async function saveNewCard(name: string) {
-    let newCard = card;
+    let newCard: Card | (Card & UserCard) = card;
+
+    if (!card.marked) card.marked = new Array(STATIC.length).fill(false);
 
     // If it's a daily bingo card that does not exist in the system, create it
     if (cardType === "dailyBingo" && !card._id) {
@@ -63,15 +63,17 @@ export function useBingoTracking(card: Card) {
       })
     }
 
-    // Add the card's id to the user's cards
+    // Add the card to the user's card collection
     await $fetch(`/api/users/${sessionUser.value._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: newCard?._id, operation: "cards-insert" }),
+      body: JSON.stringify({ data: {
+        _id: newCard._id, marked: (newCard as Card & UserCard).marked
+      }, operation: "cards-insert" }),
     });
 
     // Update local storage
-    saveProgress(newCard, { saved: true })
+    saveProgress(newCard, { saved: true });
 
     sessionUser.value = await getUser();
     $toast.success(`${name} saved`);
@@ -80,10 +82,8 @@ export function useBingoTracking(card: Card) {
   function resetCard() {
     // TODO: Implement resetting wins
 
-    for (let i = 0; i < card.cells.length; i++) {
-      card.cells[i].marked = false;
-    }
-    (cardType === "currentCard" ? $sStorage : $lstorage).setData(cardType, {...card, cells: card.cells});
+    card.marked = new Array(STATIC.length).fill(false);
+    (cardType === "currentCard" ? $sStorage : $lstorage).setData(cardType, {...card, marked: card.marked});
 
     if (card.saved) saveCard();
   }

@@ -13,13 +13,13 @@
         >
           <!-- Cells -->
           <div v-for="(cell, index) in bingoCard.cells"
-            @click="markCell(cell)" :id="`${index}`" style="font-size: clamp(10px, 1.5svw, 14px); line-height: 1.2em;"
+            @click="markCell(index)" :id="`${index}`" style="font-size: clamp(10px, 1.5svw, 14px); line-height: 1.2em;"
             :class="`grid [&_*]:[grid-area:1/1] [&_*]:my-auto [&_*]:mx-auto bg-stone-50 w-full aspect-square cursor-pointer overflow-hidden px-0.5`" 
           >
             <!-- Mark -->
-            <span v-if="cell.marked" :class="`rounded-[50%] w-3/4 h-3/4`" :style="`background-color: #76FF03`"></span>
+            <span v-if="bingoCard.marked[index]" :class="`rounded-[50%] w-3/4 h-3/4`" :style="`background-color: #76FF03`"></span>
             <!-- Star -->
-            <img v-if="cell.row == 2 && cell.column == 2 && !cell.marked"
+            <img v-if="cell.row == 2 && cell.column == 2 && !bingoCard.marked[index]"
               ref="starImg" src="~/assets/yellow-star.svg" class="w-3/4 h-3/4"
             />
             <!-- Text -->

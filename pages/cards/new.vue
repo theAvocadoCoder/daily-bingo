@@ -134,7 +134,10 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              data: savedCard._id,
+              data: {
+                _id: savedCard._id,
+                marked: new Array(25).fill(false),
+              },
               operation: "cards-insert",
             }),
           });

@@ -34,10 +34,13 @@
 
   onMounted(async () => {
     if (!card.value) {
-      const results = await $fetch(`/api/cards/${cardId}`);
+      const results = await $fetch<Card | null>(`/api/cards/${cardId}`);
       if (results) {
+        const marked = sessionUser.value.cards.find(
+          (c: UserCard) => c._id === results?._id
+        )?.marked || new Array(25).fill(false);
         card.value = results;
-        $sStorage.setData("currentCard", {...card.value, saved: true});
+        $sStorage.setData("currentCard", {...card.value, saved: true, marked});
         cardName = computed(() => card.value.name)
       }
     }

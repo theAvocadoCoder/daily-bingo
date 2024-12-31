@@ -48,7 +48,7 @@
   async function generateDailyCard() {
     const results = await $fetch("/api/cards/daily");
     if (results) {
-      card.value = {...results, saved: false};
+      card.value = {...results, saved: false, marked: new Array(25).fill(false)};
       $lstorage.setData("dailyBingo", card.value);
     }
   }

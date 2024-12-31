@@ -19,11 +19,11 @@ export function useBingoCard(type: string) {
   const { saveCard, resetCard, updateWins } = useBingoTracking(bingoCard.value);
 
   // Display markings on marked cells
-  onMounted(() => {
-    for (let i = 0; i < bingoCard.value.cells.length; i++) {
-      if (bingoCard.value.cells[i].marked) registerCell(bingoCard.value.cells[i].row, bingoCard.value.cells[i].column);
-    }
-  });
+  // onMounted(() => {
+  //   for (let i = 0; i < bingoCard.value.cells.length; i++) {
+  //     if (bingoCard.value.cells[i].marked) registerCell(bingoCard.value.cells[i].row, bingoCard.value.cells[i].column);
+  //   }
+  // });
 
   useEventListener(window, "lstorage-update", handleCardUpdate);
   useEventListener(window, "sStorage-update", handleCardUpdate);
@@ -39,16 +39,13 @@ export function useBingoCard(type: string) {
     }
   }
 
-  function markCell(_cell: Cell) {
-    const {column, row} = _cell;
-    const cell = bingoCard.value.cells.find((cell: Cell) => cell.row == row && cell.column == column) as Cell;
-
-    if (cell.marked) { unregisterCell(cell.row, cell.column) }
-    else { registerCell(cell.row, cell.column) }
-    cell.marked = !cell.marked;
+  function markCell(cellIndex: number) {
+    // if (bingoCard.value.marked[cellIndex]) { unregisterCell(cellIndex) }
+    // else { registerCell(cellIndex) }
+    bingoCard.value.marked[cellIndex] = !bingoCard.value.marked[cellIndex];
 
     const currentCard = getCard();
-    setCard({...currentCard, cells: bingoCard.value.cells});
+    setCard({...currentCard, marked: bingoCard.value.marked});
 
     if (bingoCard.value.saved) saveCard();
   }
