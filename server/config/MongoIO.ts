@@ -266,8 +266,6 @@ export default class MongoIO implements MongoInterface {
 
     const result = await this.userCollection.updateOne(filter, update);
 
-    console.log("update user card result:", result)
-
     if (!result) {
       throw new Error("Could not update card for user " + userId);
     } else {
