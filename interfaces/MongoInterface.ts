@@ -3,6 +3,7 @@ import type Group from "./Group";
 import type { Message } from "./Group";
 import type Entry from "./Entry";
 import type User from "./User";
+import type { UserCard } from "./User";
 
 export default interface MongoInterface {
   connect(): Promise<void>;
@@ -14,8 +15,8 @@ export default interface MongoInterface {
   insertUser(theUser: {email: string, username: string}): Promise<User | null>;
   updateUser(id: string, data: Partial<User>): Promise<User>;
 
-  insertUserCard(id: string, card: string): Promise<User>;
-  updateUserCard(id: string, data: string): Promise<User>;
+  insertUserCard(id: string, card: UserCard): Promise<User>;
+  updateUserCard(id: string, card: string, marked: boolean[]): Promise<User>;
   deleteUserCard(id: string, card: string): Promise<User>;
 
   insertUserGroup(id: string, group: string): Promise<User>;

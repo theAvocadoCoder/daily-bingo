@@ -3,7 +3,7 @@
  */
 import { Collection, Db, InsertOneResult, MongoClient, ObjectId, OptionalId, UpdateFilter, ServerApiVersion } from "mongodb";
 import MongoInterface from "~/interfaces/MongoInterface";
-import User from "~/interfaces/User";
+import User, { UserCard } from "~/interfaces/User";
 import Card from "~/interfaces/Card";
 import Group, { Message } from "~/interfaces/Group";
 import Entry from "~/interfaces/Entry";
@@ -225,15 +225,15 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<User>} the updated user
    */
-  public async insertUserCard(id: string, card: string): Promise<User> {
+  public async insertUserCard(id: string, card: UserCard): Promise<User> {
     if (!this.userCollection) {
       throw new Error("insertUserCard - Database not connected");
     }
 
     const userId = new ObjectId(id);
-    const cardId = new ObjectId(card);
+    const cardId = new ObjectId(card._id);
     const filter = { _id: userId };
-    const update = { $addToSet: { cards: cardId } };
+    const update = { $addToSet: { cards: {...card, _id: cardId} } };
 
     const result = await this.userCollection.updateOne(filter, update);
 
@@ -249,26 +249,24 @@ export default class MongoIO implements MongoInterface {
    * Update a User's saved cards 
    * 
    * @param {string} id the user's id
-   * @param {string} card the data in the card to edit
+   * @param {string} card the id of the card to edit
+   * @param {number} marked the array of cell markings
    * 
    * @returns {Promise<User>} the updated user
    */
-  public async updateUserCard(id: string, card: string): Promise<User> {
+  public async updateUserCard(id: string, card: string, marked: boolean[]): Promise<User> {
     if (!this.userCollection) {
       throw new Error("updateUser - Database not connected");
     }
-    
-    const [field, value] = Object.entries(card)[0] as [keyof User, any];
 
     const userId = new ObjectId(id);
     const cardId = new ObjectId(card);
     const filter = { _id: userId, "cards._id": cardId };
-    const update = Array.isArray(value) ?
-      { $addToSet: { [`cards.$.${field}`]: value } } :
-      { $set: { [`cards.$.${field}`]: value } };
+    const update = { $set: { "cards.$.marked": marked } };
 
     const result = await this.userCollection.updateOne(filter, update);
 
+    console.log("update user card result:", result)
 
     if (!result) {
       throw new Error("Could not update card for user " + userId);
@@ -296,7 +294,7 @@ export default class MongoIO implements MongoInterface {
 
     const filter = { _id: userId };
     const update = { $pull: {
-      cards: userCardId
+      cards: { _id: userCardId }
     } };
 
     const result = await this.userCollection.updateOne(filter, update);
@@ -434,7 +432,7 @@ export default class MongoIO implements MongoInterface {
    * 
    * @returns {Promise<Partial<Card>[]>} an array of the found cards
    */
-  public async findCards(ids: string[]): Promise<Partial<Card>[]> {
+  public async findCards(ids: UserCard[]): Promise<Partial<Card>[]> {
     if (!this.cardCollection) {
       throw new Error("findCards - Database not connected");
     }
@@ -443,7 +441,7 @@ export default class MongoIO implements MongoInterface {
     const cardIds = [];
 
     for (let i = 0; i < idsLength; i++) {
-      cardIds.push(new ObjectId(ids[i]));
+      cardIds.push(new ObjectId(ids[i]._id));
     }
 
     const cursor = this.cardCollection.find({ _id: { $in: cardIds } });
