@@ -26,6 +26,7 @@
           :disabled="(!!editMode && editMode != card._id) || saving" variant="text"
           @click.prevent="handleEdit(card._id)
         "></v-btn>
+        <v-btn icon="mdi-share" :disabled="(!!editMode && editMode != card._id) || saving" variant="text" @click.prevent="handleShareCard(card)"></v-btn>
         <v-btn icon="mdi-delete" :disabled="(!!editMode && editMode != card._id) || saving" variant="text" @click.prevent="toggleCancelDialog(true, card._id)"></v-btn>
       </div>
       <v-dialog v-model="cancelDialog" width="auto">
@@ -66,13 +67,16 @@ const cardModel = ref({
   card_name: "",
 });
 
-const sessionUser = ref($lstorage.getData("bingoUser"))
+const sessionUser = ref($lstorage.getData("bingoUser"));
+const config = useRuntimeConfig();
 
 const emit = defineEmits(["update-cards"]);
-const { card, displayedCards } = defineProps<{
+const props = defineProps<{
   card: any,
   displayedCards: any,
 }>();
+
+const { card, displayedCards } = toRefs(props)
 
 function toggleCancelDialog(force: boolean, id: string) {
   cancelDialog.value = force;
@@ -89,7 +93,7 @@ function handleCancelEdit() {
 }
 
 async function handleSaveEdit(cardId?: unknown) {
-  const theCard = displayedCards?.find((card: Card) => card._id == cardId);
+  const theCard = displayedCards.value?.find((card: Card) => card._id == cardId);
 
   if (editMode.value == cardId) {
     saving.value = true;
@@ -118,18 +122,25 @@ async function handleSaveEdit(cardId?: unknown) {
       emit("update-cards");
     }
     cardModel.value.card_name = "";
-    saving.value = false;
-    editMode.value = false;
+    setTimeout(() => {
+      saving.value = false;
+      editMode.value = false;
+    }, 1200);
   } else {
     editMode.value = `${cardId}` || false;
   }
+}
+
+function handleShareCard(card: Card) {
+  navigator.clipboard.writeText(`${config.public.baseUrl}/cards/${card._id}`);
+  $toast.success("Card link copied to clipboard");
 }
 
 async function handleDelete() {
   saving.value = true;
   cancelDialog.value = false;
 
-  const theCard = displayedCards?.find(
+  const theCard = displayedCards.value?.find(
     (card: Card) => card._id == selectedCardId.value
   ) as Card;
 

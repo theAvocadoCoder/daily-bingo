@@ -55,6 +55,9 @@
 
             <p v-else><span class="font-bold">{{ cardName }}</span> by <span class="italic">{{ `${bingoCard.creator.user_id ? "@" : ""}${bingoCard.creator.username}` }}</span></p>
           </ConfirmDialog>
+          <div v-if="cardIsSaved" class="text-center p-4">
+            <v-btn @click="handleShareCard(bingoCard)" class="!bg-lime-700 !text-stone-50">Share</v-btn>
+          </div>
         </SignedIn>
         <SignedOut>
           <div class="text-center p-4">
@@ -74,7 +77,10 @@
 </template> 
 
 <script setup lang="ts">
-  const {$lstorage} = useNuxtApp();
+  import type Card from "~/interfaces/Card";
+  const {$lstorage, $toast} = useNuxtApp();
+
+  const config = useRuntimeConfig();
   
   const props = defineProps<{
     type: string,
@@ -92,5 +98,10 @@
     bingoCard.value.creator.user_id === sessionUser.value._id
     || bingoCard.value.creator.user_id === null
   )
+
+  function handleShareCard(card: Card) {
+    navigator.clipboard.writeText(`${config.public.baseUrl}/cards/${card._id}`);
+    $toast.success(`Card link copied to clipboard`);
+  }
 
 </script>
