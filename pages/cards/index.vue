@@ -64,14 +64,19 @@ userCards.value = await $fetch<Card[]>("/api/cards", {
   }),
 });
 
-const displayedCards = computed(renderDisplayedCards);
+watch(userCards, () => {
+  renderDisplayedCards();
+});
+
+const displayedCards = ref();
+renderDisplayedCards();
 
 function renderDisplayedCards() {
   const cards = Array.isArray(userCards.value) ? userCards.value : [];
   if (searchValue.value === null) {
-    return cards;
+    displayedCards.value = cards;
   } else {
-    return cards?.filter((card) =>
+    displayedCards.value = cards?.filter((card) =>
       card.name
         .toLocaleLowerCase()
         .includes((searchValue.value as string).toLocaleLowerCase())
@@ -105,11 +110,11 @@ async function handleUpdateCards(deleteCard: boolean = false) {
       },
       body: JSON.stringify({
         cards: sessionUser.value.cards,
-      }),
-    }).then(cards => {
+      })
+    }).then(async (cards) => {
       if (deleteCard) $toast.success("Card deleted");
       return cards;
-    }).finally(renderDisplayedCards)
+    });
   }
 }
 </script>
